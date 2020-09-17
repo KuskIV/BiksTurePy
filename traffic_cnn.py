@@ -3,11 +3,18 @@ import tensorflow as tf
 from tensorflow.keras import datasets, layers, models
 import matplotlib.pyplot as plt
 import numpy
-import os
 
-image_id_list = []
-roi_list = []
-label_list = []
+import data
+
+
+DATASET_PATH = 'FULLIJCNN2013' # assume it is in root
+
+dataset = [] # list of 2d lists like [image_path, label]
+images_per_class = [] # list, where each entry represents the number of ppm images for that classification class
+class_names = [] # classification text for labels
+
+dataset, images_per_class = data.get_dataset_placements(DATASET_PATH)
+class_names = data.get_class_names()
 
 
 
