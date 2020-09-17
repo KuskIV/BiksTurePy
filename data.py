@@ -1,39 +1,88 @@
-import re
-import os
+import tensorflow as tf
+import numpy
+from PIL import Image
+import extract
 
-def get_class_names():
-    """Gets classification name for each label from the labels.txt, which is assumed to be in root."""
-    class_names = []
-    # RegEx to match for labels in labels.txt
-    labels_regex = re.compile('(?<== )(.)*')
+DATASET_PATH = 'FULLIJCNN2013' # assume it is in root
 
-    with open('labels.txt', 'r') as fp:
-        i = 0
-        for line in fp:
-            match = labels_regex.search(line).group(0)
-            class_names.append(match)
+def display_ppm_image(path):
+    """"Input a path to original image to display it"""
+    im = Image.open(path)
+    im.show()
 
-    return class_names
+def display_numpy_image(numpy_image):
+    """Input a (0 to 1) normalized numpy representation of a PIL image, to show it"""
+    # Scaling the pixels back
+    numpy_image_rescaled = numpy_image * 255
+    # converting the dfloat64 numpy to a unit8 - is required by PIL
+    numpy_image_rescaled_uint8 = numpy.array(numpy_image_rescaled, numpy.uint8)
+    # convert to PIL and show
+    im = Image.fromarray(numpy_image_rescaled_uint8)
+    im.show()
+
+def convert_imgs_to_numpy_arrays(dataset):
+    """Receive a dataset in and return an numpy array of the images
+       converted to normalized (0 to 1) numpy arrays."""
+    converted_images = []
+    # Convert images to numpy arrays
+    for image in dataset:
+        im_ppm = Image.open(image[0]) # Open as PIL image
+        im_array = numpy.asarray(im_ppm) # Convert to numpy array
+        converted_images.append(im_array / 255.0) # Normalize pixel values to be between 0 and 1
+
+    return converted_images
 
 
-def get_dataset_placements(dataset_path):
-    """Assumes that the exact FULLIJCNN2013 folder is in the root from
-       http://benchmark.ini.rub.de/?section=gtsdb&subsection=dataset.
-       Returns a tuple, where first item is a list with the placement of each
-       image in the FULLIJCNN2013 dataset of the detected images
-       and store in this format [image_path, label]. Second tuple item is number of images
-       per classification/label"""
+def auto_reshape_images(numpy_images, smart_resize = True):
+    """Reshapes the entire dataset in the minimal needed reshaping, by reshaping
+       to max width in the dataset and max height. Default Uses tf.keras.preprocessing.image.smart_resize
+       to do the actual reshaping in order (input to that is numpy array representaion of images), otherwise
+       can use standard resize """
+    max_width = 0
+    max_height = 0
+    reshaped_images = []
 
-    dataset_placements = []
-    images_per_class = []
-    with os.scandir(dataset_path) as dir:
-        for entry in dir:
-            if entry.is_dir(): # directories with detected signs
-                with os.scandir(entry.path) as detect_dir: # here all files are the .ppm images, the dir name indicates its label
-                    num_of_images = 0
-                    for ppm_image in detect_dir:
-                        dataset_placements.append([ppm_image.path, int(entry.name)])
-                        num_of_images += 1
-                    images_per_class.append(num_of_images)
+    # find max width and height
+    for image in numpy_images:
+        if len(image) > max_width:
+            max_width = len(image)
+        if len(image[0]) > max_height:
+            max_height = len(image[0])
 
-    return dataset_placements, images_per_class
+    reshape_size = (max_width, max_height)
+
+    for image in numpy_images:
+        if smart_resize:
+            reshaped_images.append(tf.keras.preprocessing.image.smart_resize(image, reshape_size))
+        else:
+            reshaped_images.append(tf.image.resize(image, reshape_size))
+
+    return numpy.array(reshaped_images)
+
+
+def get_labels(dataset):
+    """Input is the dataset in list of [[image_path, label]].
+       Returns a numpyarray of uint8 of the labels."""
+    labels = []
+    for image in dataset:
+        labels.append(image[1])
+
+    return numpy.array(labels, dtype=numpy.uint8)
+
+
+def get_data(padded_images = False, smart_resize = True):
+    # extract data from raw
+    raw_dataset, images_per_class = extract.get_dataset_placements(DATASET_PATH)
+
+    if padded_images:
+        printf("Padded images not implemented yet, only resize and smart resize.")
+
+    # convert ppm to numpy arrays
+    numpy_images = convert_imgs_to_numpy_arrays(raw_dataset)
+    # auto reshape images
+    numpy_images_reshaped = auto_reshape_images(numpy_images, smart_resize)
+
+    # get labels for each training example in correct order
+    labels = get_labels(raw_dataset)
+
+    return numpy_images_reshaped, labels, images_per_class

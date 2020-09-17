@@ -5,17 +5,16 @@ import matplotlib.pyplot as plt
 import numpy
 
 import data
+import extract
 
-
-DATASET_PATH = 'FULLIJCNN2013' # assume it is in root
-
-dataset = [] # list of 2d lists like [image_path, label]
+img_dataset = [] # list of all images in reshaped numpy array
+img_labels = [] # labels for all images in correct order
 images_per_class = [] # list, where each entry represents the number of ppm images for that classification class
 class_names = [] # classification text for labels
 
-dataset, images_per_class = data.get_dataset_placements(DATASET_PATH)
-class_names = data.get_class_names()
+class_names = extract.get_class_names()
 
+img_dataset, img_labels, images_per_class = data.get_data(padded_images = False, smart_resize = True)
 
 
 """
