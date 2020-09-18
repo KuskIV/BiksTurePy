@@ -11,3 +11,7 @@
 - 'data.py' formats the .ppm to PIL images and then to usable numpyarrays for training, also gives labels etc.
 - 
 
+
+## Test published model
+- Use guide here: https://www.tensorflow.org/tutorials/keras/save_and_load
+
