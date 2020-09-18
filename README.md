@@ -12,6 +12,6 @@
 - 
 
 
-## Test published model
+## Test published models
 - Use guide here: https://www.tensorflow.org/tutorials/keras/save_and_load
 
