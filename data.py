@@ -3,6 +3,10 @@ import numpy
 from PIL import Image
 import extract
 
+import random
+import math
+
+
 DATASET_PATH = 'FULLIJCNN2013' # assume it is in root
 
 def display_ppm_image(path):
@@ -73,7 +77,7 @@ def get_labels(dataset):
 
     return numpy.array(labels, dtype=numpy.uint8)
 
-f
+
 def get_data(fixed_size=(0,0), padded_images = False, smart_resize = True):
     # extract data from raw
     raw_dataset, images_per_class = extract.get_dataset_placements(DATASET_PATH)
@@ -90,3 +94,29 @@ def get_data(fixed_size=(0,0), padded_images = False, smart_resize = True):
     labels = get_labels(raw_dataset)
 
     return numpy_images_reshaped, labels, images_per_class
+
+def split_data(img_dataset, img_labels, training_split=.7, shuffle=True):
+    """Input numpy array of images, numpy array of labels.
+       Return a tuple with (training_images, training_labels, test_images, test_labels).
+       Does not have stochastic/shuffling of the data yet."""
+
+    img_dataset_in = img_dataset
+    img_labels_in = img_labels
+
+    if shuffle:
+        z = zip(img_dataset, img_labels)
+        z_list = list(z)
+        random.shuffle(z_list)
+        img_dataset_tuple, img_labels_tuple = zip(*z_list)
+        img_dataset_in = numpy.array(img_dataset_tuple)
+        img_labels_in = numpy.array(img_labels_tuple)
+
+    num_of_examples = img_dataset.shape[0]
+    split_pivot = math.floor(num_of_examples * training_split) # floor
+
+    training_images = numpy.array([img_dataset_in[i] for i in range(split_pivot)])
+    training_labels = numpy.array([img_labels_in[i] for i in range(split_pivot)])
+    test_images = numpy.array([img_dataset_in[i] for i in range(split_pivot, num_of_examples)])
+    test_labels = numpy.array([img_labels_in[i] for i in range(split_pivot, num_of_examples)])
+
+    return training_images, training_labels, test_images, test_labels
