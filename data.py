@@ -33,7 +33,7 @@ def convert_imgs_to_numpy_arrays(dataset):
     return converted_images
 
 
-def auto_reshape_images(numpy_images, smart_resize = True):
+def auto_reshape_images(fixed_size, numpy_images, smart_resize = True):
     """Reshapes the entire dataset in the minimal needed reshaping, by reshaping
        to max width in the dataset and max height. Default Uses tf.keras.preprocessing.image.smart_resize
        to do the actual reshaping in order (input to that is numpy array representaion of images), otherwise
@@ -50,6 +50,10 @@ def auto_reshape_images(numpy_images, smart_resize = True):
             max_height = len(image[0])
 
     reshape_size = (max_width, max_height)
+
+
+    if sum(fixed_size): # check if fixed size option
+        reshape_size = fixed_size
 
     for image in numpy_images:
         if smart_resize:
@@ -69,8 +73,8 @@ def get_labels(dataset):
 
     return numpy.array(labels, dtype=numpy.uint8)
 
-
-def get_data(padded_images = False, smart_resize = True):
+f
+def get_data(fixed_size=(0,0), padded_images = False, smart_resize = True):
     # extract data from raw
     raw_dataset, images_per_class = extract.get_dataset_placements(DATASET_PATH)
 
@@ -80,7 +84,7 @@ def get_data(padded_images = False, smart_resize = True):
     # convert ppm to numpy arrays
     numpy_images = convert_imgs_to_numpy_arrays(raw_dataset)
     # auto reshape images
-    numpy_images_reshaped = auto_reshape_images(numpy_images, smart_resize)
+    numpy_images_reshaped = auto_reshape_images(fixed_size, numpy_images, smart_resize)
 
     # get labels for each training example in correct order
     labels = get_labels(raw_dataset)
