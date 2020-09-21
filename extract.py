@@ -1,7 +1,7 @@
 import re
 import os
 
-def get_class_names():
+def get_class_names()->list:
     """Gets classification name for each label from the labels.txt, which is assumed to be in root."""
     class_names = []
     # RegEx to match for labels in labels.txt
@@ -16,7 +16,7 @@ def get_class_names():
     return class_names
 
 
-def get_dataset_placements(dataset_path):
+def get_dataset_placements(dataset_path: str)->tuple:
     """Assumes that the exact FULLIJCNN2013 folder is in the root from
        http://benchmark.ini.rub.de/?section=gtsdb&subsection=dataset.
        Returns a tuple, where first item is a list with the placement of each
@@ -32,8 +32,9 @@ def get_dataset_placements(dataset_path):
                 with os.scandir(entry.path) as detect_dir: # here all files are the .ppm images, the dir name indicates its label
                     num_of_images = 0
                     for ppm_image in detect_dir:
-                        dataset_placements.append([ppm_image.path, int(entry.name)])
-                        num_of_images += 1
+                        if ppm_image.path.endswith(".ppm"):
+                            dataset_placements.append([ppm_image.path, int(entry.name)])
+                            num_of_images += 1
                     images_per_class.append(num_of_images)
 
     return dataset_placements, images_per_class

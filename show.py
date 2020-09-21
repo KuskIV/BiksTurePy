@@ -7,7 +7,7 @@ from ml_tool import makePrediction
 
 
 
-def plot_image(i, prediction, true_label, img, class_names):
+def plot_image(i:int, prediction:list, true_label:str, img:str, class_names:list)->None:
     plt.grid(False)
     plt.xticks([])
     plt.yticks([])
@@ -27,7 +27,7 @@ def plot_image(i, prediction, true_label, img, class_names):
                                          class_names[int(true_label)],
                                          color=color))
 
-def plot_value_array(i, prediction, true_label):
+def plot_value_array(i:int, prediction:list, true_label:str)->None:
     plt.grid(False)
     plt.xticks(range(43))
     plt.yticks([])
@@ -38,7 +38,7 @@ def plot_value_array(i, prediction, true_label):
     thisplot[predicted_label].set_color('red')
     thisplot[int(true_label)].set_color('blue')
 
-def predict_and_plot_images(model, class_names, image_dataset, label_datset):
+def predict_and_plot_images(model, class_names:numpy.array, image_dataset:numpy.array, label_datset:numpy.array)->None:
     """Insert a model, list of class_names, list of numpy images, list of numpy labels"""
     num_rows = len(image_dataset)
     num_cols = 1

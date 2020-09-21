@@ -24,7 +24,7 @@ train_images, train_labels, test_images, test_labels = split_data(img_dataset, i
 # NOW ready to train other model or make predictions on Data
 
 # check the create model
-model = tf.keras.models.load_model('saved_models/cnn_1')
+model = tf.keras.models.load_model('saved_models/YEET2')
 
 # check 5 examples
 predict_and_plot_images(model, class_names, test_images[0:5], test_labels[0:5])
@@ -75,12 +75,21 @@ plt.ylim([0.5, 1])
 plt.legend(loc='lower right')
 
 test_loss, test_acc = model.evaluate(test_images, test_labels, verbose=2)
+model.save('saved_models/YEET')
+tf.keras.models.save_model(
+    model,
+    filepath= 'saved_models/YEET2',
+    overwrite=True,
+    include_optimizer=True,
+    save_format=None,
+    signatures=None,
+    options=None
+)
 
-"""
 # Make a single prediction
 
 #print prediction for test_img1_reshaped
-
+"""
 
 """
 from traffic_cnn import *

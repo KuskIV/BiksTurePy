@@ -7,14 +7,16 @@ import random
 import math
 
 
-DATASET_PATH = 'FULLIJCNN2013' # assume it is in root
+#DATASET_PATH = 'C:\\Users\\jeppe\\Desktop\\GTSRB_Final_Training_Images\\GTSRB\\Final_Training\\Images' # assume it is in root
+#DATASET_PATH = 'C:\\Users\\jeppe\\Desktop\\FullIJCNN2013'
+DATASET_PATH = 'FullIJCNN2013'
 
-def display_ppm_image(path):
+def display_ppm_image(path: str)->None:
     """"Input a path to original image to display it"""
     im = Image.open(path)
     im.show()
 
-def display_numpy_image(numpy_image):
+def display_numpy_image(numpy_image:numpy.array)->None:
     """Input a (0 to 1) normalized numpy representation of a PIL image, to show it"""
     # Scaling the pixels back
     numpy_image_rescaled = numpy_image * 255
@@ -24,7 +26,7 @@ def display_numpy_image(numpy_image):
     im = Image.fromarray(numpy_image_rescaled_uint8)
     im.show()
 
-def convert_imgs_to_numpy_arrays(dataset):
+def convert_imgs_to_numpy_arrays(dataset: list)->list:
     """Receive a dataset in and return an numpy array of the images
        converted to normalized (0 to 1) numpy arrays."""
     converted_images = []
@@ -37,7 +39,7 @@ def convert_imgs_to_numpy_arrays(dataset):
     return converted_images
 
 
-def auto_reshape_images(fixed_size, numpy_images, smart_resize = True):
+def auto_reshape_images(fixed_size: tuple, numpy_images: list, smart_resize:bool = True)->numpy.array:
     """Reshapes the entire dataset in the minimal needed reshaping, by reshaping
        to max width in the dataset and max height. Default Uses tf.keras.preprocessing.image.smart_resize
        to do the actual reshaping in order (input to that is numpy array representaion of images), otherwise
@@ -68,7 +70,7 @@ def auto_reshape_images(fixed_size, numpy_images, smart_resize = True):
     return numpy.array(reshaped_images)
 
 
-def get_labels(dataset):
+def get_labels(dataset: list)->numpy.array:
     """Input is the dataset in list of [[image_path, label]].
        Returns a numpyarray of uint8 of the labels."""
     labels = []
@@ -78,12 +80,12 @@ def get_labels(dataset):
     return numpy.array(labels, dtype=numpy.uint8)
 
 
-def get_data(fixed_size=(0,0), padded_images = False, smart_resize = True):
+def get_data(fixed_size:tuple=(0,0), padded_images:bool = False, smart_resize:bool = True)->tuple:
     # extract data from raw
     raw_dataset, images_per_class = extract.get_dataset_placements(DATASET_PATH)
 
     if padded_images:
-        printf("Padded images not implemented yet, only resize and smart resize.")
+        print("Padded images not implemented yet, only resize and smart resize.")
 
     # convert ppm to numpy arrays
     numpy_images = convert_imgs_to_numpy_arrays(raw_dataset)
@@ -95,7 +97,7 @@ def get_data(fixed_size=(0,0), padded_images = False, smart_resize = True):
 
     return numpy_images_reshaped, labels, images_per_class
 
-def split_data(img_dataset, img_labels, training_split=.7, shuffle=True):
+def split_data(img_dataset:list, img_labels:list, training_split:float=.7, shuffle:bool=True)->tuple:
     """Input numpy array of images, numpy array of labels.
        Return a tuple with (training_images, training_labels, test_images, test_labels).
        Does not have stochastic/shuffling of the data yet."""
