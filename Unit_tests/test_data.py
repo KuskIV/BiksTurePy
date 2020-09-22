@@ -11,13 +11,19 @@ import extract as e
 
 class test_data(unittest.TestCase):
 
-    #def test_get_data(self):
+    def test_get_labels(self):
+        img_path, labels = e.get_dataset_placements('Unit_tests\\Test_dataset')
+        result = d.get_labels(img_path).tolist()
+        res = [0,0,0,0]
+        comp = result == res
+        self.assertTrue(comp)
+
              
     def test_auto_reshape_image(self):
                 #preparing result images
         flag = True
         result = []
-        img_path, amount = e.get_dataset_placements('Unit_tests\\Test_dataset')
+        img_path, labels = e.get_dataset_placements('Unit_tests\\Test_dataset')
         imgs =[]
         for image in img_path:
             im_ppm = Image.open(image[0]) # Open as PIL image
@@ -31,7 +37,7 @@ class test_data(unittest.TestCase):
         #preparing refrence images
         ref_images =[]
         e.fileExstension = '.csv'
-        img_path, amount = e.get_dataset_placements('Unit_tests\\test_dataset_normalized')
+        img_path, labels = e.get_dataset_placements('Unit_tests\\test_dataset_normalized')
         e.fileExstension = '.ppm'
         for img in img_path:
             ref_images.append(pd.read_pickle(img[0]).to_numpy())
@@ -53,7 +59,7 @@ class test_data(unittest.TestCase):
         #preparing result images
         flag = True
         result = []
-        img_path, amount = e.get_dataset_placements('Unit_tests\\Test_dataset')
+        img_path, labels = e.get_dataset_placements('Unit_tests\\Test_dataset')
         Converted_result_imgs = d.convert_imgs_to_numpy_arrays(img_path)
         result.append(pd.DataFrame({'test':Converted_result_imgs}).to_numpy())
         #result = pd.DataFrame({'test':Converted_result_imgs})
@@ -61,7 +67,7 @@ class test_data(unittest.TestCase):
         #preparing refrence images
         ref_images =[]
         e.fileExstension = '.csv'
-        img_path, amount = e.get_dataset_placements('Unit_tests\\test_dataset_resized')
+        img_path, labels = e.get_dataset_placements('Unit_tests\\test_dataset_resized')
         e.fileExstension = '.ppm'
         for img in img_path:
             ref_images.append(pd.read_pickle(img[0]).to_numpy())
