@@ -1,6 +1,8 @@
 import re
 import os
 
+fileExstension = '.ppm'
+
 def get_class_names()->list:
     """Gets classification name for each label from the labels.txt, which is assumed to be in root."""
     class_names = []
@@ -32,7 +34,7 @@ def get_dataset_placements(dataset_path: str)->tuple:
                 with os.scandir(entry.path) as detect_dir: # here all files are the .ppm images, the dir name indicates its label
                     num_of_images = 0
                     for ppm_image in detect_dir:
-                        if ppm_image.path.endswith(".ppm"):
+                        if ppm_image.path.endswith(fileExstension):
                             dataset_placements.append([ppm_image.path, int(entry.name)])
                             num_of_images += 1
                     images_per_class.append(num_of_images)
