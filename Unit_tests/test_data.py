@@ -16,11 +16,11 @@ class test_data(unittest.TestCase):
 
     def test_convert_imgs_to_numpy_arrays(self):
         #preparing result images
+        flag = True
         result = []
         img_path, amount = e.get_dataset_placements('Unit_tests\\Test_dataset')
         Converted_result_imgs = d.convert_imgs_to_numpy_arrays(img_path)
-        for imgs in Converted_result_imgs:
-            result.append(pd.DataFrame({'test':Converted_result_imgs}).to_numpy())
+        result.append(pd.DataFrame({'test':Converted_result_imgs}).to_numpy())
         #result = pd.DataFrame({'test':Converted_result_imgs})
 
         #preparing refrence images
@@ -30,9 +30,17 @@ class test_data(unittest.TestCase):
         e.fileExstension = '.ppm'
         for img in img_path:
             ref_images.append(pd.read_pickle(img[0]).to_numpy())
-        print(result[0][0])
-        print(ref_images[0][0])
-        self.assertTrue(result[0][0]==ref_images[0][])        
+        res = res[0]
+        ref =ref_images
+        for i in range(len(ref)):
+            ref[i]= ref[i][0][0][0]
+            res[i]= res[i][0][0]
+        for i in range(len(res)):
+            comp = res[i]==ref[i]
+            if(not comp.all()):
+                flag = False
+                break
+        self.assertTrue(flag)        
          
 if __name__ == '__main__':
     unittest.main()
