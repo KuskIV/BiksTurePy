@@ -4,28 +4,27 @@ import matplotlib.pyplot as plt
 
 from ml_tool import makePrediction
 
-
-
-
 def plot_image(i:int, prediction:list, true_label:str, img:str, class_names:list)->None:
     plt.grid(False)
     plt.xticks([])
     plt.yticks([])
     plt.imshow(img)
 
+    guessed_rigth = False
+
     predicted_label = numpy.argmax(prediction)
     if predicted_label == true_label:
         color = 'blue'
+        guessed_rigth = True
     else:
         color = 'red'
 
     softmaxed = tf.keras.activations.softmax(prediction)
 
-
-    plt.xlabel("{} {:2.0f}% ({})".format(class_names[predicted_label],
-                                         100*numpy.max(softmaxed),
-                                         class_names[int(true_label)],
-                                         color=color))
+    if guessed_rigth:
+        plt.xlabel("CORRECT ({:2.0f}%)\nPrediction: {}".format(100*numpy.max(softmaxed), class_names[predicted_label], color=color))
+    else:
+        plt.xlabel("WRONG ({:2.0f}%)\nPredictoin: {}\nActual: {}".format(100*numpy.max(softmaxed), class_names[predicted_label], class_names[int(true_label)], color=color))
 
 def plot_value_array(i:int, prediction:list, true_label:str)->None:
     plt.grid(False)
