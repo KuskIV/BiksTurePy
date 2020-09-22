@@ -7,9 +7,9 @@ import random
 import math
 
 
-#DATASET_PATH = 'C:\\Users\\jeppe\\Desktop\\GTSRB_Final_Training_Images\\GTSRB\\Final_Training\\Images' # assume it is in root
+DATASET_PATH = 'C:\\Users\\jeppe\\Desktop\\GTSRB_Final_Training_Images\\GTSRB\\Final_Training\\Images' # assume it is in root
 #DATASET_PATH = 'C:\\Users\\jeppe\\Desktop\\FullIJCNN2013'
-DATASET_PATH = 'FullIJCNN2013'
+#DATASET_PATH = 'FullIJCNN2013'
 
 def display_ppm_image(path: str)->None:
     """"Input a path to original image to display it"""

@@ -43,14 +43,14 @@ def TrainModel():
 
     tf.keras.models.save_model(
         model,
-        filepath= 'saved_models/YEET3',
+        filepath= 'saved_models/YEET4.h5',
         overwrite=True,
         include_optimizer=True,
         save_format=None,
         signatures=None,
         options=None
     )
-
+TrainModel()
 def TestModel():
     # check the create model
     model = tf.keras.models.load_model('saved_models/YEET2')
