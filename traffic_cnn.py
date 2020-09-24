@@ -4,10 +4,12 @@ from tensorflow.keras import datasets, layers, models
 import matplotlib.pyplot as plt
 import numpy
 
-from data import get_data, split_data
+from data import get_data, split_data, display_numpy_image
 from extract import get_class_names
 from ml_tool import makePrediction
 from show import predict_and_plot_images
+
+SAVE_LOAD_PATH = 'saved_models/YEET6.h5'
 
 img_dataset = [] # list of all images in reshaped numpy array
 img_labels = [] # labels for all images in correct order
@@ -36,14 +38,14 @@ def TrainModel():
 
     model.compile(optimizer='adam',
                 loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
-                metrics=['accuracy'])
+                metrics=['sparse_categorical_accuracy'])
 
     history = model.fit(train_images, train_labels, epochs=10,
                         validation_data=(test_images, test_labels))
 
     tf.keras.models.save_model(
         model,
-        filepath= 'saved_models/YEET4.h5',
+        filepath= SAVE_LOAD_PATH,
         overwrite=True,
         include_optimizer=True,
         save_format=None,
@@ -51,13 +53,18 @@ def TrainModel():
         options=None
     )
 TrainModel()
+
 def TestModel():
     # check the create model
-    model = tf.keras.models.load_model('saved_models/YEET2')
+    model = tf.keras.models.load_model(SAVE_LOAD_PATH)
+    print(model.evaluate(numpy.array(test_images), numpy.array(test_labels)))
+    #display_numpy_image(test_images[0])
+    #print(test_labels[0:5])
+    #print(model.test_on_batch(test_images,test_labels))
 
     # check 5 examples
     predict_and_plot_images(model, class_names, test_images[0:5], test_labels[0:5])
-
+TestModel()
 
 # NOW ready to train other model or make predictions on Data
 
