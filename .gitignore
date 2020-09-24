@@ -8,7 +8,7 @@ __pycache__/
 
 # Avoid uploading dataset
 FULLIJCNN2013/
-
+images/
 # Distribution / packaging
 .Python
 build/
