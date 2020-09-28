@@ -52,7 +52,6 @@ def TrainModel():
         signatures=None,
         options=None
     )
-TrainModel()
 
 def TestModel():
     # check the create model
@@ -64,7 +63,7 @@ def TestModel():
 
     # check 5 examples
     predict_and_plot_images(model, class_names, test_images[0:5], test_labels[0:5])
-TestModel()
+
 
 # NOW ready to train other model or make predictions on Data
 
