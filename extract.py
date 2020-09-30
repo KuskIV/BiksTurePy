@@ -51,7 +51,7 @@ def Updated_GetData(path):
         num_of_images = 0
         for files in os.listdir(path + "/" + name):
             if files.endswith(".ppm"):
-                dataset_placements.append([path + "/" +  files, int(os.path.basename(name))])
+                dataset_placements.append([path + "/" + name + "/" +  files, int(os.path.basename(name))])
                 num_of_images += 1
         print(name)
         print(num_of_images)
