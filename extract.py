@@ -45,6 +45,17 @@ def get_dataset_placements(dataset_path: str)->tuple:
 def Updated_GetData(path):
     dataset_placements = []
     images_per_class = []
+
+    for i in range(43):
+        name = str(i).zfill(5)
+        num_of_images = 0
+        for files in os.walk(path + "/" + name):
+            dataset_placements.append([path + "/" +  files, int(os.path.basename(name))])
+            num_of_images += 1
+        print(name)
+        print(num_of_images)
+        images_per_class.append(num_of_images)
+    """
     for subdir, dirs, files in os.walk(path):
         num_of_images = 0
         for f in files:
@@ -54,6 +65,7 @@ def Updated_GetData(path):
         if len(dirs) == 0:
             print(subdir)
             images_per_class.append(num_of_images)
+    """
     return dataset_placements, images_per_class
 
 
