@@ -73,7 +73,7 @@ def AccDistribution():
 
     for i in range(len(accArr)):
         percent = (accArr[i][0] / accArr[i][1]) * 100
-        print(f"Sign label: {i.zfill(2)}, Correct: {accArr[i][1].zfill(4)}, Wrong: {accArr[i][0].zfill(4)}, percent: {percent.zfill(3)}")
+        print(f"Sign label: {str(i).zfill(2)}, Correct: {str(accArr[i][1]).zfill(4)}, Wrong: {str(accArr[i][0]).zfill(4)}, percent: {str(percent).zfill(3)}")
     print(f"Pictures in training set: {len(test_images)}")
     
 
