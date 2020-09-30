@@ -67,7 +67,8 @@ def AccDistribution():
     #for i in range(len(test_images)):
         prediction = makePrediction(model, test_images[i])
         score = tf.nn.softmax(prediction[0])
-        print(f"score = {score}, label = {test_labels[i]}")
+        softmaxed = tf.keras.activations.softmax(prediction)
+        print(f"score = {softmaxed}, label = {test_labels[i]}")
     
 
 AccDistribution()
