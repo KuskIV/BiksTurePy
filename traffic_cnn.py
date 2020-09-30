@@ -23,7 +23,7 @@ class_names = get_class_names()
 
 img_dataset, img_labels, images_per_class = get_data(fixed_size = (32, 32), padded_images = False, smart_resize = True)
 # Training and test split, 70 and 30%
-train_images, train_labels, test_images, test_labels = split_data(img_dataset, img_labels, training_split=.7, shuffle=True)
+train_images, train_labels, test_images, test_labels = split_data(img_dataset, img_labels, images_per_class, training_split=.7, shuffle=True)
 
 def TrainModel():    
     model = models.Sequential()
@@ -77,7 +77,7 @@ def AccDistribution():
     print(f"Pictures in training set: {len(test_images)}")
     
 
-AccDistribution()
+#AccDistribution()
 
 def TestModel():
     # check the create model

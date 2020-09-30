@@ -98,10 +98,29 @@ def get_data(fixed_size:tuple=(0,0), padded_images:bool = False, smart_resize:bo
 
     return numpy_images_reshaped, labels, images_per_class
 
-def split_data(img_dataset:list, img_labels:list, training_split:float=.7, shuffle:bool=True)->tuple:
+def split_data(img_dataset:list, img_labels:list, images_per_class, training_split:float=.7, shuffle:bool=True)->tuple:
     """Input numpy array of images, numpy array of labels.
        Return a tuple with (training_images, training_labels, test_images, test_labels).
        Does not have stochastic/shuffling of the data yet."""
+
+    train_set = []
+    train_label = []
+
+    val_set = []
+    val_label = []
+
+    label_index = 0
+    maxVal = images_per_class[label_index]
+    pictures_in_current_class = images_per_class[label_index]
+    dist_in_current_class = pictures_in_current_class * training_split
+
+    for i in range(len(img_dataset)):
+        if i > maxVal:
+            maxVal = images_per_class[label_index] + i
+            label_index += 1
+            pictures_in_current_class = images_per_class[label_index]
+            dist_in_current_class = pictures_in_current_class * training_split
+            print(f"Class: {label_index}, pictures in class: {pictures_in_current_class}, dist in class: {dist_in_current_class}")
 
     img_dataset_in = img_dataset
     img_labels_in = img_labels
