@@ -52,6 +52,7 @@ def Updated_GetData(path):
                 dataset_placements.append([subdir + "/" +  f, int(os.path.basename(subdir))])
                 num_of_images += 1
         if len(dirs) == 0:
+            print(subdir)
             images_per_class.append(num_of_images)
     return dataset_placements, images_per_class
 
