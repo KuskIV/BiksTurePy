@@ -62,15 +62,12 @@ def AccDistribution():
 
     accArr = numpy.zeros((43, 2))
 
-    print(test_images[0].size)
-
-    """
     for i in range(10):
     #for i in range(len(test_images)):
         prediction = model.predict(test_images[i])
         score = tf.nn.softmax(prediction[0])
         print(f"prediction = {prediction}, score = {score}, label = {test_labels[i]}")
-    """
+    
 
 AccDistribution()
 
