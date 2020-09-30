@@ -32,6 +32,7 @@ def get_dataset_placements(dataset_path: str)->tuple:
         for entry in dir:
             if entry.is_dir(): # directories with detected signs
                 with os.scandir(entry.path) as detect_dir: # here all files are the .ppm images, the dir name indicates its label
+                    print(entry.path)
                     num_of_images = 0
                     for ppm_image in detect_dir:
                         if ppm_image.path.endswith(fileExstension):
