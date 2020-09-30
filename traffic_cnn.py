@@ -63,12 +63,18 @@ def AccDistribution():
 
     accArr = numpy.zeros((43, 2))
 
-    for i in range(10):
-    #for i in range(len(test_images)):
+    #for i in range(10):
+    for i in range(len(test_images)):
         prediction = makePrediction(model, test_images[i])
-        score = tf.nn.softmax(prediction[0])
         softmaxed = tf.keras.activations.softmax(prediction)
-        print(f"score = {100*numpy.max(softmaxed)}, label = {test_labels[i]}, predicted = {numpy.argmax(softmaxed)}")
+        if test_labels[i] == numpy.argmax(softmaxed):
+            accArr[int(test_labels[i])][1] = accArr[int(test_labels[i])][1] + 1
+        else:
+            accArr[int(test_labels[i])][0] = accArr[int(test_labels[i])][0] + 1
+
+        #print(f"score = {100*numpy.max(softmaxed)}, label = {test_labels[i]}, predicted = {numpy.argmax(softmaxed)}")
+    for i in range(len(accArr)):
+        print(f"Sign label: {i}, Correct: {accArr[i][1]}, Wrong{accArr[i][1]}")
     
 
 AccDistribution()
