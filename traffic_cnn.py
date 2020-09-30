@@ -9,18 +9,20 @@ from extract import get_class_names
 from ml_tool import makePrediction
 from show import predict_and_plot_images
 
-SAVE_LOAD_PATH = 'saved_models/YEET6.h5'
+SAVE_LOAD_PATH = 'saved_models/YEET5.h5'
 
 img_dataset = [] # list of all images in reshaped numpy array
 img_labels = [] # labels for all images in correct order
 images_per_class = [] # list, where each entry represents the number of ppm images for that classification class
 class_names = [] # classification text for labels
 
+plt.show()
+
 class_names = get_class_names()
 
-img_dataset, img_labels, images_per_class = get_data(fixed_size = (32, 32), padded_images = False, smart_resize = True)
+#img_dataset, img_labels, images_per_class = get_data(fixed_size = (32, 32), padded_images = False, smart_resize = True)
 # Training and test split, 70 and 30%
-train_images, train_labels, test_images, test_labels = split_data(img_dataset, img_labels, training_split=.7, shuffle=True)
+#train_images, train_labels, test_images, test_labels = split_data(img_dataset, img_labels, training_split=.7, shuffle=True)
 
 def TrainModel():    
     model = models.Sequential()
@@ -52,7 +54,29 @@ def TrainModel():
         signatures=None,
         options=None
     )
-TrainModel()
+#TrainModel()
+
+def AccDistribution():
+    model = tf.keras.models.load_model(SAVE_LOAD_PATH)
+    model.summary()
+
+    model = tf.keras.models.load_model('saved_models/YEET6.h5')
+    model.summary()
+    
+    accArr = numpy.zeros((43, 2))
+
+    """
+    for i in range(10):
+    #for i in range(len(test_images)):
+        prediction = model.predict(test_images[i])
+        score = tf.nn.softmax(prediction[0])
+        print(f"prediction = {prediction}, score = {score}, label = {test_labels[i]}")
+        """
+
+
+
+
+AccDistribution()
 
 def TestModel():
     # check the create model
@@ -64,7 +88,7 @@ def TestModel():
 
     # check 5 examples
     predict_and_plot_images(model, class_names, test_images[0:5], test_labels[0:5])
-TestModel()
+
 
 # NOW ready to train other model or make predictions on Data
 
