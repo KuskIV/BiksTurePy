@@ -113,7 +113,7 @@ def split_data(img_dataset:list, img_labels:list, images_per_class, training_spl
     #for i in range(len(images_per_class)):
     #    print(images_per_class[i])
 
-    """
+    
     label_index = 0
     maxVal = images_per_class[label_index]
     pictures_in_current_class = images_per_class[label_index]
@@ -128,7 +128,7 @@ def split_data(img_dataset:list, img_labels:list, images_per_class, training_spl
                 pictures_in_current_class = images_per_class[label_index]
                 dist_in_current_class = pictures_in_current_class * training_split
                 print(f"Class: {label_index}, pictures in class: {pictures_in_current_class}, dist in class: {dist_in_current_class}, max value: {maxVal}")
-    """
+    
     img_dataset_in = img_dataset
     img_labels_in = img_labels
 

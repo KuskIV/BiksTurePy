@@ -53,8 +53,6 @@ def Updated_GetData(path):
             if files.endswith(".ppm"):
                 dataset_placements.append([path + "/" + name + "/" +  files, int(os.path.basename(name))])
                 num_of_images += 1
-        print(name)
-        print(num_of_images)
         images_per_class.append(num_of_images)
 
     """
