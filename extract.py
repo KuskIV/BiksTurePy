@@ -37,6 +37,7 @@ def get_dataset_placements(dataset_path: str)->tuple:
                         if ppm_image.path.endswith(fileExstension):
                             dataset_placements.append([ppm_image.path, int(entry.name)])
                             num_of_images += 1
+                    print(num_of_images)
                     images_per_class.append(num_of_images)
 
     return dataset_placements, images_per_class

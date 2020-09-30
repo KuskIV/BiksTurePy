@@ -109,8 +109,8 @@ def split_data(img_dataset:list, img_labels:list, images_per_class, training_spl
     val_set = []
     val_label = []
 
-    for i in range(len(images_per_class)):
-        print(images_per_class[i])
+    #for i in range(len(images_per_class)):
+    #    print(images_per_class[i])
 
     """
     label_index = 0
