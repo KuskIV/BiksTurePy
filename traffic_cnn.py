@@ -10,6 +10,8 @@ from extract import get_class_names
 from ml_tool import makePrediction
 from show import predict_and_plot_images
 
+
+
 SAVE_LOAD_PATH = 'saved_models/YEET5.h5'
 
 img_dataset = [] # list of all images in reshaped numpy array
@@ -21,10 +23,9 @@ plt.show()
 
 class_names = get_class_names()
 
+
 img_dataset, img_labels, images_per_class = get_data(fixed_size = (32, 32), padded_images = False, smart_resize = True)
 # Training and test split, 70 and 30%
-
-
 train_images, train_labels, test_images, test_labels = split_data(img_dataset, img_labels, images_per_class, training_split=.7, shuffle=True)
 
 def TrainModel():    

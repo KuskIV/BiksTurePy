@@ -83,7 +83,7 @@ def get_labels(dataset: list)->numpy.array:
 
 def get_data(fixed_size:tuple=(0,0), padded_images:bool = False, smart_resize:bool = True)->tuple:
     # extract data from raw
-    raw_dataset, images_per_class = extract.get_dataset_placements(DATASET_PATH)
+    raw_dataset, images_per_class = extract.Updated_GetData(DATASET_PATH)
 
     if padded_images:
         print("Padded images not implemented yet, only resize and smart resize.")
@@ -103,6 +103,7 @@ def split_data(img_dataset:list, img_labels:list, images_per_class, training_spl
        Return a tuple with (training_images, training_labels, test_images, test_labels).
        Does not have stochastic/shuffling of the data yet."""
 
+    
     train_set = []
     train_label = []
 
@@ -112,7 +113,7 @@ def split_data(img_dataset:list, img_labels:list, images_per_class, training_spl
     #for i in range(len(images_per_class)):
     #    print(images_per_class[i])
 
-    """
+    
     label_index = 0
     maxVal = images_per_class[label_index]
     pictures_in_current_class = images_per_class[label_index]
@@ -127,7 +128,7 @@ def split_data(img_dataset:list, img_labels:list, images_per_class, training_spl
                 pictures_in_current_class = images_per_class[label_index]
                 dist_in_current_class = pictures_in_current_class * training_split
                 print(f"Class: {label_index}, pictures in class: {pictures_in_current_class}, dist in class: {dist_in_current_class}, max value: {maxVal}")
-    """
+    
     img_dataset_in = img_dataset
     img_labels_in = img_labels
 

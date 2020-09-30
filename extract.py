@@ -32,13 +32,27 @@ def get_dataset_placements(dataset_path: str)->tuple:
         for entry in dir:
             if entry.is_dir(): # directories with detected signs
                 with os.scandir(entry.path) as detect_dir: # here all files are the .ppm images, the dir name indicates its label
-                    print(entry.path)
                     num_of_images = 0
                     for ppm_image in detect_dir:
                         if ppm_image.path.endswith(fileExstension):
                             dataset_placements.append([ppm_image.path, int(entry.name)])
                             num_of_images += 1
-                    print(num_of_images)
                     images_per_class.append(num_of_images)
 
     return dataset_placements, images_per_class
+
+
+def Updated_GetData(path):
+    dataset_placements = []
+    images_per_class = []
+    for subdir, dirs, files in os.walk(path):
+        num_of_images = 0
+        for f in files:
+            if f.endswith(fileExstension):
+                dataset_placements.append([f, int(os.path.basename(subdir))])
+                num_of_images += 1
+        if len(dirs) == 0:
+            images_per_class.append(num_of_images)
+    return dataset_placements, images_per_class
+
+
