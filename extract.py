@@ -49,7 +49,7 @@ def Updated_GetData(path):
         num_of_images = 0
         for f in files:
             if f.endswith(fileExstension):
-                dataset_placements.append([f, int(os.path.basename(subdir))])
+                dataset_placements.append([subdir + "/" +  f, int(os.path.basename(subdir))])
                 num_of_images += 1
         if len(dirs) == 0:
             images_per_class.append(num_of_images)
