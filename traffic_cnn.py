@@ -74,7 +74,7 @@ def AccDistribution():
 
         #print(f"score = {100*numpy.max(softmaxed)}, label = {test_labels[i]}, predicted = {numpy.argmax(softmaxed)}")
     for i in range(len(accArr)):
-        print(f"Sign label: {i}, Correct: {accArr[i][1]}, Wrong{accArr[i][1]}")
+        print(f"Sign label: {i}, Correct: {accArr[i][1]}, Wrong: {accArr[i][0]}")
     
 
 AccDistribution()
