@@ -20,9 +20,9 @@ plt.show()
 
 class_names = get_class_names()
 
-#img_dataset, img_labels, images_per_class = get_data(fixed_size = (32, 32), padded_images = False, smart_resize = True)
+img_dataset, img_labels, images_per_class = get_data(fixed_size = (32, 32), padded_images = False, smart_resize = True)
 # Training and test split, 70 and 30%
-#train_images, train_labels, test_images, test_labels = split_data(img_dataset, img_labels, training_split=.7, shuffle=True)
+train_images, train_labels, test_images, test_labels = split_data(img_dataset, img_labels, training_split=.7, shuffle=True)
 
 def TrainModel():    
     model = models.Sequential()
@@ -60,10 +60,9 @@ def AccDistribution():
     model = tf.keras.models.load_model(SAVE_LOAD_PATH)
     model.summary()
 
-    model = tf.keras.models.load_model('saved_models/YEET6.h5')
-    model.summary()
-    
     accArr = numpy.zeros((43, 2))
+
+    print(test_images[0].size)
 
     """
     for i in range(10):
@@ -71,10 +70,7 @@ def AccDistribution():
         prediction = model.predict(test_images[i])
         score = tf.nn.softmax(prediction[0])
         print(f"prediction = {prediction}, score = {score}, label = {test_labels[i]}")
-        """
-
-
-
+    """
 
 AccDistribution()
 
