@@ -4,6 +4,7 @@ from tensorflow.keras import datasets, layers, models
 import matplotlib.pyplot as plt
 import numpy
 
+
 from data import get_data, split_data, display_numpy_image
 from extract import get_class_names
 from ml_tool import makePrediction
@@ -64,7 +65,7 @@ def AccDistribution():
 
     for i in range(10):
     #for i in range(len(test_images)):
-        prediction = model.predict(test_images[i])
+        prediction = makePrediction(test_images[i])
         score = tf.nn.softmax(prediction[0])
         print(f"prediction = {prediction}, score = {score}, label = {test_labels[i]}")
     
