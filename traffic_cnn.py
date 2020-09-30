@@ -65,7 +65,7 @@ def AccDistribution():
 
     for i in range(10):
     #for i in range(len(test_images)):
-        prediction = makePrediction(test_images[i])
+        prediction = makePrediction(model, test_images[i])
         score = tf.nn.softmax(prediction[0])
         print(f"prediction = {prediction}, score = {score}, label = {test_labels[i]}")
     
