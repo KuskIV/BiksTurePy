@@ -147,11 +147,11 @@ def split_data(img_dataset:list, img_labels:list, images_per_class, training_spl
                 #print(f"Class: {label_index}, pictures in class: {pictures_in_current_class}, dist in class: {dist_in_current_class}")
         if val_in_eval < dist_in_current_class:
             val_label.append(img_labels[i])
-            val_set.append(img_dataset)
+            val_set.append(img_dataset[i])
             val_in_eval += 1
         else:
             train_label.append(img_labels[i])
-            train_set.append(img_dataset)
+            train_set.append(img_dataset[i])
             val_in_train += 1
 
 
