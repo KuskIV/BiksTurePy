@@ -19,7 +19,7 @@ def Addition(p, a):
 
 def UpdateValue(pixel, addition):
     r, g, b = pixel
-    
+
     r = Addition(r, addition)
     g = Addition(g, addition)
     b = Addition(b, addition)
@@ -39,7 +39,7 @@ def AddSnowflake(x, y, pixel, wSnow, hSnow, addition, size):
 
     for i in range(int(hVal)):
         for j in range(int(wVal)):
-            if not CutEdges(i, j, hVal, wVal):  
+            if not CutEdges(i, j, hVal, wVal):
                 xFlake = x - hSnow + i
                 yFlake = y - wSnow + j
                 if LegalSize(xFlake, yFlake, size):
@@ -77,7 +77,7 @@ def AddBeautifulSnowflake(y, x, pixel, hSnow, addition, size):
 
 def FlakeSize(size, percent):
     width, height = size
-    return math.floor((width * percent) / 100), math.floor((height * percent) / 100) 
+    return math.floor((width * percent) / 100), math.floor((height * percent) / 100)
 
 def AddFlake(Opacity):
     return True if random.randint(0, Opacity) == 0 else False
@@ -87,17 +87,16 @@ def AddParticels(img, size=7, Opacity=120, frequency=40, LoopJumpX=1, LoopJumpY=
     #print(type(img))
     print(img)
     pixels = img.load()
-    
+
     wSnow, hSnow = FlakeSize(img.size, size)
 
     for i in range(0, img.size[0], LoopJumpX):
         for j in range(0, img.size[1], LoopJumpY):
             if AddFlake(frequency):
                 AddBeautifulSnowflake(i, j, pixels, hSnow, Opacity, img.size)
-    
+
     return np.asarray(img)
     #return NumpyToImage(np.asarray(img))
 
 #AddParticels("C:/Users/madsh/OneDrive/Code/Python/BiksTurePy/FullIJCNN2013/00/00000.ppm", frequency=10, LoopJumpX=3, LoopJumpY=2)
 #AddParticels("C:/Users/madsh/OneDrive/Code/Python/BiksTurePy/FullIJCNN2013/00000.ppm", size=0.8, frequency=80, Opacity=50, LoopJumpX=5, LoopJumpY=5)
-
