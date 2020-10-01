@@ -9,37 +9,7 @@ current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentfra
 parent_dir = os.path.dirname(current_dir)
 sys.path.insert(0, parent_dir) 
 from data import display_numpy_image
-
-def changeImageSize(maxWidth: int, 
-                    maxHeight: int, 
-                    image:np.array):
-    
-    widthRatio  = maxWidth/image.size[0]
-    heightRatio = maxHeight/image.size[1]
-
-    newWidth    = int(widthRatio*image.size[0])
-    newHeight   = int(heightRatio*image.size[1])
-
-    newImage    = image.resize((newWidth, newHeight))
-    return newImage
-
-def merge_two_images(img1: Image.Image, img2: Image.Image):
-    image3 = changeImageSize(800, 500, img1)
-    image4 = changeImageSize(800, 500, img2)
-
-    image5 = image3.convert("RGBA")
-    image6 = image4.convert("RGBA")
-
-    alphaBlended1 = Image.blend(image5, image6, alpha=.25)
-
-    return alphaBlended1
-def convertToPILImg(img1: np.array)-> Image.Image:
-    numpy_image_rescaled = img1 * 255
-    # converting the dfloat64 numpy to a unit8 - is required by PIL
-    numpy_image_rescaled_uint8 = np.array(numpy_image_rescaled, np.uint8)
-    # convert to PIL and show
-    im = Image.fromarray(numpy_image_rescaled_uint8)
-    return im
+from General_image_func import changeImageSize,merge_two_images,convertToPILImg
 
 def perlin_array(shape:tuple = (200, 200),
 			scale:int=100, octaves:int = 6, 

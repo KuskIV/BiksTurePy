@@ -96,6 +96,6 @@ def AddParticels(path, size=7, Opacity=120, frequency=40, LoopJumpX=1, LoopJumpY
     
     NumpyToImage(np.asarray(img))
 
-AddParticels("C:/Users/madsh/OneDrive/Code/Python/BiksTurePy/FullIJCNN2013/00/00000.ppm", frequency=10, LoopJumpX=3, LoopJumpY=2)
+AddParticels("C:\\Users\\jeppe\\Desktop\\GTSRB_Final_Training_Images\\GTSRB\\Final_Training\\Images\\00000\\00002_00029.ppm", frequency=10, LoopJumpX=3, LoopJumpY=2)
 #AddParticels("C:/Users/madsh/OneDrive/Code/Python/BiksTurePy/FullIJCNN2013/00000.ppm", size=0.8, frequency=80, Opacity=50, LoopJumpX=5, LoopJumpY=5)
 
