@@ -40,3 +40,32 @@ def get_dataset_placements(dataset_path: str)->tuple:
                     images_per_class.append(num_of_images)
 
     return dataset_placements, images_per_class
+
+
+def Updated_GetData(path):
+    dataset_placements = []
+    images_per_class = []
+
+    for i in range(43):
+        name = str(i).zfill(5)
+        num_of_images = 0
+        for files in os.listdir(path + "/" + name):
+            if files.endswith(".ppm"):
+                dataset_placements.append([path + "/" + name + "/" +  files, int(os.path.basename(name))])
+                num_of_images += 1
+        images_per_class.append(num_of_images)
+
+    """
+    for subdir, dirs, files in os.walk(path):
+        num_of_images = 0
+        for f in files:
+            if f.endswith(fileExstension):
+                dataset_placements.append([subdir + "/" +  f, int(os.path.basename(subdir))])
+                num_of_images += 1
+        if len(dirs) == 0:
+            print(subdir)
+            images_per_class.append(num_of_images)
+    """
+    return dataset_placements, images_per_class
+
+
