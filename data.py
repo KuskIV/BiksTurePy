@@ -136,8 +136,7 @@ def split_data(img_dataset:list, img_labels:list, images_per_class, training_spl
     val_in_eval = 0
     for i in range(len(img_dataset)):
         if i > maxVal:
-            print(f"Train size: {val_in_train}, Evaluation size: {val_in_eval}, overall: {val_in_train + val_in_eval}, dist = {dist_in_current_class}")
-
+            #print(f"Train size: {val_in_train}, Evaluation size: {val_in_eval}, overall: {val_in_train + val_in_eval}, dist = {dist_in_current_class}")
             label_index += 1
             maxVal = images_per_class[label_index] + i
             val_in_train = 0
