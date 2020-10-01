@@ -81,7 +81,7 @@ def AccDistribution():
         #sAccarrTrue = str.rjust()
         #sAccarrFalse = str(accArr[i][0]).zfill(6)
         #print("Sign label: {}, Correct: {}, Wrong: {}, percent: {:.2f}".format(sI, sAccarrTrue, sAccarrFalse, percent))
-        print("Sign label: {}, Correct: {}, Wrong: {}, percent: {:.2f}".format(str(i).zfill(2), str(accArr[i][1]).rjust(6, ' '), str(accArr[i][0], percent).ljust(6, ' ')))
+        print("Sign label: {}, Correct: {}, Wrong: {}, percent: {:.2f}".format(str(i).zfill(2), str(accArr[i][1]).rjust(6, ' '), str(accArr[i][0]).ljust(6, ' '), percent))
     print(f"Pictures in evaluation set: {len(test_images)}")
 AccDistribution()
 
