@@ -1,0 +1,67 @@
+Model: "sequential"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d (Conv2D)              (None, 30, 30, 32)        896       
+_________________________________________________________________
+max_pooling2d (MaxPooling2D) (None, 15, 15, 32)        0         
+_________________________________________________________________
+conv2d_1 (Conv2D)            (None, 13, 13, 64)        18496     
+_________________________________________________________________
+max_pooling2d_1 (MaxPooling2 (None, 6, 6, 64)          0         
+_________________________________________________________________
+conv2d_2 (Conv2D)            (None, 4, 4, 64)          36928     
+_________________________________________________________________
+flatten (Flatten)            (None, 1024)              0         
+_________________________________________________________________
+dense (Dense)                (None, 64)                65600     
+_________________________________________________________________
+dense_1 (Dense)              (None, 43)                2795      
+=================================================================
+Total params: 124,715
+Trainable params: 124,715
+Non-trainable params: 0
+_________________________________________________________________
+Class: 00 | Correct:   57.0 | Wrong:  6.0 | percent: 89.47
+Class: 01 | Correct:  654.0 | Wrong: 12.0 | percent: 98.17
+Class: 02 | Correct:  668.0 | Wrong:  7.0 | percent: 98.95
+Class: 03 | Correct:  417.0 | Wrong:  6.0 | percent: 98.56
+Class: 04 | Correct:  588.0 | Wrong:  6.0 | percent: 98.98
+Class: 05 | Correct:  541.0 | Wrong: 17.0 | percent: 96.86
+Class: 06 | Correct:  126.0 | Wrong:  0.0 | percent: 100.00
+Class: 07 | Correct:  428.0 | Wrong:  4.0 | percent: 99.07
+Class: 08 | Correct:  422.0 | Wrong:  1.0 | percent: 99.76
+Class: 09 | Correct:  436.0 | Wrong:  5.0 | percent: 98.85
+Class: 10 | Correct:  602.0 | Wrong:  1.0 | percent: 99.83
+Class: 11 | Correct:  394.0 | Wrong:  2.0 | percent: 99.49
+Class: 12 | Correct:  629.0 | Wrong:  1.0 | percent: 99.84
+Class: 13 | Correct:  646.0 | Wrong:  2.0 | percent: 99.69
+Class: 14 | Correct:  233.0 | Wrong:  1.0 | percent: 99.57
+Class: 15 | Correct:  185.0 | Wrong:  4.0 | percent: 97.84
+Class: 16 | Correct:  126.0 | Wrong:  0.0 | percent: 100.00
+Class: 17 | Correct:  332.0 | Wrong:  1.0 | percent: 99.70
+Class: 18 | Correct:  354.0 | Wrong:  6.0 | percent: 98.31
+Class: 19 | Correct:   63.0 | Wrong:  0.0 | percent: 100.00
+Class: 20 | Correct:  101.0 | Wrong:  7.0 | percent: 93.07
+Class: 21 | Correct:   91.0 | Wrong:  8.0 | percent: 91.21
+Class: 22 | Correct:  114.0 | Wrong:  3.0 | percent: 97.37
+Class: 23 | Correct:  152.0 | Wrong:  1.0 | percent: 99.34
+Class: 24 | Correct:   78.0 | Wrong:  3.0 | percent: 96.15
+Class: 25 | Correct:  449.0 | Wrong:  1.0 | percent: 99.78
+Class: 26 | Correct:  174.0 | Wrong:  6.0 | percent: 96.55
+Class: 27 | Correct:   66.0 | Wrong:  6.0 | percent: 90.91
+Class: 28 | Correct:  160.0 | Wrong:  2.0 | percent: 98.75
+Class: 29 | Correct:   78.0 | Wrong:  3.0 | percent: 96.15
+Class: 30 | Correct:  134.0 | Wrong:  1.0 | percent: 99.25
+Class: 31 | Correct:  231.0 | Wrong:  3.0 | percent: 98.70
+Class: 32 | Correct:   70.0 | Wrong:  2.0 | percent: 97.14
+Class: 33 | Correct:  200.0 | Wrong:  6.0 | percent: 97.00
+Class: 34 | Correct:  125.0 | Wrong:  1.0 | percent: 99.20
+Class: 35 | Correct:  359.0 | Wrong:  1.0 | percent: 99.72
+Class: 36 | Correct:  117.0 | Wrong:  0.0 | percent: 100.00
+Class: 37 | Correct:   62.0 | Wrong:  1.0 | percent: 98.39
+Class: 38 | Correct:  612.0 | Wrong:  9.0 | percent: 98.53
+Class: 39 | Correct:   88.0 | Wrong:  2.0 | percent: 97.73
+Class: 40 | Correct:  107.0 | Wrong:  1.0 | percent: 99.07
+Class: 41 | Correct:   69.0 | Wrong:  3.0 | percent: 95.65
+Class: 42 | Correct:   72.0 | Wrong:  0.0 | percent: 100.00
