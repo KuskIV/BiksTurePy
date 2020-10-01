@@ -7,8 +7,7 @@ import numpy
 current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parent_dir = os.path.dirname(current_dir)
 sys.path.insert(0, parent_dir) 
-from General_image_func import changeImageSize,merge_two_images,convertToPILImg
-
+from General_image_func import changeImageSize,merge_two_images
 test_pic_path = "testpic/test1.jpg"
 
 img1 = Image.open(test_pic_path)
