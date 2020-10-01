@@ -76,12 +76,7 @@ def AccDistribution():
 
     for i in range(len(accArr)):
         percent = 100 - (accArr[i][0] / accArr[i][1]) * 100
-        #sI = str(i).zfill(2)
-        #sAccarrTrue = str(accArr[i][1]).zfill(6)
-        #sAccarrTrue = str.rjust()
-        #sAccarrFalse = str(accArr[i][0]).zfill(6)
-        #print("Sign label: {}, Correct: {}, Wrong: {}, percent: {:.2f}".format(sI, sAccarrTrue, sAccarrFalse, percent))
-        print("Sign label: {}, Correct: {}, Wrong: {}, percent: {:.2f}".format(str(i).zfill(2), str(accArr[i][1]).rjust(6, ' '), str(accArr[i][0]).ljust(6, ' '), percent))
+        print("Sign label: {}, Correct: {}, Wrong: {}, percent: {:.2f}".format(str(i).zfill(2), str(accArr[i][1]).rjust(6, ' '), str(accArr[i][0]).rjust(6, ' '), percent))
     print(f"Pictures in evaluation set: {len(test_images)}")
 AccDistribution()
 
