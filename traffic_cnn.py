@@ -73,11 +73,12 @@ def AccDistribution():
             accArr[int(test_labels[i])][1] = accArr[int(test_labels[i])][1] + 1
         else:
             accArr[int(test_labels[i])][0] = accArr[int(test_labels[i])][0] + 1
-
+    full_percent = 0
     for i in range(len(accArr)):
         percent = 100 - (accArr[i][0] / accArr[i][1]) * 100
+        full_percent += percent
         print("Sign label: {}, Correct: {}, Wrong: {}, percent: {:.2f}".format(str(i).zfill(2), str(accArr[i][1]).rjust(6, ' '), str(accArr[i][0]).rjust(6, ' '), percent))
-    print(f"Pictures in evaluation set: {len(test_images)}")
+    print(f"Pictures in evaluation set: {len(test_images)}, with an average accuricy of: {full_percent / len(accArr)}")
 AccDistribution()
 
 def TestModel():
