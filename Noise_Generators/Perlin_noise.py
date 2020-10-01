@@ -165,13 +165,18 @@ Mimg4 = merge_two_images(Mimg3,convertYoImg(noiseImg6))
 
 img1 = merge_two_images(Mimg2,Mimg4)
 """
+def Foggyfy(img):
+    perlin = perlin_array()
+    return merge_two_images(convertYoImg(perlin),img)
 #img1 = Blend_Multiple_noise_maps(1)
-img1 = perlin_array()
+#img1 = perlin_array()
 #img1 = Image.open(im)
-#img2 = Image.open("C:\\Users\\jeppe\\Desktop\\GTSRB_Final_Training_Images\\GTSRB\\Final_Training\\Images\\00000\\00002_00029.ppm")
-#ims = merge_two_images(img1,img2)
+img2 = Image.open("C:\\Users\\jeppe\\Desktop\\GTSRB_Final_Training_Images\\GTSRB\\Final_Training\\Images\\00000\\00002_00029.ppm")
+Foggyfy(img2).show()
+#ims = merge_two_images(convertYoImg(img1),img2)
 #ims = Image.open(ims)
-img1.show()
+#ims.show()
+#display_numpy_image(img1)
 #changeImageSize(90,90,ims).show()
 
 #print(GenerateNoise())
