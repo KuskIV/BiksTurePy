@@ -32,9 +32,9 @@ def GetRGB(r, g, b, maxWidth, maxHeight):
     return Image.new("RGBA", (maxWidth, maxHeight), (r, g, b, 255))
 
 # Adjust the pictures brightness depending on day or night.
-def DayAdjustment(img, factor, nightBool):
+def DayAdjustment(img, factor):
     img = AdjustBrightness(img, factor)
-    if nightBool == True:
+    if factor < 1:
         img = AdjustColor(img, factor)
         blue = GetRGB(0,0,220, 800, 500)
         return merge_two_images(img, blue,alpha=0.2)
@@ -45,7 +45,7 @@ test_pic_path = "testpic/test1.jpg"
 
 img1 = Image.open(test_pic_path)
 
-procImg = DayAdjustment(img1, 0.5, True)
+procImg = DayAdjustment(img1, 1.5)
 
 procImg.save("testpic/night.png")
 
