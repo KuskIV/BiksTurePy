@@ -30,5 +30,5 @@ img1.save("testpic/saturatedboi.png")
 img1 = Image.open("testpic/saturatedboi.png")
 img2 = Image.open("testpic/blue.png")
 
-merge_two_images(img1, img2, alpha=0.3)
+merge_two_images(img1, img2, alpha=0.3, shape=(800,500))
 
