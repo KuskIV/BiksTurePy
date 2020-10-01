@@ -90,7 +90,7 @@ def merge_two_images(img1, img2):
 
     # Display the alpha-blended images
     return alphaBlended1
-def convertYoImg(img1):
+def convertToImg(img1):
     numpy_image_rescaled = img1 * 255
     # converting the dfloat64 numpy to a unit8 - is required by PIL
     numpy_image_rescaled_uint8 = np.array(numpy_image_rescaled, np.uint8)
@@ -168,12 +168,12 @@ img1 = merge_two_images(Mimg2,Mimg4)
 """
 def Foggyfy(img):
     perlin = perlin_array()
-    return merge_two_images(convertYoImg(perlin),img)
+    return merge_two_images(convertToImg(perlin),img)
 #img1 = Blend_Multiple_noise_maps(1)
 #img1 = perlin_array()
 #img1 = Image.open(im)
-img2 = Image.open("C:\\Users\\jeppe\\Desktop\\GTSRB_Final_Training_Images\\GTSRB\\Final_Training\\Images\\00000\\00002_00029.ppm")
-Foggyfy(img2).show()
+#img2 = Image.open("C:\\Users\\jeppe\\Desktop\\GTSRB_Final_Training_Images\\GTSRB\\Final_Training\\Images\\00000\\00002_00029.ppm")
+#Foggyfy(img2).show()
 #ims = merge_two_images(convertYoImg(img1),img2)
 #ims = Image.open(ims)
 #ims.show()
@@ -247,8 +247,6 @@ def noise(x,y,z):
                             grad(p[BA + 1], xMinus1, y, z - 1)),
                         lerp(u, grad(p[AB + 1], x, yMinus1, zMinus1),
                             grad(p[BB + 1], xMinus1, yMinus1, zMinus1))))
-
-print(noise(100,100,0))
 """
 
 """
