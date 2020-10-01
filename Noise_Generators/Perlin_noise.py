@@ -4,7 +4,7 @@ import math
 import matplotlib.pyplot as plt
 from PIL import Image
 import noise
-
+ 
 def display_numpy_image(numpy_image:np.array)->None:
     """Input a (0 to 1) normalized numpy representation of a PIL image, to show it"""
     # Scaling the pixels back
@@ -61,9 +61,9 @@ def CombineNoise(pl):
         results.append(total)
     return results
 """
-def changeImageSize(maxWidth, 
-                    maxHeight, 
-                    image):
+def changeImageSize(maxWidth: int, 
+                    maxHeight: int, 
+                    image:np.array):
     
     widthRatio  = maxWidth/image.size[0]
     heightRatio = maxHeight/image.size[1]
@@ -74,31 +74,25 @@ def changeImageSize(maxWidth,
     newImage    = image.resize((newWidth, newHeight))
     return newImage
 
-def merge_two_images(img1, img2):
-    # Take two images for blending them together   
-    # Make the images of uniform size
+def merge_two_images(img1: Image.Image, img2: Image.Image):
     image3 = changeImageSize(800, 500, img1)
     image4 = changeImageSize(800, 500, img2)
 
-    # Make sure images got an alpha channel
     image5 = image3.convert("RGBA")
     image6 = image4.convert("RGBA")
 
-    # alpha-blend the images with varying values of alpha
     alphaBlended1 = Image.blend(image5, image6, alpha=.25)
-    #alphaBlended2 = Image.blend(image5, image6, alpha=.4)
 
-    # Display the alpha-blended images
     return alphaBlended1
-def convertToImg(img1):
+def convertToImg(img1: np.array)-> Image.Image:
     numpy_image_rescaled = img1 * 255
     # converting the dfloat64 numpy to a unit8 - is required by PIL
     numpy_image_rescaled_uint8 = np.array(numpy_image_rescaled, np.uint8)
     # convert to PIL and show
     im = Image.fromarray(numpy_image_rescaled_uint8)
     return im
-
-def perlin2d(shape,scale,octaves,persistence,lacunarity):
+"""
+def perlin2d(shape: tuple,scale:int,octaves:int,persistence:float,lacunarity:float):
     world = np.zeros(shape)
     for i in range(shape[0]):
         for j in range(shape[1]):
@@ -111,11 +105,12 @@ def perlin2d(shape,scale,octaves,persistence,lacunarity):
                                         repeaty=1024, 
                                         base=0)
     return world
-def perlin_array(shape = (144, 148),
-			scale=100, octaves = 6, 
-			persistence = 0.5, 
-			lacunarity = 2.0, 
-			seed = None):
+"""
+def perlin_array(shape:tuple = (200, 200),
+			scale:int=100, octaves:int = 6, 
+			persistence:float = 0.5, 
+			lacunarity:float = 2.0, 
+			seed:int = None)->list:
 
     if not seed:
 
@@ -168,12 +163,13 @@ img1 = merge_two_images(Mimg2,Mimg4)
 """
 def Foggyfy(img):
     perlin = perlin_array()
+    #print(type(convertToImg(perlin)))
     return merge_two_images(convertToImg(perlin),img)
 #img1 = Blend_Multiple_noise_maps(1)
 #img1 = perlin_array()
 #img1 = Image.open(im)
-#img2 = Image.open("C:\\Users\\jeppe\\Desktop\\GTSRB_Final_Training_Images\\GTSRB\\Final_Training\\Images\\00000\\00002_00029.ppm")
-#Foggyfy(img2).show()
+img2 = Image.open("C:\\Users\\jeppe\\Desktop\\GTSRB_Final_Training_Images\\GTSRB\\Final_Training\\Images\\00000\\00002_00029.ppm")
+Foggyfy(img2).show()
 #ims = merge_two_images(convertYoImg(img1),img2)
 #ims = Image.open(ims)
 #ims.show()
