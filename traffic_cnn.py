@@ -58,7 +58,6 @@ def TrainModel():
         signatures=None,
         options=None
     )
-TrainModel()
 
 def AccDistribution():
     model = tf.keras.models.load_model(SAVE_LOAD_PATH)
