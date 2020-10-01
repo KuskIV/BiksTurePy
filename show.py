@@ -106,4 +106,4 @@ def ShowExample(path):
 
 
 #ShowExample("FullIJCNN2013/00")
-ShowExample("Images/GTSRB_Final_Training_Images/GTSRB/Final_Training/Images/00000/00002_00029.ppm")
+#ShowExample("Images/GTSRB_Final_Training_Images/GTSRB/Final_Training/Images/00000/00002_00029.ppm")
