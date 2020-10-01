@@ -58,7 +58,7 @@ def TrainModel():
         signatures=None,
         options=None
     )
-TrainModel()
+#TrainModel()
 
 def AccDistribution():
     model = tf.keras.models.load_model(SAVE_LOAD_PATH)
@@ -76,8 +76,11 @@ def AccDistribution():
 
     for i in range(len(accArr)):
         percent = 100 - (accArr[i][0] / accArr[i][1]) * 100
-        print(f"Sign label: {str(i).zfill(2)}, Correct: {str(accArr[i][1]).zfill(4)}, Wrong: {str(accArr[i][0]).zfill(4)}, percent: {str(percent).zfill(3)}")
-    print(f"Pictures in training set: {len(test_images)}")
+        sI = str(i).zfill(2)
+        sAccarrTrue = str(accArr[i][1]).zfill(4)
+        sAccarrFalse = str(accArr[i][0]).zfill(4)
+        print("Sign label: {}, Correct: {}, Wrong: {}, percent: {:.2f}".format(sI, sAccarrTrue, sAccarrFalse, percent))
+    print(f"Pictures in evaluation set: {len(test_images)}")
 AccDistribution()
 
 def TestModel():
