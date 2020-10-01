@@ -82,10 +82,9 @@ def FlakeSize(size, percent):
 def AddFlake(Opacity):
     return True if random.randint(0, Opacity) == 0 else False
 
-def AddParticels(img, size=7, Opacity=120, frequency=40, LoopJumpX=1, LoopJumpY=1):
+def AddParticels(img, size=4, Opacity=120, frequency=90, LoopJumpX=2, LoopJumpY=2):
     #img = Image.open(path)
     #print(type(img))
-    print(img)
     pixels = img.load()
 
     wSnow, hSnow = FlakeSize(img.size, size)

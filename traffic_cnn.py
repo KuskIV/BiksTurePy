@@ -77,7 +77,7 @@ def AccDistribution():
         percent = 100 - (accArr[i][0] / accArr[i][1]) * 100
         full_percent += percent
         print("Class: {} | Correct: {} | Wrong: {} | percent: {:.2f}".format(str(i).zfill(2), str(accArr[i][1]).rjust(6, ' '), str(accArr[i][0]).rjust(4, ' '), percent))
-    print(f"Pictures in evaluation set: {len(test_images)}, with an average accuracy of: {round(full_percent / len(accArr), 2)}")
+    #print(f"Pictures in evaluation set: {len(test_images)}, with an average accuracy of: {round(full_percent / len(accArr), 2)}")
 AccDistribution()
 
 def TestModel():

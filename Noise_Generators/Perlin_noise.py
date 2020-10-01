@@ -41,8 +41,8 @@ def perlin_array(shape:tuple = (200, 200),
     return arr
 
 def Foggyfy(img):
-    perlin = perlin_array()
-    return merge_two_images(convertToPILImg(perlin),img)
+    perlin = perlin_array(shape=img.size)
+    return merge_two_images(convertToPILImg(perlin),img, alpha=0.3)
 
-img2 = Image.open("C:\\Users\\jeppe\\Desktop\\GTSRB_Final_Training_Images\\GTSRB\\Final_Training\\Images\\00000\\00002_00029.ppm")
-Foggyfy(img2).show()
+#img2 = Image.open("C:\\Users\\jeppe\\Desktop\\GTSRB_Final_Training_Images\\GTSRB\\Final_Training\\Images\\00000\\00002_00029.ppm")
+#Foggyfy(img2).show()

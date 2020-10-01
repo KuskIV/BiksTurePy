@@ -1,8 +1,14 @@
 import tensorflow as tf
 import numpy
 import matplotlib.pyplot as plt
-
+import matplotlib.image as mpimg
+import math
+import  os
+from PIL import  Image
 from ml_tool import makePrediction
+from Noise_Generators. AddWeather import AddParticels
+from Noise_Generators.Perlin_noise import Foggyfy
+from Noise_Generators.birghtness import DayAdjustment
 
 def plot_image(i:int, prediction:list, true_label:str, img:str, class_names:list)->None:
     plt.grid(False)
@@ -55,3 +61,49 @@ def predict_and_plot_images(model, class_names:numpy.array, image_dataset:numpy.
         plot_value_array(i, prediction, label)
     plt.tight_layout()
     plt.show()
+
+def ShowExample(path):
+    i = 0
+    picArr = []
+    """
+    for files in os.listdir(path):
+        if files.endswith(".ppm"):
+            p = path + "/" + files
+            img = Image.open(p)
+            picArr.append(AddParticels(img.copy()))
+            picArr.append(Foggyfy(img))
+
+            print("stuff")
+    """    
+    
+    img = Image.open(path)
+    picArr.append(AddParticels(img.copy(), size=4, Opacity=150, frequency=110, LoopJumpX=2, LoopJumpY=2))
+    picArr.append(AddParticels(img.copy(), size=4, Opacity=70, frequency=110, LoopJumpX=2, LoopJumpY=2))
+    picArr.append(Foggyfy(img.copy()))
+    picArr.append(DayAdjustment(img.copy(), 0.5))
+    picArr.append(DayAdjustment(img.copy(), 1.9))
+
+    fig=plt.figure(figsize=(4, 12))
+    columns = 1
+    rows = len(picArr)
+    for i in range(1, columns*rows +1):
+        print(i)
+        img = picArr[i-1]
+        fig.add_subplot(rows, columns, i)
+        plt.imshow(img)
+    plt.show()
+
+    plt.show()
+
+
+"""
+    index = 0
+    for i in range(num_rows):
+        for j in range(num_rows):
+            axs[i, j].imshow(picArr[index])
+            index += 1
+            """
+
+
+#ShowExample("FullIJCNN2013/00")
+ShowExample("Images/GTSRB_Final_Training_Images/GTSRB/Final_Training/Images/00000/00002_00029.ppm")
