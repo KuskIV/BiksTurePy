@@ -131,20 +131,20 @@ def split_data(img_dataset:list, img_labels:list, images_per_class, training_spl
     maxVal = images_per_class[label_index]
     pictures_in_current_class = images_per_class[label_index]
     dist_in_current_class = pictures_in_current_class * training_split
-    print(f"Class: {label_index}, pictures in class: {pictures_in_current_class}, dist in class: {dist_in_current_class}, max value: {maxVal}")
+    #print(f"Class: {label_index}, pictures in class: {pictures_in_current_class}, dist in class: {dist_in_current_class}, max value: {maxVal}")
     val_in_train = 0
     val_in_eval = 0
     for i in range(len(img_dataset)):
         if i > maxVal:
             maxVal = images_per_class[label_index] + i
-            print(f"Train size: {val_in_train}, Evaluation size: {val_in_eval}")
+            print(f"Train size: {val_in_train}, Evaluation size: {val_in_eval}, overall: {val_in_train + val_in_eval}")
             val_in_train = 0
             val_in_eval = 0
             label_index += 1
             if not (label_index > len(images_per_class)):
                 pictures_in_current_class = images_per_class[label_index]
                 dist_in_current_class = math.ceil(pictures_in_current_class * training_split)
-                print(f"Class: {label_index}, pictures in class: {pictures_in_current_class}, dist in class: {dist_in_current_class}")
+                #print(f"Class: {label_index}, pictures in class: {pictures_in_current_class}, dist in class: {dist_in_current_class}")
         if len(train_set) > dist_in_current_class:
             val_label.append(img_labels[i])
             val_set.append(img_dataset)
