@@ -1,3 +1,4 @@
 #!/bin/bash 
-echo "Hello BiksBois"
-echo "Jeppe Tager F****** Fejl"
+echo "Im about to run bois"
+git fetch 
+git pull 
