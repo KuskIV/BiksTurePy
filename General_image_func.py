@@ -15,14 +15,16 @@ def changeImageSize(maxWidth: int,
     newImage    = image.resize((newWidth, newHeight))
     return newImage
 
-def merge_two_images(img1: Image.Image, img2: Image.Image):
+def merge_two_images(img1: Image.Image
+                    ,img2: Image.Image,
+                     alpha=0.25):
     image3 = changeImageSize(800, 500, img1)
     image4 = changeImageSize(800, 500, img2)
 
     image5 = image3.convert("RGBA")
     image6 = image4.convert("RGBA")
 
-    alphaBlended1 = Image.blend(image5, image6, alpha=.25)
+    alphaBlended1 = Image.blend(image5, image6, alpha=alpha)
 
     return alphaBlended1
 def convertToPILImg(img1: np.array)-> Image.Image:
