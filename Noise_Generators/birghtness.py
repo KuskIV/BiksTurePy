@@ -31,7 +31,7 @@ def AdjustColor(img, factor):
 def GetRGB(r, g, b, maxWidth, maxHeight):
     return Image.new("RGBA", (maxWidth, maxHeight), (r, g, b, 255))
 
-# Adjust the pictures brightness depending on day or night.
+# Adjust the pictures brightness depending on day or night. Where a factor between 1 will result in night and above in day.
 def DayAdjustment(img, factor):
     img = AdjustBrightness(img, factor)
     if factor < 1:
