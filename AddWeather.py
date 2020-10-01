@@ -82,8 +82,10 @@ def FlakeSize(size, percent):
 def AddFlake(Opacity):
     return True if random.randint(0, Opacity) == 0 else False
 
-def AddParticels(path, size=7, Opacity=120, frequency=40, LoopJumpX=1, LoopJumpY=1):
-    img = Image.open(path)
+def AddParticels(img, size=7, Opacity=120, frequency=40, LoopJumpX=1, LoopJumpY=1):
+    #img = Image.open(path)
+    #print(type(img))
+    print(img)
     pixels = img.load()
     
     wSnow, hSnow = FlakeSize(img.size, size)
@@ -93,9 +95,9 @@ def AddParticels(path, size=7, Opacity=120, frequency=40, LoopJumpX=1, LoopJumpY
             if AddFlake(frequency):
                 AddBeautifulSnowflake(i, j, pixels, hSnow, Opacity, img.size)
     
-    
-    NumpyToImage(np.asarray(img))
+    return np.asarray(img)
+    #return NumpyToImage(np.asarray(img))
 
-AddParticels("C:/Users/madsh/OneDrive/Code/Python/BiksTurePy/FullIJCNN2013/00/00000.ppm", frequency=10, LoopJumpX=3, LoopJumpY=2)
+#AddParticels("C:/Users/madsh/OneDrive/Code/Python/BiksTurePy/FullIJCNN2013/00/00000.ppm", frequency=10, LoopJumpX=3, LoopJumpY=2)
 #AddParticels("C:/Users/madsh/OneDrive/Code/Python/BiksTurePy/FullIJCNN2013/00000.ppm", size=0.8, frequency=80, Opacity=50, LoopJumpX=5, LoopJumpY=5)
 
