@@ -41,12 +41,5 @@ def DayAdjustment(img, factor):
     else:
         return img
 
-test_pic_path = "testpic/test1.jpg"
-
-img1 = Image.open(test_pic_path)
-
-procImg = DayAdjustment(img1, 1.5)
-
-procImg.save("testpic/night.png")
 
 
