@@ -75,9 +75,6 @@ def changeImageSize(maxWidth,
 
 def merge_two_images(img1, img2):
     # Take two images for blending them together   
-    #image1 = Image.open("./sky1.png")
-    #image2 = Image.open("./spaceship1.png")
-
     # Make the images of uniform size
     image3 = changeImageSize(800, 500, img1)
     image4 = changeImageSize(800, 500, img2)
@@ -116,10 +113,17 @@ def perlin2d(shape,scale,octaves,persistence,lacunarity):
 
 def Blend_Multiple_noise_maps(x):
     noiseMaps = []
+    noiseSum = None
     for i in range(x):
-        noiseMaps.append(perlin2d((1024,1024),20.0,5,0.4,0.5))
+        if( i== 0):
+            noiseSum = convertYoImg(perlin2d((1000,1000),2.0*rd.uniform(0,1),int(round(rd.uniform(1,10))),2,0.5))
+        else:
+            noiseMaps.append(perlin2d((1000,1000),2.0*rd.uniform(0,1),int(round(rd.uniform(1,10))),2,0.5))
     for noise in noiseMaps:
+        noiseSum = merge_two_images(noiseSum,convertYoImg(noise))
+    return noiseSum
 
+"""
 noiseImg1 = perlin2d((1024,1024),20.0,5,0.4,0.5)
 noiseImg2 = perlin2d((1024,1024),21.0,5,0.5,0.7)
 noiseImg3 = perlin2d((1024,1024),22.0,5,0.3,0.5)
@@ -132,7 +136,8 @@ Mimg3 = merge_two_images(convertYoImg(noiseImg4),convertYoImg(noiseImg5))
 Mimg4 = merge_two_images(Mimg3,convertYoImg(noiseImg6))
 
 img1 = merge_two_images(Mimg2,Mimg4)
-
+"""
+img1 = Blend_Multiple_noise_maps(10)
 #img1 = Image.open(im)
 img2 = Image.open("C:\\Users\\jeppe\\Desktop\\GTSRB_Final_Training_Images\\GTSRB\\Final_Training\\Images\\00000\\00002_00029.ppm")
 ims = merge_two_images(img1,img2)
