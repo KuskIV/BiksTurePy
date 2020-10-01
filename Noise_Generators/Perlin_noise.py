@@ -15,6 +15,7 @@ def display_numpy_image(numpy_image:np.array)->None:
     im = Image.fromarray(numpy_image_rescaled_uint8)
     im.show()
 
+"""
 def psudoRand():
     seed = 4294967296
     A=1664525
@@ -59,7 +60,7 @@ def CombineNoise(pl):
             total = total +pl[j][i]
         results.append(total)
     return results
-
+"""
 def changeImageSize(maxWidth, 
                     maxHeight, 
                     image):
@@ -84,7 +85,7 @@ def merge_two_images(img1, img2):
     image6 = image4.convert("RGBA")
 
     # alpha-blend the images with varying values of alpha
-    alphaBlended1 = Image.blend(image5, image6, alpha=.3)
+    alphaBlended1 = Image.blend(image5, image6, alpha=.25)
     #alphaBlended2 = Image.blend(image5, image6, alpha=.4)
 
     # Display the alpha-blended images
@@ -110,7 +111,7 @@ def perlin2d(shape,scale,octaves,persistence,lacunarity):
                                         repeaty=1024, 
                                         base=0)
     return world
-def perlin_array(shape = (200, 200),
+def perlin_array(shape = (144, 148),
 			scale=100, octaves = 6, 
 			persistence = 0.5, 
 			lacunarity = 2.0, 
@@ -139,7 +140,7 @@ def perlin_array(shape = (200, 200),
     arr = norm_me(arr)
     return arr
 
-def Blend_Multiple_noise_maps(x):
+"""def Blend_Multiple_noise_maps(x):
     noiseMaps = []
     noiseSum = None
     for i in range(x):
@@ -150,7 +151,7 @@ def Blend_Multiple_noise_maps(x):
     for noise in noiseMaps:
         noiseSum = merge_two_images(noiseSum,convertYoImg(noise))
     return noiseSum
-
+"""
 """
 noiseImg1 = perlin2d((1024,1024),20.0,5,0.4,0.5)
 noiseImg2 = perlin2d((1024,1024),21.0,5,0.5,0.7)
