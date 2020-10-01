@@ -12,7 +12,7 @@ from show import predict_and_plot_images
 
 
 
-SAVE_LOAD_PATH = 'saved_models/YEET5.h5'
+SAVE_LOAD_PATH = 'saved_models/YEET7.h5'
 
 img_dataset = [] # list of all images in reshaped numpy array
 img_labels = [] # labels for all images in correct order
@@ -58,7 +58,7 @@ def TrainModel():
         signatures=None,
         options=None
     )
-#TrainModel()
+TrainModel()
 
 def AccDistribution():
     model = tf.keras.models.load_model(SAVE_LOAD_PATH)
@@ -79,8 +79,6 @@ def AccDistribution():
         print(f"Sign label: {str(i).zfill(2)}, Correct: {str(accArr[i][1]).zfill(4)}, Wrong: {str(accArr[i][0]).zfill(4)}, percent: {str(percent).zfill(3)}")
     print(f"Pictures in training set: {len(test_images)}")
 AccDistribution()
-
-#AccDistribution()
 
 def TestModel():
     # check the create model
