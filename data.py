@@ -146,7 +146,7 @@ def split_data(img_dataset:list, img_labels:list, images_per_class, training_spl
                 pictures_in_current_class = images_per_class[label_index]
                 dist_in_current_class = math.ceil(pictures_in_current_class * training_split)
                 #print(f"Class: {label_index}, pictures in class: {pictures_in_current_class}, dist in class: {dist_in_current_class}")
-        if val_in_eval < dist_in_current_class:
+        if val_in_eval > dist_in_current_class:
             val_label.append(img_labels[i])
             val_set.append(img_dataset[i])
             val_in_eval += 1
