@@ -12,7 +12,7 @@ from show import predict_and_plot_images
 
 
 
-SAVE_LOAD_PATH = 'saved_models/YEET7.h5'
+SAVE_LOAD_PATH = 'saved_models/YEET8.h5'
 
 img_dataset = [] # list of all images in reshaped numpy array
 img_labels = [] # labels for all images in correct order
@@ -58,6 +58,7 @@ def TrainModel():
         signatures=None,
         options=None
     )
+TrainModel()
 
 def AccDistribution():
     model = tf.keras.models.load_model(SAVE_LOAD_PATH)
