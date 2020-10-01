@@ -110,6 +110,34 @@ def perlin2d(shape,scale,octaves,persistence,lacunarity):
                                         repeaty=1024, 
                                         base=0)
     return world
+def perlin_array(shape = (200, 200),
+			scale=100, octaves = 6, 
+			persistence = 0.5, 
+			lacunarity = 2.0, 
+			seed = None):
+
+    if not seed:
+
+        seed = np.random.randint(0, 100)
+        print("seed was {}".format(seed))
+
+    arr = np.zeros(shape)
+    for i in range(shape[0]):
+        for j in range(shape[1]):
+            arr[i][j] = noise.pnoise2(i / scale,
+                                        j / scale,
+                                        octaves=octaves,
+                                        persistence=persistence,
+                                        lacunarity=lacunarity,
+                                        repeatx=1024,
+                                        repeaty=1024,
+                                        base=seed)
+    max_arr = np.max(arr)
+    min_arr = np.min(arr)
+    norm_me = lambda x: (x-min_arr)/(max_arr - min_arr)
+    norm_me = np.vectorize(norm_me)
+    arr = norm_me(arr)
+    return arr
 
 def Blend_Multiple_noise_maps(x):
     noiseMaps = []
@@ -137,10 +165,11 @@ Mimg4 = merge_two_images(Mimg3,convertYoImg(noiseImg6))
 
 img1 = merge_two_images(Mimg2,Mimg4)
 """
-img1 = Blend_Multiple_noise_maps(10)
+#img1 = Blend_Multiple_noise_maps(1)
+img1 = perlin_array()
 #img1 = Image.open(im)
-img2 = Image.open("C:\\Users\\jeppe\\Desktop\\GTSRB_Final_Training_Images\\GTSRB\\Final_Training\\Images\\00000\\00002_00029.ppm")
-ims = merge_two_images(img1,img2)
+#img2 = Image.open("C:\\Users\\jeppe\\Desktop\\GTSRB_Final_Training_Images\\GTSRB\\Final_Training\\Images\\00000\\00002_00029.ppm")
+#ims = merge_two_images(img1,img2)
 #ims = Image.open(ims)
 img1.show()
 #changeImageSize(90,90,ims).show()
