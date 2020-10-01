@@ -15,11 +15,27 @@ def changeImageSize(maxWidth: int,
     newImage    = image.resize((newWidth, newHeight))
     return newImage
 
+def EnsureUniformImageShape(img1: Image.Image,img2: Image.Image, shape=None):
+    size1 = img1.size
+    size2 = img2.size
+
+    if(shape != None):
+        img1 = changeImageSize(shape[0], shape[1], img1)
+        img2 = changeImageSize(shape[0], shape[1], img2)
+        return img1,img2
+    elif(size2 == size1):
+        return img1,img2
+    else:
+        img2 = changeImageSize(size1[0],size1[1],img2)
+        return img1,img2
+
+
+
 def merge_two_images(img1: Image.Image
                     ,img2: Image.Image,
-                     alpha=0.25):
-    image3 = changeImageSize(800, 500, img1)
-    image4 = changeImageSize(800, 500, img2)
+                     alpha:float=0.25, 
+                     shape:tuple = None):
+    image3,image4 = EnsureUniformImageShape(img1, img2,shape=shape)
 
     image5 = image3.convert("RGBA")
     image6 = image4.convert("RGBA")
@@ -34,3 +50,4 @@ def convertToPILImg(img1: np.array)-> Image.Image:
     # convert to PIL and show
     im = Image.fromarray(numpy_image_rescaled_uint8)
     return im
+
