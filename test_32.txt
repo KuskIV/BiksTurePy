@@ -1,0 +1,9 @@
+Evaluation for model
+ 1/12 [=>............................] - ETA: 0s - loss: 2.7718 - sparse_categorical_accurac 9/12 [=====================>........] - ETA: 0s - loss: 1.7704 - sparse_categorical_accurac12/12 [==============================] - 0s 6ms/step - loss: 2.2448 - sparse_categorical_accuracy: 0.7317
+[2.244788408279419, 0.7317073345184326]
+Evaluation for model
+ 1/12 [=>............................] - ETA: 0s - loss: 3.0394 - sparse_categorical_accurac 9/12 [=====================>........] - ETA: 0s - loss: 2.2372 - sparse_categorical_accurac12/12 [==============================] - 0s 6ms/step - loss: 2.6445 - sparse_categorical_accuracy: 0.5339
+[2.644465684890747, 0.5338753461837769]
+Evaluation for model
+ 1/12 [=>............................] - ETA: 0s - loss: 3.0426 - sparse_categorical_accurac 9/12 [=====================>........] - ETA: 0s - loss: 1.9055 - sparse_categorical_accurac12/12 [==============================] - 0s 6ms/step - loss: 2.3494 - sparse_categorical_accuracy: 0.7480
+[2.3494420051574707, 0.7479674816131592]

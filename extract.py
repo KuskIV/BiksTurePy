@@ -67,5 +67,3 @@ def Updated_GetData(path):
             images_per_class.append(num_of_images)
     """
     return dataset_placements, images_per_class
-
-
