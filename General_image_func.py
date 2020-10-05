@@ -42,9 +42,9 @@ def merge_two_images(img1: Image.Image
 def convertToPILImg(img1: np.array, normilized = True)-> Image.Image:
 
     if normilized is True:
-        numpy_image_rescaled = img1 * 255
+        img1 = img1 * 255
     # converting the dfloat64 numpy to a unit8 - is required by PIL
-    numpy_image_rescaled_uint8 = np.array(numpy_image_rescaled, np.uint8)
+    numpy_image_rescaled_uint8 = np.array(img1, np.uint8)
     # convert to PIL and show
     im = Image.fromarray(numpy_image_rescaled_uint8)
     return im
