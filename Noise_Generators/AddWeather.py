@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import  random
 import  math
+from cv2 import cv2
 
 def NumpyToImage(arr):
     img = Image.fromarray(arr)
@@ -96,6 +97,45 @@ def AddParticels(img, size=4, Opacity=120, frequency=90, LoopJumpX=2, LoopJumpY=
 
     return np.asarray(img)
     #return NumpyToImage(np.asarray(img))
+
+def generate_random_lines(imshape,slant,drop_length, raindrops):
+    drops=[]    
+    for i in range(raindrops):       
+        if slant<0:            
+            x= np.random.randint(slant,imshape[1])
+        else:
+            x= np.random.randint(0,imshape[1]-slant)
+        y= np.random.randint(0,imshape[0]-drop_length)
+        drops.append((x,y))
+    return drops
+        
+def add_rain(image, rain_drops=1500, drop_length=20, drop_width=2, blurr=(7,7), color=(150,150,150)):
+    imshape = image.shape    
+    slant_extreme=5  
+    slant= np.random.randint(-slant_extreme,slant_extreme)     
+    drop_color=color   
+    rain_drops= generate_random_lines(imshape,slant,drop_length, rain_drops)        
+    for rain_drop in rain_drops:        
+        cv2.line(image,(rain_drop[0],rain_drop[1]),(rain_drop[0]+slant,rain_drop[1]+drop_length),drop_color,drop_width)    
+    image= cv2.blur(image,blurr)          
+    return image
+
+def load_image(path):
+    img = Image.open(path)
+    img.load()
+    data = np.asarray(img, dtype="int32")
+    return data
+
+def generate_and_show():
+    path = "Images/GTSRB_Final_Training_Images/GTSRB/Final_Training/Images/00000/00002_00029.ppm"
+    img = load_image(path)
+    #img = add_rain(img, rain_drops=70, drop_length=7, drop_width=2, blurr=(2,2), color=(130,130,130))
+    img = add_rain(img, rain_drops=40, drop_length=2, drop_width=3, blurr=(3,3), color=(200,200,200))
+
+    plt.imshow(img)
+    plt.show()
+
+generate_and_show()
 
 #AddParticels("C:/Users/madsh/OneDrive/Code/Python/BiksTurePy/FullIJCNN2013/00/00000.ppm", frequency=10, LoopJumpX=3, LoopJumpY=2)
 #AddParticels("C:/Users/madsh/OneDrive/Code/Python/BiksTurePy/FullIJCNN2013/00000.ppm", size=0.8, frequency=80, Opacity=50, LoopJumpX=5, LoopJumpY=5)
