@@ -16,7 +16,7 @@ def Noise(img, fog_set = None, day_set = None, wh_set = None):
     
     return img
 
-#img = Image.open("C:\\Users\\jeppe\\Desktop\\GTSRB_Final_Training_Images\\GTSRB\\Final_Training\\Images\\00000\\00002_00029.ppm")
+#img = Image.open(path)
 #fog_set=(1)
 #day_set=(0.5)
 #wh_set = (70,7,2,(2,2),(130,130,130))
