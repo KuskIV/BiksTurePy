@@ -1,9 +1,9 @@
+import numpy
 import tensorflow as tf
+import math
 
 from tensorflow.keras import datasets, layers, models
 import matplotlib.pyplot as plt
-import numpy
-
 
 from data import get_data, split_data, display_numpy_image
 from extract import get_class_names
@@ -32,7 +32,13 @@ def TrainModel(save_model = True):
                 loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
                 metrics=['sparse_categorical_accuracy'])
 
-    history = model.fit(train_images, train_labels, epochs=10,
+    for i in range(10):
+        total_examples = train_images.shape[0]
+        subset = math.floor(total_examples * 0.1)
+        start = math.floor(i * total_examples)
+        end = start + subset
+        print(f'total_examples = {total_examples} | subset = {subset} | start = {start} | end = {end}')
+        history = model.fit(train_images[start:end], train_labels[start:end], epochs=10,
                         validation_data=(test_images, test_labels))
 
     if save_model:
@@ -136,9 +142,41 @@ def train_model(model, train_images, train_labels, test_images, test_labels):
     model.compile(optimizer='adam',
                 loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
                 metrics=['sparse_categorical_accuracy'])
+    batch_size = 16
+    batches = math.floor(train_images.shape[0] / batch_size)
+    epoch_size = 10
 
-    history = model.fit(train_images, train_labels, epochs=10,
-                        validation_data=(test_images, test_labels))
+    total_examples = train_images.shape[0]
+    subset_size = math.floor(total_examples * 0.01)
+    
+    print("We are in the right method")
+    for i in range(100):
+            start = math.floor(i * subset_size)
+            end = start + subset_size
+
+            print(f'total_examples = {total_examples} | subset = {subset_size} | start = {start} | end = {end}')
+            history = model.fit(train_images[start:end], train_labels[start:end], epochs=10, batch_size=batch_size, 
+                                validation_data=(test_images, test_labels))
+            
+
+            #print(f'batch number: {i}')
+
+           # for i in range(epoch_size):
+            #    train_data = model.train_on_batch(train_images[start:end], test_labels[start:end])
+            
+            #[print(element) for element in train_data]
+
+            #if i % batches == 0:
+            #    print("897 have been trained")
+
+           # print(f'total_examples = {total_examples} | subset = {subset} | start = {start} | end = {end}')
+           # history = model.fit(train_images[start:end], train_labels[start:end], epochs=10,
+            #                validation_data=(test_images, test_labels))
+
+
+
+    #history = model.fit(train_images, train_labels, epochs=10,
+    #                    validation_data=(test_images, test_labels))
 
 def train_and_eval_models_for_size(size, train_images, train_labels, test_images, test_labels, store_models=True):
     if size != (32, 32):
@@ -166,7 +204,7 @@ def train_and_eval_models_for_size(size, train_images, train_labels, test_images
     if store_models:
         #store model in saved_models with name as img_shape X model design
         for model in models:
-            filename = str(size)
+            filename = str(size[0])
             model_id = models.index(model)
             if model_id == 0:
                 filename += "default"
@@ -190,6 +228,6 @@ if __name__ == "__main__":
     img_dataset, img_labels, images_per_class = get_data(fixed_size = (32, 32), padded_images = False, smart_resize = True)
     # Training and test split, 70 and 30%
     train_images, train_labels, test_images, test_labels = split_data(img_dataset, img_labels, images_per_class, training_split=.7, shuffle=True)
-    size = image_sizes[0]
+    size = image_sizes[1]
     #for size in image_sizes:
     train_and_eval_models_for_size(size, train_images, train_labels, test_images, test_labels)
