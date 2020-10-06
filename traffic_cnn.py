@@ -97,7 +97,8 @@ def TestModel():
 
 # NOW ready to train other model or make predictions on Data
 
-def default_model(img_shape=(32, 32, 3)):
+def default_model():
+    img_shape=(32, 32, 3)
     model = models.Sequential()
     model.add(layers.Conv2D(32, (3, 3), activation='relu', input_shape=img_shape))
     model.add(layers.MaxPooling2D((2, 2)))
@@ -106,19 +107,27 @@ def default_model(img_shape=(32, 32, 3)):
     model.add(layers.Conv2D(64, (3, 3), activation='relu'))
     return model
 
-def medium_model(img_shape=(128, 128, 3)):
+def medium_model():
+    img_shape=(128, 128, 3)
     model = models.Sequential()
     model.add(layers.Conv2D(32, (15, 15), activation='relu', input_shape=img_shape))
     model.add(layers.MaxPooling2D((2, 2)))
     model.add(layers.Conv2D(64, (3, 3), activation='relu'))
     model.add(layers.MaxPooling2D(2, 2))
     model.add(layers.Conv2D(64, (3, 3), activation='relu'))
+    model.add(layers.MaxPooling2D(2, 2))
+    model.add(layers.Conv2D(64, (3, 3), activation='relu'))
     return model
 
-def large_model(img_shape=(200, 200, 3)):
+def large_model():
+    img_shape=(200, 200, 3)
     model = models.Sequential()
     model.add(layers.Conv2D(32, (21, 21), activation='relu', input_shape=img_shape))
     model.add(layers.MaxPooling2D((2, 2)))
+    model.add(layers.Conv2D(64, (3, 3), activation='relu'))
+    model.add(layers.MaxPooling2D(2, 2))
+    model.add(layers.Conv2D(64, (3, 3), activation='relu'))
+    model.add(layers.MaxPooling2D(2, 2))
     model.add(layers.Conv2D(64, (3, 3), activation='relu'))
     model.add(layers.MaxPooling2D(2, 2))
     model.add(layers.Conv2D(64, (3, 3), activation='relu'))
@@ -142,28 +151,16 @@ def train_model(model, train_images, train_labels, test_images, test_labels):
     model.compile(optimizer='adam',
                 loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
                 metrics=['sparse_categorical_accuracy'])
-    batch_size = 16
-    batches = math.floor(train_images.shape[0] / batch_size)
-    epoch_size = 10
 
-    total_examples = train_images.shape[0]
-    subset_size = math.floor(total_examples * 0.01)
-    
-    print("We are in the right method")
-    for i in range(100):
-            start = math.floor(i * subset_size)
-            end = start + subset_size
+    history = model.fit(train_images, train_labels, epochs=10,
+            validation_data=(test_images, test_labels))
 
-            print(f'total_examples = {total_examples} | subset = {subset_size} | start = {start} | end = {end}')
-            history = model.fit(train_images[start:end], train_labels[start:end], epochs=10, batch_size=batch_size, 
-                                validation_data=(test_images, test_labels))
-            
 
             #print(f'batch number: {i}')
 
            # for i in range(epoch_size):
             #    train_data = model.train_on_batch(train_images[start:end], test_labels[start:end])
-            
+
             #[print(element) for element in train_data]
 
             #if i % batches == 0:
@@ -178,7 +175,7 @@ def train_model(model, train_images, train_labels, test_images, test_labels):
     #history = model.fit(train_images, train_labels, epochs=10,
     #                    validation_data=(test_images, test_labels))
 
-def train_and_eval_models_for_size(size, train_images, train_labels, test_images, test_labels, store_models=True):
+def train_and_eval_models_for_size(size, model, model_id, train_images, train_labels, test_images, test_labels, save_model=True):
     if size != (32, 32):
         # reshape training and test images
         reshaped_train_images = reshape_numpy_array_of_images(train_images, size)
@@ -186,33 +183,28 @@ def train_and_eval_models_for_size(size, train_images, train_labels, test_images
     else:
         reshaped_train_images = train_images #set to default
         reshaped_test_images = test_images #set to default
-    # create new models of each type (default, medium, large), adapted for the specific input size
-    models = [flatten_and_dense(default_model(reshaped_train_images.shape[1:])),
-              flatten_and_dense(medium_model(reshaped_train_images.shape[1:])),
-              flatten_and_dense(default_model(reshaped_train_images.shape[1:]))]
 
-    # train each model
-    for model in models:
-        train_model(model, reshaped_train_images, train_labels, reshaped_test_images, test_labels)
+    # train model
+    print("image size")
+    print(size)
+    train_model(model, reshaped_train_images, train_labels, reshaped_test_images, test_labels)
 
     # evaluate each model
-    for model in models:
-        print("Evaluation for model")
-        print(model.evaluate(reshaped_test_images, test_labels))
+    print("Evaluation for model")
+    print(model.evaluate(reshaped_test_images, test_labels))
 
     # stor each model
-    if store_models:
+    if save_model:
         #store model in saved_models with name as img_shape X model design
-        for model in models:
-            filename = str(size[0])
-            model_id = models.index(model)
-            if model_id == 0:
-                filename += "default"
-            elif model_id == 1:
-                filename += "medium"
-            else:
-                filename += "large"
-            store_model(model, filename)
+        filename = 'adj'+str(size[0])
+        model_id = models.index(model)
+        if model_id == 0:
+            filename += "default"
+        elif model_id == 1:
+            filename += "medium"
+        else:
+            filename += "large"
+        store_model(model, filename)
 
 # Below is executed when file is executed directly as main
 if __name__ == "__main__":
@@ -228,6 +220,13 @@ if __name__ == "__main__":
     img_dataset, img_labels, images_per_class = get_data(fixed_size = (32, 32), padded_images = False, smart_resize = True)
     # Training and test split, 70 and 30%
     train_images, train_labels, test_images, test_labels = split_data(img_dataset, img_labels, images_per_class, training_split=.7, shuffle=True)
-    size = image_sizes[1]
-    #for size in image_sizes:
-    train_and_eval_models_for_size(size, train_images, train_labels, test_images, test_labels)
+
+    # generate models
+    models = [flatten_and_dense(default_model()), flatten_and_dense(medium_model()), flatten_and_dense(large_model())]
+
+    # zip together with its size
+    model_and_size = list(zip(models, image_sizes))
+
+    # train models
+    for i in range(len(model_and_size)):
+        train_and_eval_models_for_size(model_and_size[i][1], model_and_size[i][0], i, train_images, train_labels, test_images, test_labels)
