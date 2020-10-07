@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 
 from data import get_data, split_data, display_numpy_image
 from extract import get_class_names
-from ml_tool import makePrediction
+from ml_tool import *
 #from show import predict_and_plot_images
 
 SAVE_LOAD_PATH = 'saved_models/YEET8.h5'
@@ -217,10 +217,16 @@ if __name__ == "__main__":
 
     image_sizes = [(32, 32), (128, 128), (200, 200)]
 
-    img_dataset, img_labels, images_per_class = get_data(fixed_size = (32, 32), padded_images = False, smart_resize = True)
+    img_dataset, img_labels, images_per_class = get_data(fixed_size = (0, 0), padded_images = False, smart_resize = True, normalize=False)
+
+
     # Training and test split, 70 and 30%
     train_images, train_labels, test_images, test_labels = split_data(img_dataset, img_labels, images_per_class, training_split=.7, shuffle=True)
 
+    analyze_data(train_images, train_labels, images_per_class)
+
+
+    """
     # generate models
     models = [flatten_and_dense(default_model()), flatten_and_dense(medium_model()), flatten_and_dense(large_model())]
 
@@ -230,3 +236,4 @@ if __name__ == "__main__":
     # train models
     for i in range(len(model_and_size)):
         train_and_eval_models_for_size(model_and_size[i][1], model_and_size[i][0], i, train_images, train_labels, test_images, test_labels)
+    """

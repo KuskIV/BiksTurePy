@@ -8,7 +8,7 @@ import math
 
 
 # DATASET_PATH = 'C:\\Users\\jeppe\\Desktop\\GTSRB_Final_Training_Images\\GTSRB\\Final_Training\\Images' # assume it is in root
-DATASET_PATH = 'images/GTSRB_Final_Training_Images/GTSRB/Final_Training/Images'
+ DATASET_PATH = 'images/GTSRB_Final_Training_Images/GTSRB/Final_Training/Images'
 #DATASET_PATH = 'C:\\Users\\jeppe\\Desktop\\FullIJCNN2013'
 #DATASET_PATH = 'FullIJCNN2013'
 
@@ -34,9 +34,8 @@ def convert_imgs_to_numpy_arrays(dataset: list)->list:
     # Convert images to numpy arrays
     for image in dataset:
         im_ppm = Image.open(image[0]) # Open as PIL image
-        im_array = numpy.asarray(im_ppm) # Convert to numpy array
-        converted_images.append(im_array / 255.0) # Normalize pixel values to be between 0 and 1
-
+        im_numpy_array = numpy.asarray(im_ppm) # Convert to numpy array
+        converted_images.append(im_numpy_array)
     return converted_images
 
 
@@ -51,10 +50,10 @@ def auto_reshape_images(fixed_size: tuple, numpy_images: list, smart_resize:bool
 
     # find max width and height
     for image in numpy_images:
-        if len(image) > max_width:
-            max_width = len(image)
-        if len(image[0]) > max_height:
-            max_height = len(image[0])
+        if image.shape[0] > max_width:
+            max_width = image.shape[0]
+        if image.shape[1] > max_height:
+            max_height = image.shape[1]
 
     reshape_size = (max_width, max_height)
     print("reshape size")
@@ -83,7 +82,7 @@ def get_labels(dataset: list)->numpy.array:
     return numpy.array(labels, dtype=numpy.uint8)
 
 
-def get_data(fixed_size:tuple=(0,0), padded_images:bool = False, smart_resize:bool = True)->tuple:
+def get_data(fixed_size:tuple=(0,0), padded_images:bool = False, smart_resize:bool = True, normalize=True)->tuple:
     # extract data from raw
     raw_dataset, images_per_class = extract.Updated_GetData(DATASET_PATH) #using old get_data function temporarily as, new does not work for FullIJCNN2013
 
@@ -92,12 +91,19 @@ def get_data(fixed_size:tuple=(0,0), padded_images:bool = False, smart_resize:bo
 
     # convert ppm to numpy arrays
     numpy_images = convert_imgs_to_numpy_arrays(raw_dataset)
-    # auto reshape images
-    numpy_images_reshaped = auto_reshape_images(fixed_size, numpy_images, smart_resize)
 
     # get labels for each training example in correct order
     labels = get_labels(raw_dataset)
 
+    # auto reshape images
+    numpy_images_reshaped = numpy_images
+    if math.prod(fixed_size) != 0:
+        numpy_images_reshaped = auto_reshape_images(fixed_size, numpy_images, smart_resize)
+
+    if normalize:
+        numpy_images_reshaped / 255.0
+
+    # images not reshaped
     return numpy_images_reshaped, labels, images_per_class
 
 def Shuffle(img_dataset, img_labels):
@@ -117,7 +123,6 @@ def split_data(img_dataset:list, img_labels:list, images_per_class, training_spl
     """Input numpy array of images, numpy array of labels.
        Return a tuple with (training_images, training_labels, test_images, test_labels).
        Does have stochastic/shuffling of the data with shuffle parameter."""
-
 
     train_set = []
     train_label = []
