@@ -8,7 +8,7 @@ import math
 
 
 # DATASET_PATH = 'C:\\Users\\jeppe\\Desktop\\GTSRB_Final_Training_Images\\GTSRB\\Final_Training\\Images' # assume it is in root
- DATASET_PATH = 'images/GTSRB_Final_Training_Images/GTSRB/Final_Training/Images'
+DATASET_PATH = 'images/GTSRB_Final_Training_Images/GTSRB/Final_Training/Images'
 #DATASET_PATH = 'C:\\Users\\jeppe\\Desktop\\FullIJCNN2013'
 #DATASET_PATH = 'FullIJCNN2013'
 
