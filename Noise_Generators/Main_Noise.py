@@ -16,12 +16,14 @@ def Noise(img, fog_set = None, day_set = None, wh_set = None):
     
     return img
 
-#img = Image.open(path)
+img = Image.open("C:\\Users\\jeppe\\Desktop\\GTSRB_Final_Training_Images\\GTSRB\\Final_Training\\Images\\00000\\00002_00029.ppm")
 #fog_set=(1)
 #day_set=(0.5)
 #wh_set = (70,7,2,(2,2),(130,130,130))
 #Noise(img,fog_set = fog_set,day_set = day_set,wh_set = wh_set).show()
-#Noise(img,day_set = (0.5)).show()
-#Noise(img,day_set = (2.0)).show()
-#Noise(img, wh_set = (70,7,2,(2,2),(130,130,130))).show()
-#Noise(img,wh_set = (40,2,3,(3,3),(200,200,200))).show()
+#Noise(img,fog_set = (1)).save("C:/Users/jeppe/Desktop/Example_images/pic1.png")
+#Noise(img,day_set = (0.5)).save("C:/Users/jeppe/Desktop/Example_images/pic2.png")
+#Noise(img,day_set = (2.0)).save("C:/Users/jeppe/Desktop/Example_images/pic3.png")
+#Noise(img, wh_set = (500,7,1,(2,2),(130,130,150))).save("C:/Users/jeppe/Desktop/Example_images/pic4.png")
+#Noise(img,wh_set = (200,2,2,(5,5),(200,200,200))).save("C:/Users/jeppe/Desktop/Example_images/pic5.png")
+Noise(img,fog_set=(1), wh_set = (500,7,1,(2,2),(130,130,150))).save("C:/Users/jeppe/Desktop/Example_images/pic4.png")
