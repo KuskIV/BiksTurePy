@@ -151,8 +151,9 @@ def train_model(model, train_images, train_labels, test_images, test_labels):
                 loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
                 metrics=['sparse_categorical_accuracy'])
 
-    history = model.fit(train_images, train_labels, epochs=10,
-            validation_data=(test_images, test_labels))
+    #history = model.fit(train_images, train_labels, epochs=10,
+            #validation_data=(test_images, test_labels))
+    print (train_images[0].shape)
 
 
             #print(f'batch number: {i}')
