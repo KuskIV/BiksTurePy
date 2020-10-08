@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from data import get_data, split_data, display_numpy_image
 from extract import get_class_names
 from ml_tool import makePrediction
-#from show import predict_and_plot_images
+from show import predict_and_plot_images
 
 SAVE_LOAD_PATH = 'saved_models/YEET8.h5'
 STORE_FOLDER_NAME = 'saved_models/'
@@ -90,8 +90,7 @@ def TestModel():
     #display_numpy_image(test_images[0])
     #print(test_labels[0:5])
     #print(model.test_on_batch(test_images,test_labels))
-
-    # check 5 first examples in test set
+    #check 5 first examples in test set
     predict_and_plot_images(model, class_names, test_images[0:5], test_labels[0:5])
 
 

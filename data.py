@@ -121,7 +121,7 @@ def update_values(i, images_per_class, label_index, training_split):
     return maxVal, dist_in_current_class, 0
 
 
-def split_data(img_dataset:list, img_labels:list, images_per_class, split, training_split:float=.7, shuffle:bool=True)->tuple:
+def split_data(img_dataset:list, img_labels:list, images_per_class, training_split:float=.7, shuffle:bool=True)->tuple:
     """Input numpy array of images, numpy array of labels.
        Return a tuple with (training_images, training_labels, test_images, test_labels).
        Does have stochastic/shuffling of the data with shuffle parameter."""
