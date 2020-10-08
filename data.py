@@ -7,7 +7,7 @@ import random
 import math
 
 
-#DATASET_PATH = 'C:\\Users\\jeppe\\Desktop\\GTSRB_Final_Training_Images\\GTSRB\\Final_Training\\Images' # assume it is in root
+# DATASET_PATH = 'C:\\Users\\jeppe\\Desktop\\GTSRB_Final_Training_Images\\GTSRB\\Final_Training\\Images' # assume it is in root
 DATASET_PATH = 'images/GTSRB_Final_Training_Images/GTSRB/Final_Training/Images'
 #DATASET_PATH = 'C:\\Users\\jeppe\\Desktop\\FullIJCNN2013'
 #DATASET_PATH = 'FullIJCNN2013'
@@ -57,6 +57,8 @@ def auto_reshape_images(fixed_size: tuple, numpy_images: list, smart_resize:bool
             max_height = len(image[0])
 
     reshape_size = (max_width, max_height)
+    print("reshape size")
+    print(reshape_size)
 
 
     if sum(fixed_size): # check if fixed size option
@@ -83,7 +85,7 @@ def get_labels(dataset: list)->numpy.array:
 
 def get_data(fixed_size:tuple=(0,0), padded_images:bool = False, smart_resize:bool = True)->tuple:
     # extract data from raw
-    raw_dataset, images_per_class = extract.Updated_GetData(DATASET_PATH)
+    raw_dataset, images_per_class = extract.Updated_GetData(DATASET_PATH) #using old get_data function temporarily as, new does not work for FullIJCNN2013
 
     if padded_images:
         print("Padded images not implemented yet, only resize and smart resize.")
@@ -122,9 +124,9 @@ def update_values(i, images_per_class, label_index, training_split):
 def split_data(img_dataset:list, img_labels:list, images_per_class, training_split:float=.7, shuffle:bool=True)->tuple:
     """Input numpy array of images, numpy array of labels.
        Return a tuple with (training_images, training_labels, test_images, test_labels).
-       Does not have stochastic/shuffling of the data yet."""
+       Does have stochastic/shuffling of the data with shuffle parameter."""
 
-    
+
     train_set = []
     train_label = []
 
