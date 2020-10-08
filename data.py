@@ -191,6 +191,10 @@ def lazy_split(img_dataset:list, img_labels:list, images_per_class, split, curre
         append_to_lists(minIndex, images_per_class[i], training_split, split, current_split, img_dataset, img_labels, train_set, train_label, lastIndex)
         append_to_lists(maxIndex, images_per_class[i], 1 - training_split, split, current_split, img_dataset, img_labels, val_set, val_label)
 
+    if shuffle:
+        val_set, val_label = Shuffle(val_set, val_label)
+        train_set, train_label = Shuffle(train_set, train_label)
+
     return train_set, train_label, val_set, val_set
 
 def compare_two(lOne, lTwo):

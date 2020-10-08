@@ -5,7 +5,7 @@ import math
 from tensorflow.keras import datasets, layers, models
 import matplotlib.pyplot as plt
 
-from data import get_data, split_data, display_numpy_image
+from data import get_data, split_data, display_numpy_image, lazy_split
 from extract import get_class_names
 from ml_tool import makePrediction
 from show import predict_and_plot_images
@@ -218,14 +218,19 @@ if __name__ == "__main__":
 
     img_dataset, img_labels, images_per_class = get_data(fixed_size = (32, 32), padded_images = False, smart_resize = True)
     # Training and test split, 70 and 30%
-    train_images, train_labels, test_images, test_labels = split_data(img_dataset, img_labels, images_per_class, training_split=.7, shuffle=True)
 
-    # generate models
-    models = [flatten_and_dense(default_model()), flatten_and_dense(medium_model()), flatten_and_dense(large_model())]
+    split = 10
 
-    # zip together with its size
-    model_and_size = list(zip(models, image_sizes))
+    for j in range(split):
+        #train_images, train_labels, test_images, test_labels = split_data(img_dataset, img_labels, images_per_class, training_split=.7, shuffle=True)
+        train_images, train_labels, test_images, test_labels = lazy_split(img_dataset, img_labels, images_per_class, split, j, j == split - 1)
+        # generate models
+        models = [flatten_and_dense(default_model()), flatten_and_dense(medium_model()), flatten_and_dense(large_model())]
 
-    # train models
-    for i in range(len(model_and_size)):
-        train_and_eval_models_for_size(model_and_size[i][1], model_and_size[i][0], i, train_images, train_labels, test_images, test_labels)
+        # zip together with its size
+        model_and_size = list(zip(models, image_sizes))
+
+        # train models
+        for i in range(len(model_and_size)):
+            print(f"Training model {i} / {model_and_size - 1} for time {j} / {split - 1}")
+            train_and_eval_models_for_size(model_and_size[i][1], model_and_size[i][0], i, train_images, train_labels, test_images, test_labels)
