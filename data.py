@@ -121,7 +121,7 @@ def update_values(i, images_per_class, label_index, training_split):
     return maxVal, dist_in_current_class, 0
 
 
-def split_data(img_dataset:list, img_labels:list, images_per_class, training_split:float=.7, shuffle:bool=True)->tuple:
+def split_data(img_dataset:list, img_labels:list, images_per_class, split, training_split:float=.7, shuffle:bool=True)->tuple:
     """Input numpy array of images, numpy array of labels.
        Return a tuple with (training_images, training_labels, test_images, test_labels).
        Does have stochastic/shuffling of the data with shuffle parameter."""
@@ -134,22 +134,12 @@ def split_data(img_dataset:list, img_labels:list, images_per_class, training_spl
     val_label = []
 
     label_index = 0
-    maxVal = images_per_class[label_index]
-    pictures_in_current_class = images_per_class[label_index]
-    dist_in_current_class = pictures_in_current_class * training_split
-    val_in_train = 0
-    val_in_eval = 0
-    # maxVal, dist_in_current_class, val_in_train = update_values(0, images_per_class, label_index, training_split)
+    maxVal, dist_in_current_class, val_in_train = update_values(0, images_per_class, label_index, training_split)
     for i in range(len(img_dataset)):
         if i > maxVal:
             label_index += 1
             if not (label_index > len(images_per_class)):
-                # maxVal, dist_in_current_class, val_in_train = update_values(i, images_per_class, label_index, training_split)
-                maxVal = images_per_class[label_index] + i
-                val_in_train = 0
-                val_in_eval = 0
-                pictures_in_current_class = images_per_class[label_index]
-                dist_in_current_class = math.ceil(pictures_in_current_class * training_split)
+                maxVal, dist_in_current_class, val_in_train = update_values(i, images_per_class, label_index, training_split)
         if val_in_train < dist_in_current_class:
             train_label.append(img_labels[i])
             train_set.append(img_dataset[i])
@@ -164,25 +154,98 @@ def split_data(img_dataset:list, img_labels:list, images_per_class, training_spl
 
     return train_set, train_label, val_set, val_label
 
-    """
-    img_dataset_in = img_dataset
-    img_labels_in = img_labels
+def get_min_max(imgCount, training_split, split, current_split, lastIndex):
+    percent = imgCount * training_split
+    minVal = (percent / split) * (current_split)
+    maxVal = minVal + (percent / split)
 
-    if shuffle:
-        z = zip(img_dataset, img_labels)
-        z_list = list(z)
-        random.shuffle(z_list)
-        img_dataset_tuple, img_labels_tuple = zip(*z_list)
-        img_dataset_in = numpy.array(img_dataset_tuple)
-        img_labels_in = numpy.array(img_labels_tuple)
+    return math.floor(minVal), math.floor(maxVal) if not lastIndex else math.ceil(maxVal)
 
-    num_of_examples = img_dataset.shape[0]
-    split_pivot = math.floor(num_of_examples * training_split) # floor
+def append_to_lists(index, img_per_class, training_split, split, current_split, srcImg, srcLabel, outImg, outLabel, lastIndex=False):
+    minVal, maxVal = get_min_max(img_per_class, training_split, split, current_split, lastIndex)
 
-    training_images = numpy.array([img_dataset_in[i] for i in range(split_pivot)])
-    training_labels = numpy.array([img_labels_in[i] for i in range(split_pivot)])
-    test_images = numpy.array([img_dataset_in[i] for i in range(split_pivot, num_of_examples)])
-    test_labels = numpy.array([img_labels_in[i] for i in range(split_pivot, num_of_examples)])
+    minVal += index
+    maxVal += index
 
-    return training_images, training_labels, test_images, test_labels
-    """
+    #print(f"{img_per_class}, min: {minVal}, max: {maxVal}")
+
+    for j in range(minVal, maxVal):
+        outImg.append(srcImg[j])
+        outLabel.append(srcLabel[j])
+    
+
+def lazy_split(img_dataset:list, img_labels:list, images_per_class, split, current_split, lastIndex, training_split:float=.7, shuffle:bool=True)->tuple:
+    minIndex = 0
+    maxIndex = 0
+
+    train_set = []
+    train_label = []
+
+    val_set = []
+    val_label = []
+    for i in range(len(images_per_class)):
+        if i != 0:
+            minIndex += images_per_class[i - 1]
+        maxIndex += math.floor(images_per_class[i - 1 if i > 0 else 0] * training_split)
+
+        append_to_lists(minIndex, images_per_class[i], training_split, split, current_split, img_dataset, img_labels, train_set, train_label, lastIndex)
+        append_to_lists(maxIndex, images_per_class[i], 1 - training_split, split, current_split, img_dataset, img_labels, val_set, val_label)
+
+    return train_set, train_label, val_set, val_set
+
+def compare_two(lOne, lTwo):
+    return True if len(lOne) == len(lTwo) else False
+
+def test_split_data(split):
+    images_per_class = [41, 32, 33, 44, 35, 26, 47, 58]
+    img_dataset = []
+    img_labels = []
+    
+    for i in range(len(images_per_class)):
+        for _ in range(images_per_class[i]): 
+            img_dataset.append(i)
+            img_labels.append(i)
+
+    size = 0
+
+    sumTrain = 0
+    sumVal = 0
+
+    for i in range(split):
+        train_set, train_label, val_set, val_label = lazy_split(img_dataset, img_labels, images_per_class, split, i, i == split - 1, shuffle=False) # Fix 1 == split - 1, should not be a parameter
+        #print(f"trainset: {len(train_set)}, 70 percent: {(len(img_dataset) * 0.7) / split}")
+        #print(f"valset: {len(val_set)}, 30 percent: {(len(img_dataset) * 0.3) / split}")
+        #sumTrain += len(train_set)
+        #sumVal += len(val_set)
+        #print(f"Index: {i}, per class: {images_per_class}, train_set: {len(train_set)} ({len(img_dataset) * 0.7}), val_set: {len(val_set)}, ({len(img_labels) * 0.3})")
+        #size += len(train_set) + len(val_set)
+    #print(f"sum train = {sumTrain}, sum70 = {len(img_dataset) * 0.7}, sumVal = {sumVal}, sum30 = {len(img_dataset) * 0.3}, added {sumTrain + sumVal}, original {len(img_dataset)}")
+
+    #print(size)
+
+#test_split_data(4)
+
+
+
+"""
+img_dataset_in = img_dataset
+img_labels_in = img_labels
+
+if shuffle:
+    z = zip(img_dataset, img_labels)
+    z_list = list(z)
+    random.shuffle(z_list)
+    img_dataset_tuple, img_labels_tuple = zip(*z_list)
+    img_dataset_in = numpy.array(img_dataset_tuple)
+    img_labels_in = numpy.array(img_labels_tuple)
+
+num_of_examples = img_dataset.shape[0]
+split_pivot = math.floor(num_of_examples * training_split) # floor
+
+training_images = numpy.array([img_dataset_in[i] for i in range(split_pivot)])
+training_labels = numpy.array([img_labels_in[i] for i in range(split_pivot)])
+test_images = numpy.array([img_dataset_in[i] for i in range(split_pivot, num_of_examples)])
+test_labels = numpy.array([img_labels_in[i] for i in range(split_pivot, num_of_examples)])
+
+return training_images, training_labels, test_images, test_labels
+"""
