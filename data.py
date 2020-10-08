@@ -217,11 +217,11 @@ def test_split_data(split):
         #sumVal += len(val_set)
         #print(f"Index: {i}, per class: {images_per_class}, train_set: {len(train_set)} ({len(img_dataset) * 0.7}), val_set: {len(val_set)}, ({len(img_labels) * 0.3})")
         #size += len(train_set) + len(val_set)
-    print(f"sum train = {sumTrain}, sum70 = {len(img_dataset) * 0.7}, sumVal = {sumVal}, sum30 = {len(img_dataset) * 0.3}, added {sumTrain + sumVal}, original {len(img_dataset)}")
+    #print(f"sum train = {sumTrain}, sum70 = {len(img_dataset) * 0.7}, sumVal = {sumVal}, sum30 = {len(img_dataset) * 0.3}, added {sumTrain + sumVal}, original {len(img_dataset)}")
 
     #print(size)
 
-test_split_data(4)
+#test_split_data(4)
 
 
 
