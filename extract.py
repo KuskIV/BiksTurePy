@@ -55,17 +55,6 @@ def Updated_GetData(path):
                 num_of_images += 1
         images_per_class.append(num_of_images)
 
-    """
-    for subdir, dirs, files in os.walk(path):
-        num_of_images = 0
-        for f in files:
-            if f.endswith(fileExstension):
-                dataset_placements.append([subdir + "/" +  f, int(os.path.basename(subdir))])
-                num_of_images += 1
-        if len(dirs) == 0:
-            print(subdir)
-            images_per_class.append(num_of_images)
-    """
     return dataset_placements, images_per_class
 
 

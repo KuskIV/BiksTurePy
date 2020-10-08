@@ -111,6 +111,14 @@ def Shuffle(img_dataset, img_labels):
 
     return img_dataset_in, img_labels_in
 
+def update_values(i, images_per_class, label_index, training_split):
+    maxVal = images_per_class[label_index] + i
+    pictures_in_current_class = images_per_class[label_index]
+    dist_in_current_class = math.ceil(pictures_in_current_class * training_split)
+
+    return maxVal, dist_in_current_class, 0
+
+
 def split_data(img_dataset:list, img_labels:list, images_per_class, training_split:float=.7, shuffle:bool=True)->tuple:
     """Input numpy array of images, numpy array of labels.
        Return a tuple with (training_images, training_labels, test_images, test_labels).
@@ -123,28 +131,23 @@ def split_data(img_dataset:list, img_labels:list, images_per_class, training_spl
     val_set = []
     val_label = []
 
-    #for i in range(len(images_per_class)):
-    #    print(images_per_class[i])
-
-    
     label_index = 0
     maxVal = images_per_class[label_index]
     pictures_in_current_class = images_per_class[label_index]
     dist_in_current_class = pictures_in_current_class * training_split
-    #print(f"Class: {label_index}, pictures in class: {pictures_in_current_class}, dist in class: {dist_in_current_class}")
     val_in_train = 0
     val_in_eval = 0
+    # maxVal, dist_in_current_class, val_in_train = update_values(0, images_per_class, label_index, training_split)
     for i in range(len(img_dataset)):
         if i > maxVal:
-            #print(f"Train size: {val_in_train}, Evaluation size: {val_in_eval}, overall: {val_in_train + val_in_eval}, dist = {dist_in_current_class}")
             label_index += 1
-            maxVal = images_per_class[label_index] + i
-            val_in_train = 0
-            val_in_eval = 0
             if not (label_index > len(images_per_class)):
+                # maxVal, dist_in_current_class, val_in_train = update_values(i, images_per_class, label_index, training_split)
+                maxVal = images_per_class[label_index] + i
+                val_in_train = 0
+                val_in_eval = 0
                 pictures_in_current_class = images_per_class[label_index]
                 dist_in_current_class = math.ceil(pictures_in_current_class * training_split)
-                #print(f"Class: {label_index}, pictures in class: {pictures_in_current_class}, dist in class: {dist_in_current_class}")
         if val_in_train < dist_in_current_class:
             train_label.append(img_labels[i])
             train_set.append(img_dataset[i])
@@ -152,7 +155,6 @@ def split_data(img_dataset:list, img_labels:list, images_per_class, training_spl
         else:
             val_label.append(img_labels[i])
             val_set.append(img_dataset[i])
-            val_in_eval += 1
 
     if shuffle:
         val_set, val_label = Shuffle(val_set, val_label)
