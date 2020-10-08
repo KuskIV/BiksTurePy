@@ -232,5 +232,5 @@ if __name__ == "__main__":
 
         # train models
         for i in range(len(model_and_size)):
-            print(f"Training model {i} / {model_and_size - 1} for time {j} / {split - 1}")
+            print(f"Training model {i} / {len(model_and_size) - 1} for time {j} / {split - 1}")
             train_and_eval_models_for_size(model_and_size[i][1], model_and_size[i][0], i, train_images, train_labels, test_images, test_labels)
