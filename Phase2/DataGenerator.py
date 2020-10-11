@@ -47,7 +47,7 @@ def AddNoiseToAllImg(folders,dist):
 
 def Generate_Dataset(path,dist,resolution, mode = "all"):
     subfolders = [ f.path for f in os.scandir(path) if f.is_dir() ]
-    if mode == "all":
+    if mode == "all": #More modes can easyly be added with else if chaining
         AddNoiseToAllImg(subfolders,dist)
 
 path = 'C:/Users/jeppe/Desktop/FullIJCNN2013'
