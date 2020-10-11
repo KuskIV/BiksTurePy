@@ -1,6 +1,9 @@
-from Noise_Generators.Main_Noise import Noise
-import os
+import os,sys,inspect
 from PIL import Image
+current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+parent_dir = os.path.dirname(current_dir)
+sys.path.insert(0, parent_dir) 
+from Noise_Generators.Main_Noise import Noise
 
 def CreateDistination(dist):
     if(os.path.exists(dist)):

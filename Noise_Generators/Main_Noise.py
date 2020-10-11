@@ -1,6 +1,6 @@
-from AddWeather import add_rain
-from Perlin_noise import Foggyfy
-from birghtness import DayAdjustment
+from Noise_Generators.AddWeather import add_rain
+from Noise_Generators.Perlin_noise import Foggyfy
+from Noise_Generators.birghtness import DayAdjustment
 from PIL import Image
 
 def Noise(img, fog_set = None, day_set = None, wh_set = None):
