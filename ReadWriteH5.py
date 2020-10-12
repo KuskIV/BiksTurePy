@@ -14,24 +14,20 @@ dataset_path = "Images/GTSRB_Final_Training_Images/GTSRB/Final_Training/Images/"
 def CreateH5():
     h5 = h5py.File(h5Path, 'a')
 
-    for i in os.listdir(dataset_path): # This loop does nothing
-        vid_name = os.path.join(dataset_path, i)
-        group = h5.create_group(vid_name)
+    for i in os.listdir(dataset_path):
+        group_name = os.path.join(dataset_path, i)
+        group = h5.create_group(group_name)
         print("Group: ", i)
 
+        for j in os.listdir(group_name):
+            img_path = os.path.join(group_name, j)
 
-        for j in os.listdir(vid_name):
-            track = os.path.join(vid_name)
-            sub_group = group.create_group(j)
-            for k in os.listdir(track):
-                img_path = os.path.join(track, k)
-
-                with open(img_path, 'rb') as image:
-                    data = image.read()
+            with open(img_path, 'rb') as image:
+                data = image.read()
                 
-                data_np = np.asarray(data)
+            data_np = np.asarray(data)
 
-                data_set = sub_group.create_dataset(k, data=data_np)
+            data_set = group.create_dataset(j, data=data_np)
     h5.close()
 
 data = []
