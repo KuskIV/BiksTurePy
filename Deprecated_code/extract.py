@@ -3,19 +3,7 @@ import os
 
 fileExstension = '.ppm'
 
-def get_class_names()->list:
-    """Gets classification name for each label from the labels.txt, which is assumed to be in root."""
-    class_names = []
-    # RegEx to match for labels in labels.txt
-    labels_regex = re.compile('(?<== )(.)*')
 
-    with open('labels.txt', 'r') as fp:
-        i = 0
-        for line in fp:
-            match = labels_regex.search(line).group(0)
-            class_names.append(match)
-
-    return class_names
 
 
 def get_dataset_placements(dataset_path: str)->tuple:
@@ -41,18 +29,3 @@ def get_dataset_placements(dataset_path: str)->tuple:
 
     return dataset_placements, images_per_class
 
-
-def Updated_GetData(path):
-    dataset_placements = []
-    images_per_class = []
-
-    for i in range(43):
-        name = str(i).zfill(5)
-        num_of_images = 0
-        for files in os.listdir(path + "/" + name):
-            if files.endswith(".ppm"):
-                dataset_placements.append([path + "/" + name + "/" +  files, int(os.path.basename(name))])
-                num_of_images += 1
-        images_per_class.append(num_of_images)
-
-    return dataset_placements, images_per_class

@@ -5,10 +5,7 @@ import matplotlib.image as mpimg
 import math
 import  os
 from PIL import  Image
-from ml_tool import makePrediction
-from Noise_Generators. AddWeather import AddParticels
-from Noise_Generators.Perlin_noise import Foggyfy
-from Noise_Generators.birghtness import DayAdjustment
+#from ml_tool import makePrediction
 
 def plot_image(i:int, prediction:list, true_label:str, img:str, class_names:list)->None:
     plt.grid(False)
@@ -77,11 +74,11 @@ def ShowExample(path):
     """    
     
     img = Image.open(path)
-    picArr.append(AddParticels(img.copy(), size=4, Opacity=150, frequency=110, LoopJumpX=2, LoopJumpY=2))
-    picArr.append(AddParticels(img.copy(), size=4, Opacity=70, frequency=110, LoopJumpX=2, LoopJumpY=2))
-    picArr.append(Foggyfy(img.copy()))
-    picArr.append(DayAdjustment(img.copy(), 0.5))
-    picArr.append(DayAdjustment(img.copy(), 1.9))
+    #picArr.append(AddParticels(img.copy(), size=4, Opacity=150, frequency=110, LoopJumpX=2, LoopJumpY=2))
+    #picArr.append(AddParticels(img.copy(), size=4, Opacity=70, frequency=110, LoopJumpX=2, LoopJumpY=2))
+    #picArr.append(Foggyfy(img.copy()))
+    #picArr.append(DayAdjustment(img.copy(), 0.5))
+    #picArr.append(DayAdjustment(img.copy(), 1.9))
 
     fig=plt.figure(figsize=(4, 12))
     columns = 1

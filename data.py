@@ -1,44 +1,11 @@
 import tensorflow as tf
 import numpy
 from PIL import Image
-import extract
-
+import os
 import random
 import math
-
-
-# DATASET_PATH = 'C:\\Users\\jeppe\\Desktop\\GTSRB_Final_Training_Images\\GTSRB\\Final_Training\\Images' # assume it is in root
-DATASET_PATH = 'images/GTSRB_Final_Training_Images/GTSRB/Final_Training/Images'
-#DATASET_PATH = 'C:\\Users\\jeppe\\Desktop\\FullIJCNN2013'
-#DATASET_PATH = 'FullIJCNN2013'
-
-def display_ppm_image(path: str)->None:
-    """"Input a path to original image to display it"""
-    im = Image.open(path)
-    im.show()
-
-def display_numpy_image(numpy_image:numpy.array)->None:
-    """Input a (0 to 1) normalized numpy representation of a PIL image, to show it"""
-    # Scaling the pixels back
-    numpy_image_rescaled = numpy_image * 255
-    # converting the dfloat64 numpy to a unit8 - is required by PIL
-    numpy_image_rescaled_uint8 = numpy.array(numpy_image_rescaled, numpy.uint8)
-    # convert to PIL and show
-    im = Image.fromarray(numpy_image_rescaled_uint8)
-    im.show()
-
-def convert_imgs_to_numpy_arrays(dataset: list)->list:
-    """Receive a dataset in and return an numpy array of the images
-       converted to normalized (0 to 1) numpy arrays."""
-    converted_images = []
-    # Convert images to numpy arrays
-    for image in dataset:
-        im_ppm = Image.open(image[0]) # Open as PIL image
-        im_array = numpy.asarray(im_ppm) # Convert to numpy array
-        converted_images.append(im_array / 255.0) # Normalize pixel values to be between 0 and 1
-
-    return converted_images
-
+from global_paths import get_dataset_path
+from general_image_func import convert_imgs_to_numpy_arrays
 
 def auto_reshape_images(fixed_size: tuple, numpy_images: list, smart_resize:bool = True)->numpy.array:
     """Reshapes the entire dataset in the minimal needed reshaping, by reshaping
@@ -82,10 +49,26 @@ def get_labels(dataset: list)->numpy.array:
 
     return numpy.array(labels, dtype=numpy.uint8)
 
+def get_ppm_pictures(path):
+    dataset_placements = []
+    images_per_class = []
+
+    for i in range(43):
+        name = str(i).zfill(5)
+        num_of_images = 0
+        for files in os.listdir(path + "/" + name):
+            if files.endswith(".ppm"):
+                dataset_placements.append([path + "/" + name + "/" +  files, int(os.path.basename(name))])
+                num_of_images += 1
+        images_per_class.append(num_of_images)
+
+    return dataset_placements, images_per_class
 
 def get_data(fixed_size:tuple=(0,0), padded_images:bool = False, smart_resize:bool = True)->tuple:
     # extract data from raw
-    raw_dataset, images_per_class = extract.Updated_GetData(DATASET_PATH) #using old get_data function temporarily as, new does not work for FullIJCNN2013
+    
+
+    raw_dataset, images_per_class = get_ppm_pictures(get_dataset_path()) #TODO get data from H5PY
 
     if padded_images:
         print("Padded images not implemented yet, only resize and smart resize.")
@@ -121,7 +104,7 @@ def update_values(i, images_per_class, label_index, training_split):
     return maxVal, dist_in_current_class, 0
 
 
-def split_data(img_dataset:list, img_labels:list, images_per_class, training_split:float=.7, shuffle:bool=True)->tuple:
+def split_data(img_dataset:list, img_labels:list, images_per_class, training_split:float=.7, shuffle:bool=True)->tuple: # Migth not be used anymore, once lazt is implemented
     """Input numpy array of images, numpy array of labels.
        Return a tuple with (training_images, training_labels, test_images, test_labels).
        Does have stochastic/shuffling of the data with shuffle parameter."""
@@ -153,46 +136,3 @@ def split_data(img_dataset:list, img_labels:list, images_per_class, training_spl
         train_set, train_label = Shuffle(train_set, train_label)
 
     return train_set, train_label, val_set, val_label
-
-def get_min_max(imgCount, training_split, split, current_split, lastIndex):
-    percent = imgCount * training_split
-    minVal = (percent / split) * (current_split)
-    maxVal = minVal + (percent / split)
-
-    return math.floor(minVal), math.floor(maxVal) if not lastIndex else math.ceil(maxVal)
-
-def append_to_lists(index, img_per_class, training_split, split, current_split, srcImg, srcLabel, outImg, outLabel, lastIndex=False):
-    minVal, maxVal = get_min_max(img_per_class, training_split, split, current_split, lastIndex)
-
-    minVal += index
-    maxVal += index
-
-    #print(f"{img_per_class}, min: {minVal}, max: {maxVal}")
-
-    for j in range(minVal, maxVal):
-        outImg.append(srcImg[j])
-        outLabel.append(srcLabel[j])
-    
-
-def lazy_split(img_dataset:list, img_labels:list, images_per_class, split, current_split, lastIndex, training_split:float=.7, shuffle:bool=True)->tuple:
-    minIndex = 0
-    maxIndex = 0
-
-    train_set = []
-    train_label = []
-
-    val_set = []
-    val_label = []
-    for i in range(len(images_per_class)):
-        if i != 0:
-            minIndex += images_per_class[i - 1]
-        maxIndex += math.floor(images_per_class[i - 1 if i > 0 else 0] * training_split)
-
-        append_to_lists(minIndex, images_per_class[i], training_split, split, current_split, img_dataset, img_labels, train_set, train_label, lastIndex)
-        append_to_lists(maxIndex, images_per_class[i], 1 - training_split, split, current_split, img_dataset, img_labels, val_set, val_label)
-
-    if shuffle:
-        val_set, val_label = Shuffle(val_set, val_label)
-        train_set, train_label = Shuffle(train_set, train_label)
-
-    return train_set, train_label, val_set, val_set
