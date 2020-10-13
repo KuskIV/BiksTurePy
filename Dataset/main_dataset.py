@@ -11,5 +11,7 @@ from global_paths import get_dataset_path, get_h5_path
 if __name__ == "__main__":
     h5_path = get_h5_path()
     dataset_path = get_dataset_path()
-    CreateH5(h5_path, dataset_path())
+    print(h5_path)
+    print(dataset_path)
+    #CreateH5(h5_path, dataset_path)
     read_h5(h5_path)

@@ -4,9 +4,16 @@ import os
 import io
 from PIL import Image
 import dask.array as da
+import os.path
+from os import path
 
 def CreateH5(h5Path, dataset_path):
-    h5 = h5py.File(h5Path, 'w')
+    if path.exists(h5Path):
+        print("was found")
+        h5 = h5py.File(h5Path, 'w')
+    else:
+        h5 = h5py.File(h5Path, 'a')
+
 
     for i in os.listdir(dataset_path):
         group_name = os.path.join(dataset_path, i)

@@ -10,8 +10,7 @@ current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentfra
 parent_dir = os.path.dirname(current_dir)
 sys.path.insert(0, parent_dir) 
 
-from data import get_data, split_data, display_numpy_image, lazy_split  # Not an error
-from show import predict_and_plot_images                                # Not an error
+from data import get_data, split_data  # Not an error
 from general_image_func import get_class_names                          # Not an error
 from Models.create_model import flatten_and_dense, store_model          # Not an error
 
