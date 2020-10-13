@@ -83,7 +83,7 @@ def get_data(fixed_size:tuple=(0,0), padded_images:bool = False, smart_resize:bo
 
     return numpy_images_reshaped, labels, images_per_class
 
-def Shuffle(img_dataset, img_labels):
+def Shuffle(img_dataset, img_labels): # THIS METHOD HAS BEEN COPIED TO "general_image_func" it will be deleted soon from this position
     img_dataset_in = img_dataset
     img_labels_in = img_labels
 

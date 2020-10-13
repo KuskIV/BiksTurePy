@@ -3,10 +3,18 @@ import numpy as np
 import os
 import io
 from PIL import Image
-import dask.array as da
+import math
 from os import path
 import os.path
 import sys
+import re
+
+import os,sys,inspect
+current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+parent_dir = os.path.dirname(current_dir)
+sys.path.insert(0, parent_dir) 
+
+from general_image_func import Shuffle
 
 data = []
 group = []
@@ -42,12 +50,83 @@ def get_h5(h5_path):
         h5.visititems(sort_groups)
         return h5
 
-def lazyload_h5(h5, current_split, max_split):
-    isLast = current_split == max_split - 1
+def get_min_max(imgCount, training_split, split, current_split, lastIndex):
+    percent = imgCount * training_split
+    minVal = (percent / split) * (current_split)
+    maxVal = minVal + (percent / split)
+
+    return math.floor(minVal), math.floor(maxVal) if not lastIndex else math.ceil(maxVal)
+
+def append_to_lists(index, img_per_class, training_split, split, current_split, srcImg, srcLabel, outImg, outLabel, lastIndex=False):
+    minVal, maxVal = get_min_max(img_per_class, training_split, split, current_split, lastIndex)
+
+    minVal += index
+    maxVal += index
+
+    #print(f"{img_per_class}, min: {minVal}, max: {maxVal}")
+
+    for j in range(minVal, maxVal):
+        outImg.append(srcImg[j])
+        outLabel.append(srcLabel[j])
+    
+
+def lazy_split(h5, images_per_class, split, current_split, lastIndex, training_split:float=.7, shuffle:bool=True)->tuple:
+    minIndex = 0
+    maxIndex = 0
+
+    train_set = []
+    train_label = []
+
+    val_set = []
+    val_label = []
+
+
+
+
+    # for i in range(len(images_per_class)):
+    #     if i != 0:
+    #         minIndex += images_per_class[i - 1]
+    #     maxIndex += math.floor(images_per_class[i - 1 if i > 0 else 0] * training_split)
+
+    #     append_to_lists(minIndex, images_per_class[i], training_split, split, current_split, img_dataset, img_labels, train_set, train_label, lastIndex)
+    #     append_to_lists(maxIndex, images_per_class[i], 1 - training_split, split, current_split, img_dataset, img_labels, val_set, val_label)
+
+    # if shuffle:
+    #     val_set, val_label = Shuffle(val_set, val_label)
+    #     train_set, train_label = Shuffle(train_set, train_label)
+
+    return train_set, train_label, val_set, val_set
+
+def get_slice(img_in_class, split, iteration):
+    return math.floor((img_in_class * split) / iteration)
+
+def lazyload_h5(h5, current_iteration, max_iteration, training_split:float=.7):
+    isLast = current_iteration == max_iteration - 1
+    nested_level = 2
+
+    train_set = []
+    train_label = []
+
+    val_set = []
+    val_label = []
 
     print(f"groups: {len(group)}")
     print(f"data: {len(data)}")
 
-    
+    for i in range(len(group)):
+        keys = re.split('/', group[i]) # this is kinda fucked
 
+        if len(keys) != nested_level:
+            continue
+
+        #print(h5[keys[0]][keys[1]])
+        img_in_class = len(h5[keys[0]][keys[1]])
+        if img_in_class == 210:      
+            train_slice = get_slice(img_in_class, training_split, max_iteration) # '10' should be replaced by 'max_split'
+            val_slice = get_slice(img_in_class, 1 - training_split, max_iteration)
+
+            print(train_slice * current_iteration, " - ", train_slice, " - ", val_slice * current_iteration, " - ", val_slice)
+            break
+
+        
     return [], [], [], []

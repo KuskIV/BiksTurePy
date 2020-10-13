@@ -3,7 +3,6 @@ import numpy as np
 import os
 import io
 from PIL import Image
-import dask.array as da
 import os.path
 from os import path
 
