@@ -74,12 +74,12 @@ def display_ppm_image(path: str)->None:
     im = Image.open(path)
     im.show()
 
-def display_numpy_image(numpy_image:numpy.array)->None:
+def display_numpy_image(numpy_image:np.array)->None:
     """Input a (0 to 1) normalized numpy representation of a PIL image, to show it"""
     # Scaling the pixels back
     numpy_image_rescaled = numpy_image * 255
     # converting the dfloat64 numpy to a unit8 - is required by PIL
-    numpy_image_rescaled_uint8 = numpy.array(numpy_image_rescaled, numpy.uint8)
+    numpy_image_rescaled_uint8 = np.array(numpy_image_rescaled, np.uint8)
     # convert to PIL and show
     im = Image.fromarray(numpy_image_rescaled_uint8)
     im.show()
@@ -91,7 +91,7 @@ def convert_imgs_to_numpy_arrays(dataset: list)->list:
     # Convert images to numpy arrays
     for image in dataset:
         im_ppm = Image.open(image[0]) # Open as PIL image
-        im_array = numpy.asarray(im_ppm) # Convert to numpy array
+        im_array = np.asarray(im_ppm) # Convert to numpy array
         converted_images.append(im_array / 255.0) # Normalize pixel values to be between 0 and 1
 
     return converted_images

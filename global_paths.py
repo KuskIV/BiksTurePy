@@ -3,7 +3,7 @@ paths = {
             'h5':'', 
             'dataset':'Dataset/images',
             'model':'Models/saved_models',
-            'current_model':'Models/saved_models/YEET8.h5'
+            'current_model':'Models/saved_models/YEET8.h5',
             'test_img_path':'Dataset/FullJCNN2013'
     }
 

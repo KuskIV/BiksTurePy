@@ -53,7 +53,7 @@ def get_ppm_pictures(path):
     dataset_placements = []
     images_per_class = []
 
-    for i in range(43):
+    for i in range(43): #TODO: if this is used, take 43 as parameter
         name = str(i).zfill(5)
         num_of_images = 0
         for files in os.listdir(path + "/" + name):
