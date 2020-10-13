@@ -68,7 +68,7 @@ def ReadH5():
 
 #ReadH5()
 
-LazyRead()
+#LazyRead()
 
-#CreateH5()
+CreateH5()
     
