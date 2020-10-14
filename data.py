@@ -8,9 +8,9 @@ import math
 
 
 # DATASET_PATH = 'C:\\Users\\jeppe\\Desktop\\GTSRB_Final_Training_Images\\GTSRB\\Final_Training\\Images' # assume it is in root
-# DATASET_PATH = 'images/GTSRB_Final_Training_Images/GTSRB/Final_Training/Images'
+DATASET_PATH = 'images/GTSRB_Final_Training_Images/GTSRB/Final_Training/Images'
 # DATASET_PATH = 'C:\\Users\\jeppe\\Desktop\\FullIJCNN2013'
-DATASET_PATH = 'FullIJCNN2013'
+#DATASET_PATH = 'FullIJCNN2013'
 
 def display_ppm_image(path: str)->None:
     """"Input a path to original image to display it"""
@@ -84,8 +84,9 @@ def get_labels(dataset: list)->numpy.array:
 
 def get_data(fixed_size:tuple=(0,0), padded_images:bool = False, smart_resize:bool = True, normalize=True)->tuple:
     # extract data from raw
-    raw_dataset, images_per_class = extract.get_dataset_placements(DATASET_PATH) #using old get_data function temporarily as, new does not work for FullIJCNN2013
+    raw_dataset, images_per_class = extract.Updated_GetData(DATASET_PATH) #using old get_data function temporarily as, new does not work for FullIJCNN2013
                                             #Updated_GetData
+                                            #get_dataset_placements
     if padded_images:
         print("Padded images not implemented yet, only resize and smart resize.")
 

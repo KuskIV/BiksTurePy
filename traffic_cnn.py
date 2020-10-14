@@ -13,7 +13,6 @@ from ml_tool import *
 SAVE_LOAD_PATH = 'saved_models/YEET8.h5'
 STORE_FOLDER_NAME = 'saved_models/'
 
-
 def TrainModel(save_model = True):
     model = models.Sequential()
     model.add(layers.Conv2D(32, (3, 3), activation='relu', input_shape=(32, 32, 3)))
@@ -110,11 +109,20 @@ def default_model():
 def medium_model():
     img_shape=(128, 128, 3)
     model = models.Sequential()
-    model.add(layers.Conv2D(32, (15, 15), activation='relu', input_shape=img_shape))
+    model.add(layers.Conv2D(32, (3,3), activation='relu', padding='same', input_shape=img_shape))
+    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
     model.add(layers.MaxPooling2D((2, 2)))
-    model.add(layers.Conv2D(64, (3, 3), activation='relu'))
+    model.add(layers.Conv2D(64, (3, 3), padding='same', activation='relu'))
+    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
     model.add(layers.MaxPooling2D(2, 2))
     model.add(layers.Conv2D(64, (3, 3), activation='relu'))
+    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
     model.add(layers.MaxPooling2D(2, 2))
     model.add(layers.Conv2D(64, (3, 3), activation='relu'))
     return model
@@ -122,13 +130,33 @@ def medium_model():
 def large_model():
     img_shape=(200, 200, 3)
     model = models.Sequential()
-    model.add(layers.Conv2D(32, (21, 21), activation='relu', input_shape=img_shape))
+    model.add(layers.Conv2D(32, (3, 3), activation='relu', padding='same', input_shape=img_shape))
+    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
     model.add(layers.MaxPooling2D((2, 2)))
-    model.add(layers.Conv2D(64, (3, 3), activation='relu'))
+    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
     model.add(layers.MaxPooling2D(2, 2))
-    model.add(layers.Conv2D(64, (3, 3), activation='relu'))
+    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
     model.add(layers.MaxPooling2D(2, 2))
-    model.add(layers.Conv2D(64, (3, 3), activation='relu'))
+    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
     model.add(layers.MaxPooling2D(2, 2))
     model.add(layers.Conv2D(64, (3, 3), activation='relu'))
     return model
@@ -224,7 +252,6 @@ if __name__ == "__main__":
     train_images, train_labels, test_images, test_labels = split_data(img_dataset, img_labels, images_per_class, training_split=.7, shuffle=True)
 
     analyze_data(train_images, train_labels, images_per_class)
-
 
     """
     # generate models
