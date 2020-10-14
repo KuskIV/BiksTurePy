@@ -125,7 +125,10 @@ def lazyload_h5(h5, current_iteration, max_iteration, training_split:float=.7):
             train_slice = get_slice(img_in_class, training_split, max_iteration) # '10' should be replaced by 'max_split'
             val_slice = get_slice(img_in_class, 1 - training_split, max_iteration)
 
-            print(train_slice * current_iteration, " - ", train_slice, " - ", val_slice * current_iteration, " - ", val_slice)
+            print(f"Start: {train_slice * current_iteration}, End: {train_slice * current_iteration + train_slice }")
+            print(f"Start: {val_slice * current_iteration}, End: {val_slice * current_iteration + val_slice }")
+            print("---")
+            #print(train_slice * current_iteration, " - ", train_slice, " - ", val_slice * current_iteration, " - ", val_slice)
             break
 
         
