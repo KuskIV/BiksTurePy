@@ -8,13 +8,16 @@ from os import path
 import os.path
 import sys
 import re
+from PIL import Image
+import random
 
 import os,sys,inspect
 current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parent_dir = os.path.dirname(current_dir)
 sys.path.insert(0, parent_dir) 
 
-from general_image_func import Shuffle
+from general_image_func import convertToPILImg
+from global_paths import get_h5_path
 
 data = []
 group = []
@@ -99,66 +102,112 @@ def lazy_split(h5, images_per_class, split, current_split, lastIndex, training_s
 
     return train_set, train_label, val_set, val_set
 
-def generate_ppm_keys(start_val, end_val):
-    folder_batch_size = 30
-    print(end_val - start_val)
-    for i in range(start_val, end_val):
-        ppm_start = str(math.floor(i / folder_batch_size)).zfill(5)
-        ppm_end = str(i % folder_batch_size).zfill(5)
-        print(f"{ppm_start}_{ppm_end}.ppm")
 
+## DONT DELETE THESE THREE LINES OF CODE!:
+#img_as_arr = np.array(self.h5[keys[0]][keys[1]][ppm_names[i]])
+#img = Image.fromarray(img_as_arr.astype('uint8'), 'RGB')
+#img.show()
+
+
+def Shuffle(img_dataset, img_labels):
+    img_dataset_in = img_dataset
+    img_labels_in = img_labels
+
+    z = zip(img_dataset, img_labels)
+    z_list = list(z)
+    random.shuffle(z_list)
+    img_dataset_tuple, img_labels_tuple = zip(*z_list)
+    img_dataset_in = np.array(img_dataset_tuple)
+    img_labels_in = np.array(img_labels_tuple)
+
+    return img_dataset_in, img_labels_in
 
 def get_slice(img_in_class, split, iteration, is_last=False):
     return math.ceil((img_in_class * split) / iteration) if is_last else math.floor((img_in_class * split) / iteration)
 
-def lazyload_h5(h5, current_iteration, max_iteration, training_split:float=.7):
-    is_last = current_iteration == max_iteration - 1
-    nested_level = 3
-
-    train_set = []
-    train_label = []
-
-    val_set = []
-    val_label = []
 
 
+class h5_object():
+    def __init__(self, folder_batch_size, training_split=0.7):
+        self.folder_batch_size = folder_batch_size
+        self.nested_level = 2 #len(get_h5_path().split("/"))
+        self.h5 = get_h5(get_h5_path())
+        self.training_split = training_split
 
-    print(f"groups: {len(group)}")
-    print(f"data: {len(data)}")
+    
+    def get_val_size(self):
+        return 1 - self.training_split
 
-    for i in range(len(group)):
-        keys = re.split('/', group[i]) # this is kinda fucked
+    def generate_ppm_keys(self, start_val, end_val):
+        names = []
+        #print(end_val - start_val)
+        for i in range(start_val, end_val):
+            ppm_start = str(math.floor(i / self.folder_batch_size)).zfill(5)
+            ppm_end = str(i % self.folder_batch_size).zfill(5)
+            ppm = f"{ppm_start}_{ppm_end}.ppm"
+            names.append(ppm)
+            #print(ppm)
 
-        if len(keys) != nested_level:
-            continue
-        img_in_class = len(h5[keys[0]][keys[1]][keys[2]])
+            #img_as_arr = np.array(self.h5[a][b][ppm])
+            #img = Image.fromarray(img_as_arr.astype('uint8'), 'RGB')
+            #img.show()
+        return names
 
-        if img_in_class == 210:      
-            train_slice = get_slice(img_in_class, training_split, max_iteration)
-            val_slice = get_slice(img_in_class, 1 - training_split, max_iteration, is_last)
+    def append_to_list(self, ppm_names, keys, images, labels):
+        for j in range(len(ppm_names)):
+            arr = np.asarray(self.h5[keys[0]][keys[1]][ppm_names[j]])# Add keys[2] # TODO make get_key method
+            images.append(arr.flatten())
+            labels.append(keys[1]) # Should be key 2
+
+    def lazyload_h5(self, current_iteration, max_iteration, shuffle=True):
+        is_last = current_iteration == max_iteration - 1
+
+        train_set = []
+        train_label = []
+
+        val_set = []
+        val_label = []
+
+        print(f"groups: {len(group)}")
+        print(f"data: {len(data)}")
+        print(f"{current_iteration} / {max_iteration}")
+
+        for i in range(len(group)):
+            keys = re.split('/', group[i])
+            #print(keys)
+            if len(keys) != self.nested_level:
+                continue
+            img_in_class = len(self.h5[keys[0]][keys[1]]) # add: keys[2] # TODO make get_key method
+            #print(keys)
+            #print(img_in_class)
+
+            train_slice = get_slice(img_in_class, self.training_split, max_iteration)
+            val_slice = get_slice(img_in_class, 1 - self.training_split, max_iteration, is_last)
             
-
-            print(f"Start: {train_slice * current_iteration}, End: {train_slice * current_iteration + train_slice }")
-            print(f"Start: {math.ceil(img_in_class * training_split) + (val_slice * current_iteration)}, End: {math.ceil(img_in_class * training_split) + (val_slice * current_iteration + val_slice)}")
-            print("---")
+            # print(f"Start: {train_slice * current_iteration}, End: {train_slice * current_iteration + train_slice }")
+            # print(f"Start: {math.ceil(img_in_class * self.training_split) + (val_slice * current_iteration)}, End: {math.ceil(img_in_class * self.training_split) + (val_slice * current_iteration + val_slice)}")
+            # print("---")
             
             start_val = train_slice * current_iteration
-            end_val = train_slice * current_iteration + train_slice
-            # generate_ppm_keys(start_val, end_val)
-
-
-            print("---")
-
-            if is_last:
-                print("is last ", end_val + max_iteration * (math.floor(img_in_class * (1 - training_split))))
-                print(max_iteration - 1, " - ", (math.floor((img_in_class * (1 - training_split)) / max_iteration)), " - ", end_val)
-            start_val = math.ceil(img_in_class * training_split) + (val_slice * current_iteration) if not is_last else math.ceil(img_in_class * training_split) + (max_iteration - 1) * (math.floor((img_in_class * (1 - training_split)) / max_iteration))
-            end_val = math.ceil(img_in_class * training_split) + (val_slice * current_iteration + val_slice) if not is_last else img_in_class
-            generate_ppm_keys(start_val, end_val)
+            end_val = train_slice * current_iteration + train_slice if not is_last else math.ceil(img_in_class * self.training_split)
+            ppm_names = h5_object.generate_ppm_keys(self, start_val, end_val)
             
+            #img_as_arr = np.array(self.h5[keys[0]][keys[1]][ppm_names[0]])
+            #img = Image.fromarray(img_as_arr.astype('uint8'), 'RGB')
+            #img.show()
+            #break
 
-            #print(train_slice * current_iteration, " - ", train_slice, " - ", val_slice * current_iteration, " - ", val_slice)
-            break
+            h5_object.append_to_list(self, ppm_names, keys, train_set, train_label)
 
-        
-    return [], [], [], []
+            start_val = math.ceil(img_in_class * self.training_split) + (val_slice * current_iteration) if not is_last else math.ceil(img_in_class * self.training_split) + (max_iteration - 1) * (math.floor((img_in_class * (h5_object.get_val_size(self))) / max_iteration))
+            end_val = math.ceil(img_in_class * self.training_split) + (val_slice * current_iteration + val_slice) if not is_last else img_in_class
+            ppm_names = h5_object.generate_ppm_keys(self, start_val, end_val)
+
+            h5_object.append_to_list(self, ppm_names, keys, val_set, val_label)
+
+        if shuffle:
+            train_set, train_label = Shuffle(train_set, train_label)
+            val_set, val_label = Shuffle(val_set, val_label)
+
+
+        return train_label, train_label, val_set, val_label

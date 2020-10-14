@@ -1,4 +1,4 @@
-from create_h5 import CreateH5
+from create_h5 import generate_h5
 from load_h5 import read_h5
 
 import os,sys,inspect
@@ -13,5 +13,5 @@ if __name__ == "__main__":
     dataset_path = get_dataset_path()
     print(h5_path)
     print(dataset_path)
-    CreateH5(h5_path, dataset_path)
-    read_h5(h5_path)
+    generate_h5(h5_path, dataset_path)
+    #read_h5(h5_path)

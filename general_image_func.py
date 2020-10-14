@@ -97,7 +97,7 @@ def convert_imgs_to_numpy_arrays(dataset: list)->list:
 
     return converted_images
 
-def Shuffle(img_dataset, img_labels):
+def Shuffle(img_dataset, img_labels): # should be removed from this locatrion. has been placed into load_h5
     img_dataset_in = img_dataset
     img_labels_in = img_labels
 
