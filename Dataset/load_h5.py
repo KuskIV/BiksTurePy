@@ -101,6 +101,7 @@ def lazy_split(h5, images_per_class, split, current_split, lastIndex, training_s
 
 def generate_ppm_keys(start_val, end_val):
     folder_batch_size = 30
+    print(end_val - start_val)
     for i in range(start_val, end_val):
         ppm_start = str(math.floor(i / folder_batch_size)).zfill(5)
         ppm_end = str(i % folder_batch_size).zfill(5)
@@ -113,7 +114,6 @@ def get_slice(img_in_class, split, iteration, is_last=False):
 def lazyload_h5(h5, current_iteration, max_iteration, training_split:float=.7):
     is_last = current_iteration == max_iteration - 1
     nested_level = 3
-    folder_batch_size = 30
 
     train_set = []
     train_label = []
@@ -131,13 +131,10 @@ def lazyload_h5(h5, current_iteration, max_iteration, training_split:float=.7):
 
         if len(keys) != nested_level:
             continue
-
-        #print(h5[keys[0]][keys[1]][keys[2]])
         img_in_class = len(h5[keys[0]][keys[1]][keys[2]])
-        #print(img_in_class)
-        print(f"In class: {img_in_class}, train: {img_in_class * training_split}, val: {img_in_class * (1 - training_split)}")
+
         if img_in_class == 210:      
-            train_slice = get_slice(img_in_class, training_split, max_iteration) # '10' should be replaced by 'max_split'
+            train_slice = get_slice(img_in_class, training_split, max_iteration)
             val_slice = get_slice(img_in_class, 1 - training_split, max_iteration, is_last)
             
 
@@ -147,11 +144,16 @@ def lazyload_h5(h5, current_iteration, max_iteration, training_split:float=.7):
             
             start_val = train_slice * current_iteration
             end_val = train_slice * current_iteration + train_slice
-            generate_ppm_keys(start_val, end_val)
+            # generate_ppm_keys(start_val, end_val)
+
 
             print("---")
-            start_val = math.ceil(img_in_class * training_split) + (val_slice * current_iteration)
-            end_val = math.ceil(img_in_class * training_split) + (val_slice * current_iteration + val_slice)
+
+            if is_last:
+                print("is last ", end_val + max_iteration * (math.floor(img_in_class * (1 - training_split))))
+                print(max_iteration - 1, " - ", (math.floor((img_in_class * (1 - training_split)) / max_iteration)), " - ", end_val)
+            start_val = math.ceil(img_in_class * training_split) + (val_slice * current_iteration) if not is_last else math.ceil(img_in_class * training_split) + (max_iteration - 1) * (math.floor((img_in_class * (1 - training_split)) / max_iteration))
+            end_val = math.ceil(img_in_class * training_split) + (val_slice * current_iteration + val_slice) if not is_last else img_in_class
             generate_ppm_keys(start_val, end_val)
             
 

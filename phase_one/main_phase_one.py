@@ -22,7 +22,7 @@ def find_ideal_model():
     #img_dataset, img_labels, images_per_class = get_data(fixed_size = (32, 32), padded_images = False, smart_resize = True)
     
     # Training and test split, 70 and 30%
-    split = 2
+    split = 4
     h5 = get_h5(get_h5_path())
 
     for j in range(split):
