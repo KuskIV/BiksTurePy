@@ -70,6 +70,8 @@ def append_to_lists(index, img_per_class, training_split, split, current_split, 
         outLabel.append(srcLabel[j])
     
 
+
+
 def lazy_split(h5, images_per_class, split, current_split, lastIndex, training_split:float=.7, shuffle:bool=True)->tuple:
     minIndex = 0
     maxIndex = 0
@@ -97,18 +99,29 @@ def lazy_split(h5, images_per_class, split, current_split, lastIndex, training_s
 
     return train_set, train_label, val_set, val_set
 
-def get_slice(img_in_class, split, iteration):
-    return math.floor((img_in_class * split) / iteration)
+def generate_ppm_keys(start_val, end_val):
+    folder_batch_size = 30
+    for i in range(start_val, end_val):
+        ppm_start = str(math.floor(i / folder_batch_size)).zfill(5)
+        ppm_end = str(i % folder_batch_size).zfill(5)
+        print(f"{ppm_start}_{ppm_end}.ppm")
+
+
+def get_slice(img_in_class, split, iteration, is_last=False):
+    return math.ceil((img_in_class * split) / iteration) if is_last else math.floor((img_in_class * split) / iteration)
 
 def lazyload_h5(h5, current_iteration, max_iteration, training_split:float=.7):
-    isLast = current_iteration == max_iteration - 1
-    nested_level = 2
+    is_last = current_iteration == max_iteration - 1
+    nested_level = 3
+    folder_batch_size = 30
 
     train_set = []
     train_label = []
 
     val_set = []
     val_label = []
+
+
 
     print(f"groups: {len(group)}")
     print(f"data: {len(data)}")
@@ -119,15 +132,29 @@ def lazyload_h5(h5, current_iteration, max_iteration, training_split:float=.7):
         if len(keys) != nested_level:
             continue
 
-        #print(h5[keys[0]][keys[1]])
-        img_in_class = len(h5[keys[0]][keys[1]])
+        #print(h5[keys[0]][keys[1]][keys[2]])
+        img_in_class = len(h5[keys[0]][keys[1]][keys[2]])
+        #print(img_in_class)
+        print(f"In class: {img_in_class}, train: {img_in_class * training_split}, val: {img_in_class * (1 - training_split)}")
         if img_in_class == 210:      
             train_slice = get_slice(img_in_class, training_split, max_iteration) # '10' should be replaced by 'max_split'
-            val_slice = get_slice(img_in_class, 1 - training_split, max_iteration)
+            val_slice = get_slice(img_in_class, 1 - training_split, max_iteration, is_last)
+            
 
             print(f"Start: {train_slice * current_iteration}, End: {train_slice * current_iteration + train_slice }")
-            print(f"Start: {val_slice * current_iteration}, End: {val_slice * current_iteration + val_slice }")
+            print(f"Start: {math.ceil(img_in_class * training_split) + (val_slice * current_iteration)}, End: {math.ceil(img_in_class * training_split) + (val_slice * current_iteration + val_slice)}")
             print("---")
+            
+            start_val = train_slice * current_iteration
+            end_val = train_slice * current_iteration + train_slice
+            generate_ppm_keys(start_val, end_val)
+
+            print("---")
+            start_val = math.ceil(img_in_class * training_split) + (val_slice * current_iteration)
+            end_val = math.ceil(img_in_class * training_split) + (val_slice * current_iteration + val_slice)
+            generate_ppm_keys(start_val, end_val)
+            
+
             #print(train_slice * current_iteration, " - ", train_slice, " - ", val_slice * current_iteration, " - ", val_slice)
             break
 
