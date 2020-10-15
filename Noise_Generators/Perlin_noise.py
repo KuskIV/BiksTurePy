@@ -11,8 +11,7 @@ current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentfra
 parent_dir = os.path.dirname(current_dir)
 sys.path.insert(0, parent_dir) 
 
-from data import display_numpy_image
-from General_image_func import changeImageSize,merge_two_images,convertToPILImg
+from general_image_func import changeImageSize,merge_two_images,convertToPILImg,display_numpy_image
 
 
 
