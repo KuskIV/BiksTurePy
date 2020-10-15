@@ -3,37 +3,63 @@ from perlin_noise import perlin
 from brightness import brightness
 from PIL import Image
 
-def Noise(img, fog_set = None, day_set = None, wh_set = None):
-    #Input should be a pill image and tuples corrospondiong to the noises wanted.
-    if(wh_set != None):
-        wn =  weather(wh_set)
-        img = wn.add_rain(img)
-    
-    if(fog_set != None):
-        pn = perlin(fog_set)
-        img = pn.Foggyfy(img)
-    
-    if(day_set != None):
-        bn = brightness(day_set)
-        img = bn.DayAdjustment(img)
-    
-    return img
+class Filter:
+    fog_set = None
+    day_set = None
+    wh_set = None
+    def __init__(self,config:dict):
+        Keys = ['fog_set','day_set','wh_set']
+        if Keys[0] in config:
+            self.fog_set = config.get(Keys[0])
+        if config.get(Keys[1]) != None:
+            self.day_set = config.get(Keys[1])
+        if config.get(Keys[2]) != None:
+            self.wh_set = config.get(Keys[2])
+        
+    def Apply(self,img):
+        #Input should be a pill image and tuples corrospondiong to the noises wanted.
+        if(self.wh_set != None):
+            wn =  weather(self.wh_set)
+            img = wn.add_rain(img)
+        
+        if(self.fog_set != None):
+            pn = perlin(self.fog_set)
+            img = pn.Foggyfy(img)
+        
+        if(self.day_set != None):
+            bn = brightness(self.day_set)
+            img = bn.DayAdjustment(img)
+        
+        return img
+
+    def __add__(self,img):
+        return self.Apply(img)
 
 def QuickDebug():
     img = Image.open("C:\\Users\\jeppe\\Desktop\\GTSRB_Final_Training_Images\\GTSRB\\Final_Training\\Images\\00000\\00002_00029.ppm")
 
-    p = {'octaves':6, 'persistence':0.5, 'lacunarity': 8, 'alpha': 0.3}
-    Noise(img,fog_set=p).show()
-
+    p = {'octaves':6, 'persistence':0.5, 'lacunarity': 8, 'alpha': 0.5}
     day = {'factor':1.3} 
     night = {'factor':0.3}
+    rain = {'rain_drops':200, 'drop_length':2,'drop_width':1,'blurr':(2,2),'color':(130,130,130)}
+
+    Filter_Con = {'fog_set':p, 'day_set':day, 'wh_set':rain}
+    F = Filter(Filter_Con)
+
+    newImage = F+img
+    newImage.show()
+
+    """
+    Noise(img,fog_set=p).show()
+
+
     Noise(img,day_set=day).show()
     Noise(img,day_set=night).show()
 
-    rain = {'rain_drops':300, 'drop_length':7,'drop_width':2,'blurr':(2,2),'color':(130,130,130)}
     Noise(img,wh_set=rain).show()
+    """
 
-#QuickDebug()
+QuickDebug()
 #fog_set=(1)
 #day_set=(0.5)
 #wh_set = (70,7,2,(2,2),(130,130,130))
