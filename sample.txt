@@ -1,111 +1,0 @@
-Model: "sequential"
-_________________________________________________________________
-Layer (type)                 Output Shape              Param #   
-=================================================================
-conv2d (Conv2D)              (None, 30, 30, 32)        896       
-_________________________________________________________________
-max_pooling2d (MaxPooling2D) (None, 15, 15, 32)        0         
-_________________________________________________________________
-conv2d_1 (Conv2D)            (None, 13, 13, 64)        18496     
-_________________________________________________________________
-max_pooling2d_1 (MaxPooling2 (None, 6, 6, 64)          0         
-_________________________________________________________________
-conv2d_2 (Conv2D)            (None, 4, 4, 64)          36928     
-=================================================================
-Total params: 56,320
-Trainable params: 56,320
-Non-trainable params: 0
-_________________________________________________________________
-
-Epoch 1/10  1/858 [..............................] - ETA: 0s - loss: 3.7550 - sparse_categorical_accuracy: 0.0000e+00
-  858/858 [==============================] - 7s 8ms/step - loss: 1.2953 - sparse_categorical_accuracy: 0.6498 - val_loss: 0.3763 - val_sparse_categorical_accuracy: 0.8935
-
-Epoch 2/10  1/858 [..............................] - ETA: 0s - loss: 0.2437 - sparse_categorical_accuracy: 0.9062  858/858 [==============================] - 7s 8ms/step - loss: 0.2296 - sparse_categorical_accuracy: 0.9380 - val_loss: 0.1737 - val_sparse_categorical_accuracy: 0.9541
-
-Epoch 3/10
-  1/858 [..............................] - ETA: 0s - loss: 0.0636 - sparse_categorical_accuracy: 1.0000  858/858 [==============================] - 7s 8ms/step - loss: 0.1213 - sparse_categorical_accuracy: 0.9669 - val_loss: 0.1180 - val_sparse_categorical_accuracy: 0.9712
-
-Epoch 4/10
-  1/858 [..............................] - ETA: 0s - loss: 0.6505 - sparse_categorical_accuracy: 0.9375  858/858 [==============================] - 7s 8ms/step - loss: 0.0774 - sparse_categorical_accuracy: 0.9790 - val_loss: 0.1181 - val_sparse_categorical_accuracy: 0.9696
-
-Epoch 5/10
-  1/858 [..............................] - ETA: 0s - loss: 0.0482 - sparse_categorical_accuracy: 1.0000  858/858 [==============================] - 7s 8ms/step - loss: 0.0577 - sparse_categorical_accuracy: 0.9842 - val_loss: 0.0937 - val_sparse_categorical_accuracy: 0.9788
-
-Epoch 6/10  1/858 [..............................] - ETA: 0s - loss: 0.0399 - sparse_categorical_accuracy: 1.0000  858/858 [==============================] - 7s 8ms/step - loss: 0.0466 - sparse_categorical_accuracy: 0.9863 - val_loss: 0.1186 - val_sparse_categorical_accuracy: 0.9706
-
-Epoch 7/10  1/858 [..............................] - ETA: 0s - loss: 0.0665 - sparse_categorical_accuracy: 0.9688  858/858 [==============================] - 7s 8ms/step - loss: 0.0381 - sparse_categorical_accuracy: 0.9886 - val_loss: 0.1007 - val_sparse_categorical_accuracy: 0.9761
-
-Epoch 8/10  1/858 [..............................] - ETA: 0s - loss: 0.0709 - sparse_categorical_accuracy: 0.9375  858/858 [==============================] - 7s 8ms/step - loss: 0.0309 - sparse_categorical_accuracy: 0.9912 - val_loss: 0.0791 - val_sparse_categorical_accuracy: 0.9851
-
-Epoch 9/10
-  1/858 [..............................] - ETA: 0s - loss: 0.0043 - sparse_categorical_accuracy: 1.0000  858/858 [==============================] - 7s 8ms/step - loss: 0.0253 - sparse_categorical_accuracy: 0.9928 - val_loss: 0.0722 - val_sparse_categorical_accuracy: 0.9838
-
-Epoch 10/10  1/858 [..............................] - ETA: 0s - loss: 0.0138 - sparse_categorical_accuracy: 1.0000
-  858/858 [==============================] - 7s 8ms/step - loss: 0.0282 - sparse_categorical_accuracy: 0.9914 - val_loss: 0.0777 - val_sparse_categorical_accuracy: 0.9839
-Model: "sequential"
-_________________________________________________________________
-Layer (type)                 Output Shape              Param #   
-=================================================================
-conv2d (Conv2D)              (None, 30, 30, 32)        896       
-_________________________________________________________________
-max_pooling2d (MaxPooling2D) (None, 15, 15, 32)        0         
-_________________________________________________________________
-conv2d_1 (Conv2D)            (None, 13, 13, 64)        18496     
-_________________________________________________________________
-max_pooling2d_1 (MaxPooling2 (None, 6, 6, 64)          0         
-_________________________________________________________________
-conv2d_2 (Conv2D)            (None, 4, 4, 64)          36928     
-_________________________________________________________________
-flatten (Flatten)            (None, 1024)              0         
-_________________________________________________________________
-dense (Dense)                (None, 64)                65600     
-_________________________________________________________________
-dense_1 (Dense)              (None, 43)                2795      
-=================================================================
-Total params: 124,715
-Trainable params: 124,715
-Non-trainable params: 0
-_________________________________________________________________
-Class: 00 | Correct:   59.0 | Wrong:  4.0 | percent: 93.22
-Class: 01 | Correct:  650.0 | Wrong: 16.0 | percent: 97.54
-Class: 02 | Correct:  657.0 | Wrong: 18.0 | percent: 97.26
-Class: 03 | Correct:  408.0 | Wrong: 15.0 | percent: 96.32
-Class: 04 | Correct:  588.0 | Wrong:  6.0 | percent: 98.98
-Class: 05 | Correct:  534.0 | Wrong: 24.0 | percent: 95.51
-Class: 06 | Correct:  126.0 | Wrong:  0.0 | percent: 100.00
-Class: 07 | Correct:  424.0 | Wrong:  8.0 | percent: 98.11
-Class: 08 | Correct:  421.0 | Wrong:  2.0 | percent: 99.52
-Class: 09 | Correct:  435.0 | Wrong:  6.0 | percent: 98.62
-Class: 10 | Correct:  601.0 | Wrong:  2.0 | percent: 99.67
-Class: 11 | Correct:  388.0 | Wrong:  8.0 | percent: 97.94
-Class: 12 | Correct:  630.0 | Wrong:  0.0 | percent: 100.00
-Class: 13 | Correct:  640.0 | Wrong:  8.0 | percent: 98.75
-Class: 14 | Correct:  234.0 | Wrong:  0.0 | percent: 100.00
-Class: 15 | Correct:  186.0 | Wrong:  3.0 | percent: 98.39
-Class: 16 | Correct:  126.0 | Wrong:  0.0 | percent: 100.00
-Class: 17 | Correct:  332.0 | Wrong:  1.0 | percent: 99.70
-Class: 18 | Correct:  359.0 | Wrong:  1.0 | percent: 99.72
-Class: 19 | Correct:   62.0 | Wrong:  1.0 | percent: 98.39
-Class: 20 | Correct:  104.0 | Wrong:  4.0 | percent: 96.15
-Class: 21 | Correct:   96.0 | Wrong:  3.0 | percent: 96.88
-Class: 22 | Correct:  116.0 | Wrong:  1.0 | percent: 99.14
-Class: 23 | Correct:  153.0 | Wrong:  0.0 | percent: 100.00
-Class: 24 | Correct:   77.0 | Wrong:  4.0 | percent: 94.81
-Class: 25 | Correct:  427.0 | Wrong: 23.0 | percent: 94.61
-Class: 26 | Correct:  171.0 | Wrong:  9.0 | percent: 94.74
-Class: 27 | Correct:   72.0 | Wrong:  0.0 | percent: 100.00
-Class: 28 | Correct:  155.0 | Wrong:  7.0 | percent: 95.48
-Class: 29 | Correct:   80.0 | Wrong:  1.0 | percent: 98.75
-Class: 30 | Correct:  132.0 | Wrong:  3.0 | percent: 97.73
-Class: 31 | Correct:  233.0 | Wrong:  1.0 | percent: 99.57
-Class: 32 | Correct:   72.0 | Wrong:  0.0 | percent: 100.00
-Class: 33 | Correct:  206.0 | Wrong:  0.0 | percent: 100.00
-Class: 34 | Correct:  126.0 | Wrong:  0.0 | percent: 100.00
-Class: 35 | Correct:  358.0 | Wrong:  2.0 | percent: 99.44
-Class: 36 | Correct:  117.0 | Wrong:  0.0 | percent: 100.00
-Class: 37 | Correct:   63.0 | Wrong:  0.0 | percent: 100.00
-Class: 38 | Correct:  617.0 | Wrong:  4.0 | percent: 99.35
-Class: 39 | Correct:   89.0 | Wrong:  1.0 | percent: 98.88
-Class: 40 | Correct:  108.0 | Wrong:  0.0 | percent: 100.00
-Class: 41 | Correct:   69.0 | Wrong:  3.0 | percent: 95.65
-Class: 42 | Correct:   72.0 | Wrong:  0.0 | percent: 100.00

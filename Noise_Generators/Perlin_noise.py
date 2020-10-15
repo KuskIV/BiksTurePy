@@ -1,13 +1,16 @@
 import numpy as np
 import random as rd
-import os,sys,inspect
+
 import math
 import matplotlib.pyplot as plt
 from PIL import Image
 import noise
+
+import os,sys,inspect
 current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parent_dir = os.path.dirname(current_dir)
 sys.path.insert(0, parent_dir) 
+
 from data import display_numpy_image
 from General_image_func import changeImageSize,merge_two_images,convertToPILImg
 
