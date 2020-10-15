@@ -12,7 +12,7 @@ sys.path.insert(0, parent_dir)
 
 from data import get_data, split_data  # Not an error
 from general_image_func import get_class_names                          # Not an error
-from Models.create_model import flatten_and_dense, store_model          # Not an error
+from Models.create_model import flatten_and_dense          # Not an error
 
 def default_model():
     img_shape=(32, 32, 3)
@@ -52,6 +52,7 @@ def large_model():
 
 def reshape_numpy_array_of_images(images, size):
     reshaped_images = []
+    #print(type(images[0]), " ", type(images[0][0]), " ", type(images[0][0][0]), " ", type(images[0][0][0][0]))
     for image in images:
         reshaped_images.append(tf.keras.preprocessing.image.smart_resize(image, size))
     return numpy.array(reshaped_images)
@@ -61,9 +62,9 @@ def train_model(model, train_images, train_labels, test_images, test_labels): #T
                 loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
                 metrics=['sparse_categorical_accuracy'])
 
-    #history = model.fit(train_images, train_labels, epochs=10,
-            #validation_data=(test_images, test_labels))
-    print (train_images[0].shape)
+    history = model.fit(train_images, train_labels, epochs=10,
+            validation_data=(test_images, test_labels))
+    print (train_images[0].shape, " ---")
 
 
             #print(f'batch number: {i}')
@@ -86,14 +87,10 @@ def train_model(model, train_images, train_labels, test_images, test_labels): #T
     #                    validation_data=(test_images, test_labels))
 
 def train_and_eval_models_for_size(models, size, model, model_id, train_images, train_labels, test_images, test_labels, save_model=True):
-    if size != (32, 32):
         # reshape training and test images
-        reshaped_train_images = reshape_numpy_array_of_images(train_images, size)
-        reshaped_test_images = reshape_numpy_array_of_images(test_images, size)
-    else:
-        reshaped_train_images = train_images #set to default
-        reshaped_test_images = test_images #set to default
-
+    reshaped_train_images = reshape_numpy_array_of_images(train_images, size)
+    reshaped_test_images = reshape_numpy_array_of_images(test_images, size)
+    #print(type(train_labels), " ", type(train_labels[0]), " ", type(test_labels), " ", type(test_labels[0]))
     # train model
     print("image size")
     print(size)
@@ -101,20 +98,11 @@ def train_and_eval_models_for_size(models, size, model, model_id, train_images, 
 
     # evaluate each model
     print("Evaluation for model")
-    print(model.evaluate(reshaped_test_images, test_labels))
 
-    # stor each model
-    if save_model:
-        #store model in saved_models with name as img_shape X model design
-        filename = 'adj' + str(size[0])
-        model_id = models.index(model)
-        if model_id == 0:
-            filename += "default"
-        elif model_id == 1:
-            filename += "medium"
-        else:
-            filename += "large"
-        store_model(model, filename)
+    print(reshaped_test_images.shape, "  ", reshaped_train_images[0].shape)
+    #print(model.evaluate(reshaped_test_images, test_labels))
+
+    
 
 
 def get_processed_models():
