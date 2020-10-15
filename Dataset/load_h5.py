@@ -98,7 +98,7 @@ class h5_object():
             if len(keys) != self.nested_level:
                 continue
             img_in_class = len(self.get_key(self.h5, keys))
-            print(f"{img_in_class} & {math.floor(img_in_class * self.training_split)} & {math.ceil(img_in_class * h5_object.get_val_size(self))} /")
+            print(f"{i} & {img_in_class} & {math.floor(img_in_class * self.training_split)} & {math.ceil(img_in_class * h5_object.get_val_size(self))} /")
 
 
 
