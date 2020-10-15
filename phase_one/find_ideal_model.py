@@ -105,4 +105,4 @@ def train_and_eval_models_for_size(models, size, model, model_id, train_images, 
 
 
 def get_processed_models():
-    return [flatten_and_dense(default_model()), flatten_and_dense(medium_model()), flatten_and_dense(large_model())]
+    return [flatten_and_dense(large_model()), flatten_and_dense(medium_model()), flatten_and_dense(default_model())]

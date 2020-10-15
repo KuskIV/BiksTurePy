@@ -10,7 +10,6 @@ parent_dir = os.path.dirname(current_dir)
 sys.path.insert(0, parent_dir) 
 
 from Dataset.load_h5 import h5_object
-from global_paths import get_h5_path
 from Models.create_model import store_model
 
 lazy_split = 10
@@ -34,7 +33,7 @@ def val_set_start_end(self, train_slice:int, val_slice:int, current_iteration:in
     return start_val, end_val
 
 def find_ideal_model(h5_obj:object)->None:
-    image_sizes = [(32, 32), (128, 128), (200, 200)]
+    image_sizes = [(200, 200), (128, 128), (32, 32)]
 
     models = get_processed_models()
 
@@ -53,9 +52,9 @@ def find_ideal_model(h5_obj:object)->None:
             print(f"Training model {i} / {len(model_and_size) - 1} for time {j} / {lazy_split - 1}")
             train_and_eval_models_for_size(models, model_and_size[i][1], model_and_size[i][0], i, train_images, train_labels, test_images, test_labels)
 
-    store_model(models[0], "default32")
+    store_model(models[0], "large200")
     store_model(models[1], "medium128")
-    store_model(models[2], "large200")
+    store_model(models[2], "default32")
 
 if __name__ == "__main__":
     h5_obj = h5_object(folder_batch_size, get_key, get_ppm_arr, train_set_start_end, val_set_start_end, dataset_split)
