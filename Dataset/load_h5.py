@@ -21,13 +21,13 @@ from global_paths import get_h5_path
 data = []
 group = []
 
-def sort_groups(name, obj):
+def sort_groups(name:int, obj:object)->None:
     if isinstance(obj, h5py.Dataset):
         data.append(name)
     elif isinstance(obj, h5py.Group):
         group.append(name)
 
-def get_h5(h5_path):
+def get_h5(h5_path:str)->h5py._hl.files.File:
     if not path.exists(h5_path):
         print(f"The path for the h5 file does not exist ({h5_path}). The program has exited.")
         sys.exit()
@@ -42,7 +42,7 @@ def get_h5(h5_path):
 #img = Image.fromarray(img_as_arr.astype('uint8'), 'RGB')
 #img.show()
 
-def Shuffle(img_dataset, img_labels):
+def Shuffle(img_dataset:int, img_labels:int)->tuple:
     img_dataset_in = img_dataset
     img_labels_in = img_labels
 
@@ -55,11 +55,11 @@ def Shuffle(img_dataset, img_labels):
 
     return img_dataset_in, img_labels_in
 
-def get_slice(img_in_class, split, iteration, is_last=False):
+def get_slice(img_in_class:int, split:float, iteration:int, is_last=False)->int:
     return math.ceil((img_in_class * split) / iteration) if is_last else math.floor((img_in_class * split) / iteration)
 
 
-def get_keys(group):
+def get_keys(group)->str:
     return re.split('/', group)
 
 class h5_object():
@@ -74,19 +74,8 @@ class h5_object():
         self.val_set_start_end = val_set_start_end
 
     
-    def get_val_size(self):
+    def get_val_size(self)->float:
         return 1 - self.training_split
-
-    # def train_set_start_end(self, train_slice, current_iteration, is_last, img_in_class):
-    #     start_val = train_slice * current_iteration
-    #     end_val = train_slice * current_iteration + train_slice if not is_last else math.ceil(img_in_class * self.training_split)
-    #     return start_val, end_val
-
-    # def val_set_start_end(self, train_slice, val_slice, current_iteration, is_last, img_in_class, max_iteration):
-    #     start_val = math.ceil(img_in_class * self.training_split) + (val_slice * current_iteration) if not is_last else math.ceil(img_in_class * self.training_split) + (max_iteration - 1) * (math.floor((img_in_class * (h5_object.get_val_size(self))) / max_iteration))
-    #     end_val = math.ceil(img_in_class * self.training_split) + (val_slice * current_iteration + val_slice) if not is_last else img_in_class
-    #     return start_val, end_val
-
 
     def generate_ppm_keys(self, start_val:int, end_val:int)->list:
         names = []
@@ -97,14 +86,14 @@ class h5_object():
             names.append(ppm)
         return names
 
-    def append_to_list(self, ppm_names, keys, images, labels):
+    def append_to_list(self, ppm_names:list, keys:list, images:list, labels:list):
         for j in range(len(ppm_names)):
             arr = np.array(self.get_ppm_arr(self.h5, keys, ppm_names[j]))
             images.append(arr / 255.0)
             labels.append(int(keys[2]))
 
 
-    def print_class_data(self):
+    def print_class_data(self)->None:
         for i in range(len(group)):
             keys = get_keys(group[i])
             if len(keys) != self.nested_level:
@@ -114,7 +103,7 @@ class h5_object():
 
 
 
-    def lazyload_h5(self, current_iteration, max_iteration, shuffle=True):
+    def lazyload_h5(self, current_iteration:int, max_iteration:int, shuffle=True)->tuple:
         is_last = current_iteration == max_iteration - 1
 
         train_set = []

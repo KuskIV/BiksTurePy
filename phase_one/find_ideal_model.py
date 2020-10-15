@@ -13,7 +13,7 @@ sys.path.insert(0, parent_dir)
 from general_image_func import get_class_names                          # Not an error
 from Models.create_model import flatten_and_dense          # Not an error
 
-def default_model():
+def default_model()->tf.python.keras.engine.sequential.Sequential:
     img_shape=(32, 32, 3)
     model = models.Sequential()
     model.add(layers.Conv2D(32, (3, 3), activation='relu', input_shape=img_shape))
@@ -23,7 +23,7 @@ def default_model():
     model.add(layers.Conv2D(64, (3, 3), activation='relu'))
     return model
 
-def medium_model():
+def medium_model()->tf.python.keras.engine.sequential.Sequential:
     img_shape=(128, 128, 3)
     model = models.Sequential()
     model.add(layers.Conv2D(32, (15, 15), activation='relu', input_shape=img_shape))
@@ -35,7 +35,7 @@ def medium_model():
     model.add(layers.Conv2D(64, (3, 3), activation='relu'))
     return model
 
-def large_model():
+def large_model()->tf.python.keras.engine.sequential.Sequential:
     img_shape=(200, 200, 3)
     model = models.Sequential()
     model.add(layers.Conv2D(32, (21, 21), activation='relu', input_shape=img_shape))

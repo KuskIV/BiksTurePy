@@ -2,6 +2,8 @@ from find_ideal_model import get_processed_models, train_and_eval_models_for_siz
 import numpy as np
 from PIL import Image
 import math
+import h5py
+
 import os,sys,inspect
 current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parent_dir = os.path.dirname(current_dir)
@@ -15,23 +17,23 @@ lazy_split = 10
 dataset_split = 0.7
 folder_batch_size = 30
 
-def get_ppm_arr(h5, keys, ppm_name):
+def get_ppm_arr(h5:h5py._hl.files.File, keys:list, ppm_name:str)->str:
     return h5[keys[0]][keys[1]][keys[2]][ppm_name]
 
-def get_key(h5, keys):
+def get_key(h5:h5py._hl.files.File, keys:list)->str:
     return h5[keys[0]][keys[1]][keys[2]]
 
-def train_set_start_end(self, train_slice, current_iteration, is_last, img_in_class):
+def train_set_start_end(self, train_slice:int, current_iteration:int, is_last:bool, img_in_class:int)->tuple:
     start_val = train_slice * current_iteration
     end_val = train_slice * current_iteration + train_slice if not is_last else math.ceil(img_in_class * self.training_split)
     return start_val, end_val
 
-def val_set_start_end(self, train_slice, val_slice, current_iteration, is_last, img_in_class, max_iteration):
+def val_set_start_end(self, train_slice:int, val_slice:int, current_iteration:int, is_last:int, img_in_class:int, max_iteration:int)->tuple:
     start_val = math.ceil(img_in_class * self.training_split) + (val_slice * current_iteration) if not is_last else math.ceil(img_in_class * self.training_split) + (max_iteration - 1) * (math.floor((img_in_class * (h5_object.get_val_size(self))) / max_iteration))
     end_val = math.ceil(img_in_class * self.training_split) + (val_slice * current_iteration + val_slice) if not is_last else img_in_class
     return start_val, end_val
 
-def find_ideal_model(h5_obj):
+def find_ideal_model(h5_obj:object)->None:
     image_sizes = [(32, 32), (128, 128), (200, 200)]
 
     models = get_processed_models()
@@ -58,5 +60,6 @@ def find_ideal_model(h5_obj):
 if __name__ == "__main__":
     h5_obj = h5_object(folder_batch_size, get_key, get_ppm_arr, train_set_start_end, val_set_start_end, dataset_split)
     find_ideal_model(h5_obj)
+    
     # # This was a table generator for roni
     # h5_obj.print_class_data()
