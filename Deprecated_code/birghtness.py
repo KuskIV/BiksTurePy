@@ -16,7 +16,7 @@ from PIL import Image, ImageEnhance
 from tensorflow.keras import datasets, layers, models
 import matplotlib.pyplot as plt
 import numpy
-
+ 
 # Method to adjust the brightness, a lower factor value will result in a darker picture.
 def AdjustBrightness(img, factor):
     IEB = ImageEnhance.Brightness(img)

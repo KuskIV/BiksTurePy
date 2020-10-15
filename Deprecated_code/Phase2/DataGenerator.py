@@ -4,7 +4,7 @@ current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentfra
 parent_dir = os.path.dirname(current_dir)
 sys.path.insert(0, parent_dir)
 from General_image_func import changeImageSize,merge_two_images,convertToPILImg
-from Noise_Generators.noise_main import Noise
+from Noise_Generators.Main_Noise import Noise
 
 def CreateDistination(dist):
     if(os.path.exists(dist)):
