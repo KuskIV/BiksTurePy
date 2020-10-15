@@ -29,10 +29,11 @@ def generate_h5(h5Path, dataset_path):
 
         group = h5.create_group(group_name)
         print("Group: ", i)
+        print_progressbar(int(i) + 1, 43, prefix = 'Progress:', suffix = 'Complete', length = 50)
+
 
         for j in os.listdir(group_name):
             img_path = os.path.join(group_name, j)
-            print_progressbar(j + 1, 43, prefix = 'Progress:', suffix = 'Complete', length = 50)
             if img_path.endswith('.ppm'):
                 img = Image.open(img_path)
                 data = np.asarray(img)
