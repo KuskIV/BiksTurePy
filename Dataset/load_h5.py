@@ -60,9 +60,11 @@ def get_slice(img_in_class, split, iteration, is_last=False):
     return math.ceil((img_in_class * split) / iteration) if is_last else math.floor((img_in_class * split) / iteration)
 
 
+def get_keys(group):
+    return re.split('/', group)
 
 class h5_object():
-    def __init__(self, folder_batch_size, get_key, get_ppm_arr, training_split=0.7):
+    def __init__(self, folder_batch_size:int, get_key, get_ppm_arr, training_split=0.7):
         self.folder_batch_size = folder_batch_size
         self.nested_level = len(get_h5_path().split("/"))
         self.h5 = get_h5(get_h5_path())
@@ -74,7 +76,7 @@ class h5_object():
     def get_val_size(self):
         return 1 - self.training_split
 
-    def generate_ppm_keys(self, start_val, end_val):
+    def generate_ppm_keys(self, start_val:int, end_val:int)->list:
         names = []
         for i in range(start_val, end_val):
             ppm_start = str(math.floor(i / self.folder_batch_size)).zfill(5)
@@ -86,9 +88,17 @@ class h5_object():
     def append_to_list(self, ppm_names, keys, images, labels):
         for j in range(len(ppm_names)):
             arr = np.array(self.get_ppm_arr(self.h5, keys, ppm_names[j]))
-            #arr = np.array(self.h5[keys[0]][keys[1]][keys[2]][ppm_names[j]])# TODO make get_key method
             images.append(arr / 255.0)
             labels.append(int(keys[2]))
+
+
+    def print_class_data(self):
+        for i in range(len(group)):
+            keys = get_keys(group[i])
+            img_in_class = len(self.get_key(self.h5, keys))
+            print(f"Img in class: {img_in_class}, training set: {math.floor(img_in_class * self.training_split)}, val set: {math.ceil(img_in_class * h5_object.get_val_size())}")
+
+
 
     def lazyload_h5(self, current_iteration, max_iteration, shuffle=True):
         is_last = current_iteration == max_iteration - 1
@@ -104,11 +114,11 @@ class h5_object():
         print(f"{current_iteration} / {max_iteration}")
 
         for i in range(len(group)):
-            keys = re.split('/', group[i])
+            keys = get_keys(group[i])
+
             if len(keys) != self.nested_level:
                 continue
             img_in_class = len(self.get_key(self.h5, keys))
-            #img_in_class = len(self.h5[keys[0]][keys[1]][keys[2]]) # TODO make get_key method
 
             train_slice = get_slice(img_in_class, self.training_split, max_iteration)
             val_slice = get_slice(img_in_class, 1 - self.training_split, max_iteration, is_last)

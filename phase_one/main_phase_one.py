@@ -11,6 +11,10 @@ from Dataset.load_h5 import h5_object
 from global_paths import get_h5_path
 from Models.create_model import store_model
 
+lazy_split = 10
+dataset_split = 0.7
+folder_batch_size = 30
+
 def get_ppm_arr(h5, keys, ppm_name):
     return h5[keys[0]][keys[1]][keys[2]][ppm_name]
 
@@ -21,11 +25,6 @@ def find_ideal_model():
     class_names = get_class_names()
 
     image_sizes = [(32, 32), (128, 128), (200, 200)]
-
-    # Training and test split, 70 and 30%
-    lazy_split = 10
-    dataset_split = 0.7
-    folder_batch_size = 30
 
     h5_obj = h5_object(folder_batch_size, get_key, get_ppm_arr, dataset_split)
     models = get_processed_models()
@@ -49,4 +48,6 @@ def find_ideal_model():
     store_model(models[2], "large200")
 
 if __name__ == "__main__":
-    find_ideal_model()
+    #find_ideal_model()
+    h5_obj = h5_object(folder_batch_size, get_key, get_ppm_arr, dataset_split)
+    h5_obj.print_class_data()
