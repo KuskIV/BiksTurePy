@@ -136,12 +136,12 @@ class h5_object():
                 train_slice = get_slice(img_in_class, self.training_split, max_iteration)
                 val_slice = get_slice(img_in_class, 1 - self.training_split, max_iteration, is_last)
                 
-                start_val, end_val = h5_object.train_set_start_end(self, train_slice, current_iteration, is_last, img_in_class)
+                start_val, end_val = self.train_set_start_end(self, train_slice, current_iteration, is_last, img_in_class)
                 ppm_names = h5_object.generate_ppm_keys(self, start_val, end_val)
 
                 h5_object.append_to_list(self, ppm_names, keys, train_set, train_label)
                 
-                start_val, end_val = h5_object.val_set_start_end(self, train_slice, val_slice, current_iteration, is_last, img_in_class, max_iteration)
+                start_val, end_val = self.val_set_start_end(self, train_slice, val_slice, current_iteration, is_last, img_in_class, max_iteration)
                 ppm_names = h5_object.generate_ppm_keys(self, start_val, end_val)
 
                 h5_object.append_to_list(self, ppm_names, keys, val_set, val_label)
