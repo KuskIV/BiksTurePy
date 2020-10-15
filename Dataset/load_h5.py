@@ -56,9 +56,7 @@ def Shuffle(img_dataset, img_labels):
     return img_dataset_in, img_labels_in
 
 def get_slice(img_in_class, split, iteration, is_last=False):
-    val = (img_in_class * split) / iteration
-    return math.ceil(val) if is_last else math.floor(val)
-    #return math.ceil((img_in_class * split) / iteration) if is_last else math.floor((img_in_class * split) / iteration)
+    return math.ceil((img_in_class * split) / iteration) if is_last else math.floor((img_in_class * split) / iteration)
 
 
 def get_keys(group):

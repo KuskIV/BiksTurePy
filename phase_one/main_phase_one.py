@@ -56,7 +56,7 @@ def find_ideal_model(h5_obj):
     store_model(models[2], "large200")
 
 if __name__ == "__main__":
-    h5_obj = h5_object(folder_batch_size, get_key, get_ppm_arr, dataset_split, train_set_start_end, val_set_start_end)
+    h5_obj = h5_object(folder_batch_size, get_key, get_ppm_arr, train_set_start_end, val_set_start_end, dataset_split)
     find_ideal_model(h5_obj)
     # # This was a table generator for roni
     # h5_obj.print_class_data()
