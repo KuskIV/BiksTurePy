@@ -134,7 +134,7 @@ class h5_object():
                 img_in_class = len(self.get_key(self.h5, keys))
 
                 train_slice = get_slice(img_in_class, self.training_split, max_iteration)
-                val_slice = get_slice(img_in_class, 1 - self.training_split, max_iteration, is_last)
+                val_slice = get_slice(img_in_class, h5_object.get_val_size(self), max_iteration, is_last)
                 
                 start_val, end_val = self.train_set_start_end(self, train_slice, current_iteration, is_last, img_in_class)
                 ppm_names = h5_object.generate_ppm_keys(self, start_val, end_val)
