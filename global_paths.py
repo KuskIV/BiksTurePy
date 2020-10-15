@@ -7,24 +7,24 @@ paths = {
             'test_img_path':'Dataset/FullJCNN2013',
     }
 
-def get_paths(key):
+def get_paths(key:str)->str:
     if key in paths:
         return paths.get(key)
     else:
         print(f"ERROR: The key for path {key} is not defined.")
         return -1
 
-def get_h5_path():
+def get_h5_path()->str:
     return paths.get("h5")
 
-def get_dataset_path():
+def get_dataset_path()->str:
     return paths.get("dataset")
 
-def get_current_model_path():
+def get_current_model_path()->str:
     return paths.get("current_model")
 
-def get_test_img_path():
+def get_test_img_path()->str:
     return paths.get("test_img_path")
 
-def get_model_path():
+def get_model_path()->str:
     return paths.get("model") 
