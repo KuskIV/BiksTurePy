@@ -32,7 +32,7 @@ def generate_h5(h5Path, dataset_path):
 
         for j in os.listdir(group_name):
             img_path = os.path.join(group_name, j)
-            printProgressBar(j + 1, l, prefix = 'Progress:', suffix = 'Complete', length = 50)
+            print_progressbar(j + 1, 43, prefix = 'Progress:', suffix = 'Complete', length = 50)
             if img_path.endswith('.ppm'):
                 img = Image.open(img_path)
                 data = np.asarray(img)
