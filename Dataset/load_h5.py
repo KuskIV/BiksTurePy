@@ -95,6 +95,8 @@ class h5_object():
     def print_class_data(self):
         for i in range(len(group)):
             keys = get_keys(group[i])
+            if len(keys) != self.nested_level:
+                continue
             img_in_class = len(self.get_key(self.h5, keys))
             print(f"Img in class: {img_in_class}, training set: {math.floor(img_in_class * self.training_split)}, val set: {math.ceil(img_in_class * h5_object.get_val_size())}")
 
