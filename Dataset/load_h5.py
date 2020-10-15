@@ -63,20 +63,7 @@ def get_keys(group)->str:
     return re.split('/', group)
 
 class h5_object():
-    def __init__(self, folder_batch_size:int, get_key, get_ppm_arr, train_set_start_end, val_set_start_end, training_split=0.7):
-        self.folder_batch_size = folder_batch_size
-        self.nested_level = len(get_h5_path().split("/"))
-        self.h5 = get_h5(get_h5_path())
-        self.training_split = training_split
-        self.get_key = get_key
-        self.get_ppm_arr = get_ppm_arr
-        self.train_set_start_end = train_set_start_end
-        self.val_set_start_end = val_set_start_end
-
     
-    def get_val_size(self)->float:
-        return 1 - self.training_split
-
     def generate_ppm_keys(self, start_val:int, end_val:int)->list:
         names = []
         for i in range(start_val, end_val):
@@ -85,6 +72,32 @@ class h5_object():
             ppm = f"{ppm_start}_{ppm_end}.ppm"
             names.append(ppm)
         return names
+
+    def __init__(self, folder_batch_size:int, get_key, get_ppm_arr, train_set_start_end, val_set_start_end, training_split=0.7):
+        self.folder_batch_size = folder_batch_size
+        self.nested_level = len(get_h5_path().split("/"))
+        self.h5 = get_h5(get_h5_path())
+        self.training_split = training_split
+        
+        self.get_key = get_key
+        self.get_ppm_arr = get_ppm_arr
+        self.train_set_start_end = train_set_start_end
+        self.val_set_start_end = val_set_start_end
+
+        # self.ppm_names = []
+        # for i in range(len(group)):
+        #     keys = get_keys(group[i])
+
+        #     if len(keys) == self.nested_level:
+        #         img_in_class = len(self.get_key(self.h5, keys))
+        #         self.ppm_names.append(self.generate_ppm_keys(0, img_in_class))
+        #         random.shuffle(self.ppm_names[-1])
+
+
+    def get_val_size(self)->float:
+        return 1 - self.training_split
+
+
 
     def append_to_list(self, ppm_names:list, keys:list, images:list, labels:list):
         for j in range(len(ppm_names)):
@@ -101,7 +114,49 @@ class h5_object():
             img_in_class = len(self.get_key(self.h5, keys))
             print(f"{i-2} & {img_in_class} & {math.floor(img_in_class * self.training_split)} & {math.ceil(img_in_class * h5_object.get_val_size(self))} /")
 
+    # def get_part_of_array(self, current_slize, max_slice, split, class_index, train_set, train_label, val_set, val_label):
+    #     is_last = current_slize == max_slice - 1
+    #     split_size = math.floor(len(self.ppm_names) / max_slice)
 
+    #     train_size = math.floor(split_size * split)
+    #     val_size = split_size - train_size
+
+    #     train_start = split_size * current_slize
+    #     train_end = train_start + train_size
+    #     val_start = train_end
+    #     val_end = val_start + val_size if not is_last else len(self.ppm_names)
+
+    #     for i in range(train_start, train_end):
+    #         train_set.append(self.ppm_names[i]) # this should be an array, now it is the name
+    #         train_label.append(class_index)
+        
+    #     for i in range(val_start, val_end):
+    #         val_set.append(self.ppm_names[i]) # this should be an array, now it is the name
+    #         val_label.append(class_index)
+
+    #     return train_set, train_label, val_set, val_label
+
+    # def shuffle_and_lazyload(self, current_iteration:int, max_iteration:int, shuffle=True)->tuple:
+    #     train_set = []
+    #     train_label = []
+
+    #     val_set = []
+    #     val_label = []
+
+    #     for i in range(len(group)):
+    #         keys = get_keys(group[i])
+
+    #         if len(keys) == self.nested_level:
+    #             img_in_class = len(self.get_key(self.h5, keys))
+    #             h5_object.get_part_of_array(self, current_iteration, max_iteration, self.training_split, i, train_set, train_label, val_set, val_label) 
+    #             # in line above, i should be the name of the class (folder name, int)
+
+
+    #     if shuffle:
+    #         train_set, train_label = Shuffle(train_set, train_label)
+    #         val_set, val_label = Shuffle(val_set, val_label)
+
+    #     return train_set, train_label, val_set, val_label
 
     def lazyload_h5(self, current_iteration:int, max_iteration:int, shuffle=True)->tuple:
         is_last = current_iteration == max_iteration - 1
