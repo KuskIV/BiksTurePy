@@ -83,19 +83,6 @@ def get_data(fixed_size:tuple=(0,0), padded_images:bool = False, smart_resize:bo
 
     return numpy_images_reshaped, labels, images_per_class
 
-def Shuffle(img_dataset, img_labels): # THIS METHOD HAS BEEN COPIED TO "general_image_func" it will be deleted soon from this position
-    img_dataset_in = img_dataset
-    img_labels_in = img_labels
-
-    z = zip(img_dataset, img_labels)
-    z_list = list(z)
-    random.shuffle(z_list)
-    img_dataset_tuple, img_labels_tuple = zip(*z_list)
-    img_dataset_in = numpy.array(img_dataset_tuple)
-    img_labels_in = numpy.array(img_labels_tuple)
-
-    return img_dataset_in, img_labels_in
-
 def update_values(i, images_per_class, label_index, training_split):
     maxVal = images_per_class[label_index] + i
     pictures_in_current_class = images_per_class[label_index]

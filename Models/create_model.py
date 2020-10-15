@@ -2,10 +2,17 @@ import math
 import  tensorflow as tf
 from tensorflow.keras import datasets, layers, models
 
+import os,sys,inspect
+current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+parent_dir = os.path.dirname(current_dir)
+sys.path.insert(0, parent_dir) 
+
+from global_paths import  get_model_path
+
 def store_model(model, path):
     tf.keras.models.save_model(
         model,
-        filepath= path,
+        filepath= get_model_path() + "/" + path,
         overwrite=True,
         include_optimizer=True,
         save_format=None,

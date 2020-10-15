@@ -96,16 +96,3 @@ def convert_imgs_to_numpy_arrays(dataset: list)->list:
         converted_images.append(im_array / 255.0) # Normalize pixel values to be between 0 and 1
 
     return converted_images
-
-def Shuffle(img_dataset, img_labels): # should be removed from this locatrion. has been placed into load_h5
-    img_dataset_in = img_dataset
-    img_labels_in = img_labels
-
-    z = zip(img_dataset, img_labels)
-    z_list = list(z)
-    random.shuffle(z_list)
-    img_dataset_tuple, img_labels_tuple = zip(*z_list)
-    img_dataset_in = np.array(img_dataset_tuple)
-    img_labels_in = np.array(img_labels_tuple)
-
-    return img_dataset_in, img_labels_in
