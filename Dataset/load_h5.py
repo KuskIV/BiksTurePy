@@ -84,14 +84,14 @@ class h5_object():
         self.train_set_start_end = train_set_start_end
         self.val_set_start_end = val_set_start_end
 
-        # self.ppm_names = []
-        # for i in range(len(group)):
-        #     keys = get_keys(group[i])
-
-        #     if len(keys) == self.nested_level:
-        #         img_in_class = len(self.get_key(self.h5, keys))
-        #         self.ppm_names.append(self.generate_ppm_keys(0, img_in_class))
-        #         random.shuffle(self.ppm_names[-1])
+        self.ppm_names = []
+        for i in range(len(group)):
+            keys = get_keys(group[i])
+            if len(keys) == self.nested_level:
+                img_in_class = len(self.get_key(self.h5, keys))
+                self.ppm_names.append(self.generate_ppm_keys(0, img_in_class))
+                random.shuffle(self.ppm_names[-1])
+                print(self.ppm_names[-1])
 
 
     def get_val_size(self)->float:
