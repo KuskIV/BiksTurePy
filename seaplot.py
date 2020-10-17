@@ -2,7 +2,7 @@ import re
 import matplotlib.pyplot as plt
 import seaborn as sbs
 
-def img_sizes_list_from_tuple_file(filelocation):
+def load_from_txt(filelocation):
     width_re = re.compile('\d*(?=,)')
     height_re = re.compile('\d*(?=\))')
     image_sizes_as_tuples = []
@@ -18,7 +18,7 @@ def img_sizes_list_from_tuple_file(filelocation):
     return image_sizes_as_tuples
 
 if __name__ == '__main__':
-    img_sizes = img_sizes_list_from_tuple_file('img_res.txt')
+    img_sizes = load_from_txt('img_res.txt')
 
     img_sizes_prod = [img[0]*img[1] for img in img_sizes]
     img_size_ratios = [img[0]/img[1] for img in img_sizes]
