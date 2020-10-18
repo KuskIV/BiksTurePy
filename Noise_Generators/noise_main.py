@@ -31,7 +31,7 @@ class Filter:
         if config.get(Keys[2]) != None:
             self.wh_set = config.get(Keys[2])
         
-    def Apply(self,img:Image.Image):
+    def Apply(self,img:Image.Image)->Image.Image:
         """The method that applies the filters onto the images
 
         Args:
@@ -54,7 +54,7 @@ class Filter:
         
         return img
 
-    def __add__(self,img:Image.Image):
+    def __add__(self,img:Image.Image)->Image.Image:
         """Interface method for the apply method to be able to wrtie more readable code.
         This enables the use of plus, so that a filter can be applied simply by adding the filter and image togther.
 
