@@ -11,7 +11,7 @@ current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentfra
 parent_dir = os.path.dirname(current_dir)
 sys.path.insert(0, parent_dir) 
 from general_image_func import changeImageSize,merge_two_images,convertToPILImg
-
+from global_paths import get_paths
 class weather:
     """The weather class is a class used to draw snow and rain onto exsistig pictures
 
@@ -93,7 +93,7 @@ class weather:
 def QuickDebug()->None:
     """Small function to test the weather class
     """
-    img = Image.open("C:\\Users\\jeppe\\Desktop\\GTSRB_Final_Training_Images\\GTSRB\\Final_Training\\Images\\00000\\00002_00029.ppm")
+    img = Image.open(get_paths("dataset"))
     p = {'rain_drops':300, 'drop_length':7,'drop_width':2,'blurr':(2,2),'color':(130,130,130)}
     pn = weather(p)
     img = pn.add_rain(img).show()

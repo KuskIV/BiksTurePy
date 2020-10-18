@@ -12,7 +12,7 @@ parent_dir = os.path.dirname(current_dir)
 sys.path.insert(0, parent_dir) 
 
 from general_image_func import changeImageSize,merge_two_images,convertToPILImg,display_numpy_image
-
+from global_paths import get_paths
 
 
 class perlin:
@@ -67,7 +67,6 @@ class perlin:
         if not self.seed:
 
             seed = np.random.randint(0, 100)
-            print("seed was {}".format(seed))
 
         arr = np.zeros(self.shape)
         for i in range(self.shape[0]):
@@ -103,7 +102,7 @@ class perlin:
 def QuickDebug()->None:
     """Small function that shows how to call the perlin class with some config dict. And shows the resulting image
     """
-    img = Image.open("C:\\Users\\jeppe\\Desktop\\GTSRB_Final_Training_Images\\GTSRB\\Final_Training\\Images\\00000\\00002_00029.ppm")
+    img = Image.open(get_paths("dataset"))
     p = {'octaves':6, 'persistence':0.5, 'lacunarity': 2.0, 'alpha': 0.3}
     pn = perlin(p)
     img = pn.Foggyfy(img).show()
