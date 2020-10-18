@@ -66,11 +66,24 @@ class Filter:
         """
         return self.Apply(img)
 
+    def __mul__(self, imgs:list)->list:
+        """Method for applying the same filter on multiple images
+
+        Args:
+            imgs (list): List of Pil images
+
+        Returns:
+            list: List of Pil images with the filter
+        """
+        returnLiSt = []
+        for img in imgs:
+            returnLiSt.append(self + img)
+        return returnLiSt
 def QuickDebug():
     """Small debug function
     """
     img = Image.open("C:\\Users\\jeppe\\Desktop\\GTSRB_Final_Training_Images\\GTSRB\\Final_Training\\Images\\00000\\00002_00029.ppm")
-
+    imgs = [img,img]
     p = {'octaves':6, 'persistence':0.5, 'lacunarity': 8, 'alpha': 1.0}
     day = {'factor':1.0} 
     night = {'factor':0.3}
@@ -79,8 +92,8 @@ def QuickDebug():
     Filter_Con = {'fog_set':p, 'day_set':day, 'wh_set':rain}
     F = Filter(Filter_Con)
 
-    newImage = F+img
-    newImage.show()
+    newImage = F*imgs
+    newImage[0].show()
 
 QuickDebug()
 #fog_set=(1)
