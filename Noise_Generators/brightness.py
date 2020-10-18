@@ -40,7 +40,7 @@ class brightness:
             self.factor = config.get(keys[0])
 
     # Method to adjust the brightness, a lower factor value will result in a darker picture.
-    def AdjustBrightness(self,img):
+    def AdjustBrightness(self,img:Image.Image):
         """Adjusts the brightness of the image, using the inputtet factor.
 
         Args:
@@ -53,7 +53,7 @@ class brightness:
         return IEB.enhance(self.factor)
 
     # Method to adjust the color, a lower factor value will result in dimmer colors.
-    def AdjustColor(self,img):
+    def AdjustColor(self,img:Image.Image):
         """Method to adjust the color, a lower factor value will result in dimmer colors.
 
         Args:
@@ -78,7 +78,6 @@ class brightness:
             return merge_two_images(img, blue,alpha=0.2)
         else:
             return img
-    
 def QuickDebug():
     img = Image.open("C:\\Users\\jeppe\\Desktop\\GTSRB_Final_Training_Images\\GTSRB\\Final_Training\\Images\\00000\\00002_00029.ppm")
     day = {'factor':1.3} 
@@ -88,5 +87,5 @@ def QuickDebug():
     bright.DayAdjustment(img).show()
     dark.DayAdjustment(img).show()
 
-
+#QuickDebug()
 

@@ -13,6 +13,11 @@ sys.path.insert(0, parent_dir)
 from general_image_func import changeImageSize,merge_two_images,convertToPILImg
 
 class weather:
+    """The weather class is a class used to draw snow and rain onto exsistig pictures
+
+    Returns:
+        Image.Image: The image returned will have add some noise based on the config file given to the function at instatiaction.
+    """
     #default values
     rain_drops = 200
     drop_length = 2
@@ -45,11 +50,11 @@ class weather:
         """Function for generating random lines, it also makes the lines slant in diffrent orientations.
 
         Args:
-            imshape ([type]): [description]
-            slant ([type]): [description]
+            imshape (tuple(int,int)): A tuple containing the demensions of the image
+            slant (int): Determins how slantet the lines should be
 
         Returns:
-            [type]: [description]
+            List: List containnig the coordinats for each of the drops or flakes generated.
         """
         drops=[]    
         for i in range(self.rain_drops):
@@ -61,7 +66,7 @@ class weather:
             drops.append((x,y))
         return drops
             
-    def add_rain(self,image):
+    def add_rain(self,image:Image.Image):
         """The function takes a image and adds rain or snow.
 
         Args:
@@ -77,9 +82,10 @@ class weather:
         slant_extreme=5  
         slant= np.random.randint(-slant_extreme,slant_extreme)     
         drop_color=self.color   
-        self.rain_drops= self.generate_random_lines(imshape,slant)        
+        self.rain_drops= self.generate_random_lines(imshape,slant)
+        rand = random.uniform(0.5, 1)
         for rain_drop in self.rain_drops:        
-            cv2.line(image,(rain_drop[0],rain_drop[1]),(rain_drop[0]+slant,rain_drop[1]+self.drop_length),drop_color,self.drop_width)    
+            cv2.line(image,(rain_drop[0],rain_drop[1]),(rain_drop[0]+slant,rain_drop[1]+int(round(self.drop_length*rand))),drop_color,int(round(self.drop_width*rand)))    
         image= cv2.blur(image,self.blurr) 
 
         return convertToPILImg(image, normilized=False) 
