@@ -38,26 +38,16 @@ class Filter:
 def QuickDebug():
     img = Image.open("C:\\Users\\jeppe\\Desktop\\GTSRB_Final_Training_Images\\GTSRB\\Final_Training\\Images\\00000\\00002_00029.ppm")
 
-    p = {'octaves':6, 'persistence':0.5, 'lacunarity': 8, 'alpha': 0.5}
-    day = {'factor':1.3} 
+    p = {'octaves':6, 'persistence':0.5, 'lacunarity': 8, 'alpha': 1.0}
+    day = {'factor':1.0} 
     night = {'factor':0.3}
-    rain = {'rain_drops':200, 'drop_length':2,'drop_width':1,'blurr':(2,2),'color':(130,130,130)}
+    rain = {'rain_drops':500, 'drop_length':2,'drop_width':1,'blurr':(2,2),'color':(200,200,255)}
 
     Filter_Con = {'fog_set':p, 'day_set':day, 'wh_set':rain}
     F = Filter(Filter_Con)
 
     newImage = F+img
     newImage.show()
-
-    """
-    Noise(img,fog_set=p).show()
-
-
-    Noise(img,day_set=day).show()
-    Noise(img,day_set=night).show()
-
-    Noise(img,wh_set=rain).show()
-    """
 
 QuickDebug()
 #fog_set=(1)

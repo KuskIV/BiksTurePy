@@ -77,9 +77,10 @@ class weather:
         slant_extreme=5  
         slant= np.random.randint(-slant_extreme,slant_extreme)     
         drop_color=self.color   
-        self.rain_drops= self.generate_random_lines(imshape,slant)        
+        self.rain_drops= self.generate_random_lines(imshape,slant)
+        rand = random.uniform(0.5, 1)
         for rain_drop in self.rain_drops:        
-            cv2.line(image,(rain_drop[0],rain_drop[1]),(rain_drop[0]+slant,rain_drop[1]+self.drop_length),drop_color,self.drop_width)    
+            cv2.line(image,(rain_drop[0],rain_drop[1]),(rain_drop[0]+slant,rain_drop[1]+int(round(self.drop_length*rand))),drop_color,int(round(self.drop_width*rand)))    
         image= cv2.blur(image,self.blurr) 
 
         return convertToPILImg(image, normilized=False) 
