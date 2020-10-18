@@ -2,7 +2,7 @@ import numpy as np
 import tensorflow as tf
 from PIL import Image
 
-def makePrediction(model:tf.python.keras.engine.sequential.Sequential, image:Image.Image)->list:
+def make_prediction(model:tf.python.keras.engine.sequential.Sequential, image:Image.Image)->list:
     """Based on one image, a model makes a prediction to what it is
 
     Args:
@@ -15,7 +15,7 @@ def makePrediction(model:tf.python.keras.engine.sequential.Sequential, image:Ima
     img_reshaped = tf.reshape(image, (1, 32, 32, 3))
     return model.predict_step(img_reshaped)
 
-def AccDistribution(SAVE_LOAD_PATH:str, test_images:list, test_labels:list)->None:
+def accumilate_distribution(SAVE_LOAD_PATH:str, test_images:list, test_labels:list)->None:
     """Given a set of images and lables, a prediction is made for each image
 
     Args:
@@ -30,13 +30,15 @@ def AccDistribution(SAVE_LOAD_PATH:str, test_images:list, test_labels:list)->Non
     accArr = np.zeros((43, 2))
 
     for i in range(len(test_images)):
-        prediction = makePrediction(model, test_images[i])
+        prediction = make_prediction(model, test_images[i])
         softmaxed = tf.keras.activations.softmax(prediction)
         if test_labels[i] == np.argmax(softmaxed):
             accArr[int(test_labels[i])][1] = accArr[int(test_labels[i])][1] + 1
         else:
             accArr[int(test_labels[i])][0] = accArr[int(test_labels[i])][0] + 1
+
     full_percent = 0
+
     for i in range(len(accArr)):
         percent = 100 - (accArr[i][0] / accArr[i][1]) * 100
         full_percent += percent

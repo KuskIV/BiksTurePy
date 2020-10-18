@@ -4,7 +4,10 @@ paths = {
             'dataset':'Dataset/images',
             'model':'Models/saved_models',
             'current_model':'Models/saved_models/YEET8.h5',
-            'test_img_path':'Dataset/FullJCNN2013'
+            'test_img_path':'Dataset/FullJCNN2013',
+            'large': 'large200',
+            'medium':'medium128',
+            'small':'small32'
     }
 
 def get_paths(key:str)->str:
@@ -61,3 +64,6 @@ def get_model_path()->str:
         str: the path to the model
     """
     return paths.get("model") 
+
+def get_test_model_paths()->tuple:
+    return paths.get("large"), paths.get("medium"), paths.get("small")
