@@ -4,7 +4,7 @@ paths = {
             'dataset':'Dataset/images',
             'model':'Models/saved_models',
             'current_model':'Models/saved_models/YEET8.h5',
-            'test_img_path':'Dataset/FullJCNN2013',
+            'test_img_path':'Dataset/FullJCNN2013'
     }
 
 def get_paths(key:str)->str:

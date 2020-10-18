@@ -1,5 +1,4 @@
 from create_h5 import generate_h5
-from load_h5 import read_h5
 
 import os,sys,inspect
 current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
