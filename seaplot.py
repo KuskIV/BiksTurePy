@@ -1,6 +1,7 @@
 import re
 import matplotlib.pyplot as plt
 import seaborn as sbs
+from random import randint
 
 def load_from_txt(filelocation):
     width_re = re.compile('\d*(?=,)')
@@ -25,10 +26,22 @@ if __name__ == '__main__':
 
     sbs.set_theme()
 
-    sbs.kdeplot(data=img_size_ratios)
+    prod_label = 'product of the image sizes'
+    img_size_prod_d = {prod_label: img_sizes_prod}
+    sbs.kdeplot(data=img_size_prod_d, x=prod_label)
     print("plotting image size ratios")
     plt.show()
 
-    sbs.kdeplot(data=img_sizes_prod)
+    ratios_label = 'image ratios'
+    img_size_ratios_d = {ratios_label: img_size_ratios}
+    sbs.kdeplot(data=img_size_ratios_d, x=ratios_label)
     print("plotting product of image sizes")
+    plt.show()
+
+    #plotting 100k random integers from [1;10], which should be uniform
+    r_numbers = [randint(1,10) for i in range(100000)]
+    r_numbers_label = '100k random numbers [1;10]'
+    r_numbers_d = {r_numbers_label: r_numbers}
+    sbs.kdeplot(data=r_numbers_d, x=r_numbers_label)
+    print("plotting 100k random integers from [1;10], which should be uniform")
     plt.show()
