@@ -37,13 +37,17 @@ def find_ideal_model(h5_obj:object)->None:
 
     models = get_processed_models()
 
+    train_images = []
+    test_images = []
+
     for j in range(lazy_split):
 
         # generate models
-        train_images, train_labels, test_images, test_labels = h5_obj.lazyload_h5(j, lazy_split)
+        # train_images, train_labels, test_images, test_labels = h5_obj.lazyload_h5(j, lazy_split)
+        train_images, train_labels, test_images, test_labels = h5_obj.shuffle_and_lazyload(j, lazy_split)
+        print(train_labels)
         print(f"Images in train_set: {len(train_images)} ({len(train_images) == len(train_labels)}), Images in val_set: {len(test_images)} ({len(test_images) == len(test_labels)})")
         print(f"This version will split the dataset in {lazy_split} sizes.")
-
         # zip together with its size
         model_and_size = list(zip(models, image_sizes))
 
@@ -58,7 +62,7 @@ def find_ideal_model(h5_obj:object)->None:
 
 if __name__ == "__main__":
     h5_obj = h5_object(folder_batch_size, get_key, get_ppm_arr, train_set_start_end, val_set_start_end, dataset_split)
-    #find_ideal_model(h5_obj)
+    find_ideal_model(h5_obj)
     
     # # This was a table generator for roni
     # h5_obj.print_class_data()
