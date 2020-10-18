@@ -30,7 +30,7 @@ class perlin:
     seed = None
     alpha = 0.3
 
-    def __init__(self, config:dict):
+    def __init__(self, config:dict)->object:
         """The to configure the default variables in perlin noise.
 
         Args:
@@ -87,7 +87,7 @@ class perlin:
         arr = norm_me(arr)
         return arr
 
-    def Foggyfy(self,img:Image.Image):
+    def Foggyfy(self,img:Image.Image)->Image.Image:
         """
         Foggyfy is the method that applys some generated perlin noise to an image
 
@@ -100,7 +100,7 @@ class perlin:
         perlin = self.perlin_array()
         return merge_two_images(convertToPILImg(perlin),img, alpha=self.alpha)
 
-def QuickDebug():
+def QuickDebug()->None:
     """Small function that shows how to call the perlin class with some config dict. And shows the resulting image
     """
     img = Image.open("C:\\Users\\jeppe\\Desktop\\GTSRB_Final_Training_Images\\GTSRB\\Final_Training\\Images\\00000\\00002_00029.ppm")

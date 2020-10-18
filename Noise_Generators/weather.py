@@ -25,7 +25,7 @@ class weather:
     blurr = (5,5)
     color = (200,200,200)
 
-    def __init__(self,config:dict):
+    def __init__(self,config:dict)->object:
         """Instatiation of the class with a config file will overide the default values
 
         Args:
@@ -66,7 +66,7 @@ class weather:
             drops.append((x,y))
         return drops
             
-    def add_rain(self,image:Image.Image):
+    def add_rain(self,image:Image.Image)->Image.Image:
         """The function takes a image and adds rain or snow.
 
         Args:
@@ -90,7 +90,7 @@ class weather:
 
         return convertToPILImg(image, normilized=False) 
 
-def QuickDebug():
+def QuickDebug()->None:
     """Small function to test the weather class
     """
     img = Image.open("C:\\Users\\jeppe\\Desktop\\GTSRB_Final_Training_Images\\GTSRB\\Final_Training\\Images\\00000\\00002_00029.ppm")

@@ -66,11 +66,11 @@ class brightness:
         return IEC.enhance(self.factor)
 
     # Creates a new picture with the color needed.
-    def GetRGB(self,r:int, g:int, b:int, maxWidth:int, maxHeight:int):
+    def GetRGB(self,r:int, g:int, b:int, maxWidth:int, maxHeight:int)->Image.Image:
         return Image.new("RGBA", (maxWidth, maxHeight), (r, g, b, 255))
 
     # Adjust the pictures brightness depending on day or night. Where a factor between 1 will result in night and above in day.
-    def DayAdjustment(self,img):
+    def DayAdjustment(self,img:Image.Image)->Image.Image:
         img = self.AdjustBrightness(img)
         if self.factor < 1:
             img = self.AdjustColor(img)
@@ -78,7 +78,7 @@ class brightness:
             return merge_two_images(img, blue,alpha=0.2)
         else:
             return img
-def QuickDebug():
+def QuickDebug()->None:
     img = Image.open("C:\\Users\\jeppe\\Desktop\\GTSRB_Final_Training_Images\\GTSRB\\Final_Training\\Images\\00000\\00002_00029.ppm")
     day = {'factor':1.3} 
     night = {'factor':0.3}
