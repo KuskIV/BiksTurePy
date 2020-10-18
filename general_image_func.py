@@ -19,6 +19,7 @@ def changeImageSize(maxWidth: int,
         Image.Image: The resized image
     """
     
+
     widthRatio  = maxWidth/image.size[0]
     heightRatio = maxHeight/image.size[1]
 

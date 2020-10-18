@@ -18,7 +18,7 @@ def store_model(model:tf.python.keras.engine.sequential.Sequential, path:str)->N
     """
     tf.keras.models.save_model(
         model,
-        filepath= get_model_path() + "/" + path,
+        filepath= path,
         overwrite=True,
         include_optimizer=True,
         save_format=None,
