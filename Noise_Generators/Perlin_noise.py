@@ -16,6 +16,11 @@ from general_image_func import changeImageSize,merge_two_images,convertToPILImg,
 
 
 class perlin:
+    """A class to generate psudorandom fog onto image given som paramters
+
+    Returns:
+        Image.Image: Image with a fog overlay
+    """
     #Default values
     shape = (200, 200)
     scale = 100
@@ -25,7 +30,7 @@ class perlin:
     seed = None
     alpha = 0.3
 
-    def __init__(self, config):
+    def __init__(self, config:dict):
         """The to configure the default variables in perlin noise.
 
         Args:
@@ -82,7 +87,7 @@ class perlin:
         arr = norm_me(arr)
         return arr
 
-    def Foggyfy(self,img):
+    def Foggyfy(self,img:Image.Image):
         """
         Foggyfy is the method that applys some generated perlin noise to an image
 
