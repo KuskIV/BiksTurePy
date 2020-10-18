@@ -1,11 +1,29 @@
 import numpy as np
 import tensorflow as tf
+from PIL import Image
 
-def makePrediction(model, image):
+def makePrediction(model:tf.python.keras.engine.sequential.Sequential, image:Image.Image)->list:
+    """Based on one image, a model makes a prediction to what it is
+
+    Args:
+        model (tf.python.keras.engine.sequential.Sequential): The model to use
+        image (Image.Image): The imaage to predict on
+
+    Returns:
+        list: The probability of the given image beign each class. Softmax not yet applied
+    """
     img_reshaped = tf.reshape(image, (1, 32, 32, 3))
     return model.predict_step(img_reshaped)
 
-def AccDistribution(SAVE_LOAD_PATH, test_images, test_labels):
+def AccDistribution(SAVE_LOAD_PATH:str, test_images:list, test_labels:list)->None:
+    """Given a set of images and lables, a prediction is made for each image
+
+    Args:
+        SAVE_LOAD_PATH (str): The path to load the model from
+        test_images (list): A set of images
+        test_labels (list): A set of lables
+    """
+
     model = tf.keras.models.load_model(SAVE_LOAD_PATH)
     model.summary()
 

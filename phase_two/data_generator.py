@@ -6,6 +6,8 @@ sys.path.insert(0, parent_dir)
 from General_image_func import changeImageSize,merge_two_images,convertToPILImg
 from Noise_Generators.noise_main import Noise
 
+
+#TODO pls fix jeppe, this was not what you was supposed to do lazy boi.
 def CreateDistination(dist):
     if(os.path.exists(dist)):
         pass

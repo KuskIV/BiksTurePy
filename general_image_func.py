@@ -7,7 +7,17 @@ import random
 
 def changeImageSize(maxWidth: int, 
                     maxHeight: int, 
-                    image:np.array):
+                    image:np.array)->Image.Image:
+    """Resizes an image
+
+    Args:
+        maxWidth (int): The max width of the image
+        maxHeight (int): The max heigth of the image
+        image (np.array): The input image to resize
+
+    Returns:
+        Image.Image: The resized image
+    """
     
     widthRatio  = maxWidth/image.size[0]
     heightRatio = maxHeight/image.size[1]
@@ -17,7 +27,18 @@ def changeImageSize(maxWidth: int,
 
     return image.resize((newWidth, newHeight))
 
-def EnsureUniformImageShape(img1: Image.Image,img2: Image.Image, shape=None):
+def EnsureUniformImageShape(img1: Image.Image,img2: Image.Image, shape=None)->tuple:
+    """This method ensure two imagse are uniform, and returns them
+
+    Args:
+        img1 (Image.Image): The first image
+        img2 (Image.Image): The second image
+        shape ([type], optional): The shape to set both image to. Defaults to None.
+
+    Returns:
+        tuple: A tuple containing both images
+    """
+
     size1 = img1.size
     size2 = img2.size
 
@@ -34,7 +55,18 @@ def EnsureUniformImageShape(img1: Image.Image,img2: Image.Image, shape=None):
 def merge_two_images(img1: Image.Image
                     ,img2: Image.Image,
                      alpha:float=0.25, 
-                     shape:tuple = None):
+                     shape:tuple = None)->Image.Image:
+    """Merges two images, and returns one image
+
+    Args:
+        img1 (Image.Image): The first image
+        img2 (Image.Image): The second imaeg
+        alpha (float, optional): The opacity of the imaeg when merging them. Defaults to 0.25.
+        shape (tuple, optional): The shape of the output image. Defaults to None.
+
+    Returns:
+        Image.Image: The two images merged
+    """
     image3,image4 = EnsureUniformImageShape(img1, img2,shape=shape)
 
     image5 = image3.convert("RGBA")
@@ -43,6 +75,15 @@ def merge_two_images(img1: Image.Image
     return Image.blend(image5, image6, alpha=alpha)
 
 def convertToPILImg(img1: np.array, normilized = True)-> Image.Image:
+    """Converts a numpy array to a PIL image
+
+    Args:
+        img1 (np.array): The array to convert
+        normilized (bool, optional): If the value should be between 0-1. Defaults to True.
+
+    Returns:
+        Image.Image: The output image after it has been converted
+    """
 
     if normilized is True:
         img1 = img1 * 255
@@ -53,7 +94,11 @@ def convertToPILImg(img1: np.array, normilized = True)-> Image.Image:
     return im
 
 def get_class_names()->list:
-    """Gets classification name for each label from the labels.txt, which is assumed to be in root."""
+    """Gets classification name for each label from the labels.txt, which is assumed to be in root.
+    
+    Returns:
+        list: A list of all the class names
+    """
     class_names = []
     # RegEx to match for labels in labels.txt
     labels_regex = re.compile('(?<== )(.)*')
@@ -71,12 +116,20 @@ def make_prediction(model, image): # hopfully delete
     return model.predict_step(img_reshaped)
 
 def display_ppm_image(path: str)->None:
-    """"Input a path to original image to display it"""
+    """Input a path to original image to display it
+
+    Args:
+        path (str): The path to the original image
+    """
     im = Image.open(path)
     im.show()
 
 def display_numpy_image(numpy_image:np.array)->None:
-    """Input a (0 to 1) normalized numpy representation of a PIL image, to show it"""
+    """Input a (0 to 1) normalized numpy representation of a PIL image, to show it
+
+    Args:
+        numpy_image (np.array): The input image to normalize
+    """
     # Scaling the pixels back
     numpy_image_rescaled = numpy_image * 255
     # converting the dfloat64 numpy to a unit8 - is required by PIL
@@ -87,7 +140,14 @@ def display_numpy_image(numpy_image:np.array)->None:
 
 def convert_imgs_to_numpy_arrays(dataset: list)->list:
     """Receive a dataset in and return an numpy array of the images
-       converted to normalized (0 to 1) numpy arrays."""
+       converted to normalized (0 to 1) numpy arrays.
+
+    Args:
+        dataset (list): A list of PIL images to convert
+
+    Returns:
+        list: A list of numpu arrays after they have been converted
+    """
     converted_images = []
     # Convert images to numpy arrays
     for image in dataset:
