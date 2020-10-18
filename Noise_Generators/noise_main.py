@@ -79,12 +79,31 @@ class Filter:
         for img in imgs:
             returnLiSt.append(self + img)
         return returnLiSt
+def premade_single_filter(str:str)->Filter:
+    config = {}
+    if str == 'fog':
+        config = {'octaves':8, 'persistence':0.3, 'lacunarity': 5, 'alpha': 0.4}
+        result = Filter({'fog_set':config})
+    if str == 'rain':
+        config = {'rain_drops':500, 'drop_length':2,'drop_width':1,'blurr':(2,2),'color':(200,200,255)}
+        result = Filter({'wh_set':config})
+    if str == 'snow':
+        config = {'rain_drops':700, 'drop_length':2,'drop_width':2,'blurr':(2,2),'color':(255,255,255)}
+        result = Filter({'wh_set':config})
+    if str == 'day':
+        config = {'factor':1.0}
+        result = Filter({'day_set':config})
+    if str == 'night':
+        config = {'factor':0.3}
+        result = Filter({'day_set':config})
+    return result
+
 def QuickDebug():
     """Small debug function
     """
     img = Image.open("C:\\Users\\jeppe\\Desktop\\GTSRB_Final_Training_Images\\GTSRB\\Final_Training\\Images\\00000\\00002_00029.ppm")
     imgs = [img,img]
-    p = {'octaves':6, 'persistence':0.5, 'lacunarity': 8, 'alpha': 1.0}
+    p = {'octaves':8, 'persistence':0.8, 'lacunarity': 8, 'alpha': 0.4}
     day = {'factor':1.0} 
     night = {'factor':0.3}
     rain = {'rain_drops':500, 'drop_length':2,'drop_width':1,'blurr':(2,2),'color':(200,200,255)}
@@ -92,8 +111,11 @@ def QuickDebug():
     Filter_Con = {'fog_set':p, 'day_set':day, 'wh_set':rain}
     F = Filter(Filter_Con)
 
-    newImage = F*imgs
-    newImage[0].show()
+    snow = premade_single_filter('fog')
+    (snow + img).show()
+    #newImage = F*imgs
+    #newImage[0].show()
+    #newImage[1].show()
 
 QuickDebug()
 #fog_set=(1)
