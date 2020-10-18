@@ -185,22 +185,19 @@ class h5_object():
             img_in_class = len(self.get_key(self.h5, keys))
             print(f"{i-2} & {img_in_class} & {math.floor(img_in_class * self.training_split)} & {math.ceil(img_in_class * h5_object.get_val_size(self))} /")
 
-    def get_part_of_array(self, current_slize:int, max_slice:int, split, class_index:int, train_set:list, train_label:list, val_set:list, val_label:list, keys:list):
+    def get_part_of_array(self, current_slize:int, max_slice:int, split:float, class_index:int, train_set:list, train_label:list, val_set:list, val_label:list, keys:list)->:
         """Returns a part of the train_set, train_lable, val_set and val_label lists, based on how many slices the lists are split into and what slize we are currently on
 
         Args:
-            current_slize (int): [description]
-            max_slice (int): [description]
-            split ([type]): [description]
-            class_index (int): [description]
-            train_set (list): [description]
-            train_label (list): [description]
-            val_set (list): [description]
-            val_label (list): [description]
-            keys (list): [description]
-
-        Returns:
-            [type]: [description]
+            current_slize (int): the current slize 
+            max_slice (int): how many slizes the array should be split itno
+            split (float): how the train and validation should be split
+            class_index (int): the class of images currently to be split
+            train_set (list): the list of train images
+            train_label (list): the list of train labesl
+            val_set (list): the list of validation images
+            val_label (list): the list of validation lables
+            keys (list): the key to the images from the h5 file
         """
         is_last = current_slize == max_slice - 1
         split_size = math.floor(len(self.ppm_names[class_index]) / max_slice)
@@ -222,6 +219,16 @@ class h5_object():
         return train_set, train_label, val_set, val_label
 
     def shuffle_and_lazyload(self, current_iteration:int, max_iteration:int, shuffle=True)->tuple:
+        """This method iterates through all the different classes of images, and returns a part of the images based on the current iteration and the max iteratino
+
+        Args:
+            current_iteration (int): the current iteration
+            max_iteration (int): how many slizes the images should be split into
+            shuffle (bool, optional): whether or not the output tuple should be shuffled. Defaults to True.
+
+        Returns:
+            tuple: a tuple consisting of a train and validation set each containing images and labes.
+        """
         train_set = []
         train_label = []
 
@@ -241,7 +248,17 @@ class h5_object():
 
         return train_set, train_label, val_set, val_label
 
-    def lazyload_h5(self, current_iteration:int, max_iteration:int, shuffle=True)->tuple:
+    def lazyload_h5(self, current_iteration:int, max_iteration:int, shuffle=True)->tuple: # NOT USED ANYMORE
+        """NOT USED ANYMORE
+
+        Args:
+            current_iteration (int): [description]
+            max_iteration (int): [description]
+            shuffle (bool, optional): [description]. Defaults to True.
+
+        Returns:
+            tuple: [description]
+        """
         is_last = current_iteration == max_iteration - 1
 
         train_set = []

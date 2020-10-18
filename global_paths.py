@@ -8,6 +8,14 @@ paths = {
     }
 
 def get_paths(key:str)->str:
+    """Given a key, the value for that key is returned
+
+    Args:
+        key (str): The input key
+
+    Returns:
+        str: The corresponding value
+    """
     if key in paths:
         return paths.get(key)
     else:
@@ -15,16 +23,41 @@ def get_paths(key:str)->str:
         return -1
 
 def get_h5_path()->str:
+    """Returns the path to the h5py file
+
+    Returns:
+        str: the path to the h5py file
+    """
     return paths.get("h5")
 
 def get_dataset_path()->str:
+    """Returns the path to the dataset
+
+    Returns:
+        str: the path to the dataset 
+    """
     return paths.get("dataset")
 
 def get_current_model_path()->str:
+    """Returns the path to the current model
+
+    Returns:
+        str: the path to the current model
+    """
     return paths.get("current_model")
 
 def get_test_img_path()->str:
+    """Returns the path to the test images 
+
+    Returns:
+        str: the path to the test images
+    """
     return paths.get("test_img_path")
 
 def get_model_path()->str:
+    """Returns the path to the model
+
+    Returns:
+        str: the path to the model
+    """
     return paths.get("model") 
