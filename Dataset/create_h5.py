@@ -8,7 +8,14 @@ from os import path
 from tqdm import tqdm
 from tqdm import trange
 
-def generate_h5(h5Path, dataset_path):
+def generate_h5(h5Path:str, dataset_path:str)->None:
+    """This method generates a H5PY file from the data in the dataset_path, and a
+    saves it in the h5Path
+
+    Args:
+        h5Path (str): the path where the H5PY files will be saved
+        dataset_path (str): The path to the data the H5PY file will be based on
+    """
 
     print(f"\n\n\nA new H5PY file is about to be created.\n    Dataset path: {dataset_path}\n    H5PY Path: {h5Path}\n\n")
     if path.exists(h5Path):
