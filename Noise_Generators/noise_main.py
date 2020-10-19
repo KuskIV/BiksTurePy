@@ -4,14 +4,6 @@ from brightness import brightness
 from PIL import Image
 import random
 
-import os,sys,inspect
-current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-parent_dir = os.path.dirname(current_dir)
-sys.path.insert(0, parent_dir) 
-
-from general_image_func import convertToPILImg
-from Dataset.load_h5 import h5_object
-
 class Filter:
     """The filter class is a combination the three noises fog, 
     brightness and weather, the purpose is to provide a easy way the reuse and repeat the settings for a filter.
@@ -137,14 +129,7 @@ def premade_single_filter(str:str)->Filter:
     return result
 
 def QuickDebugL():
-    h5_obj = h5_object(30, training_split=0.7)
-    train_images, _, _, _ = h5_obj.shuffle_and_lazyload(1, 100)
-
-    for img in range(len(train_images)):
-        train_images[img] = convertToPILImg(train_images[img], normilized=False)
-
-    #imgs = Image.open("C:\\Users\\jeppe\\Desktop\\GTSRB_Final_Training_Images\\GTSRB\\Final_Training\\Images\\00000\\00002_00029.ppm")
-    imgs = train_images
+    imgs = Image.open("C:\\Users\\jeppe\\Desktop\\GTSRB_Final_Training_Images\\GTSRB\\Final_Training\\Images\\00000\\00002_00029.ppm")
     F = premade_single_filter('fog')
     R = premade_single_filter('rain')
     S = premade_single_filter('snow')
