@@ -1,8 +1,13 @@
 from weather import weather
-from Perlin_noise import perlin
+from perlin_noise import perlin
 from brightness import brightness
 from PIL import Image
 import random
+import os,sys,inspect
+current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+parent_dir = os.path.dirname(current_dir)
+sys.path.insert(0, parent_dir)
+import global_paths
 
 class Filter:
     """The filter class is a combination the three noises fog, 
@@ -109,6 +114,24 @@ def apply_multiple_filters(Imgs:list,mode = 'rand',KeepOriginal:bool=True,filter
 
     return result
 
+        
+def loadImags(folder):
+    loaded_img = []
+    with os.scandir(folder) as imgs:
+        for ppm_path in imgs:
+            if ppm_path.name.endswith(".ppm"):
+                loaded_img.append(Image.open(ppm_path.path))
+    return loaded_img  
+
+def load_X_images(path):
+    subfolders = [ f.path for f in os.scandir(path) if f.is_dir() ]
+    newImgs = []
+    for folder in subfolders:
+        imgs = loadImags(folder)
+        newImgs.extend(imgs)
+    return newImgs
+
+
 def premade_single_filter(str:str)->Filter:
     config = {}
     if str == 'fog':
@@ -129,7 +152,8 @@ def premade_single_filter(str:str)->Filter:
     return result
 
 def QuickDebugL():
-    imgs = Image.open("C:\\Users\\jeppe\\Desktop\\GTSRB_Final_Training_Images\\GTSRB\\Final_Training\\Images\\00000\\00002_00029.ppm")
+    #imgs = Image.open("C:\\Users\\jeppe\\Desktop\\GTSRB_Final_Training_Images\\GTSRB\\Final_Training\\Images\\00000\\00002_00029.ppm")
+    imgs = load_X_images('C:/Users/jeppe/Desktop/FullIJCNN2013')
     F = premade_single_filter('fog')
     R = premade_single_filter('rain')
     S = premade_single_filter('snow')
@@ -138,9 +162,8 @@ def QuickDebugL():
     dict = {'fog':F,'rain':R,'snow':S,'day':D,'night':N}
     res = apply_multiple_filters(imgs,filters=dict, mode='normal')
     for i in range(len(res)):
-        res[i][0].show()
-        res[i][0].save(f'/home/biks/Desktop/YEET/{i}.png')
-        break
+        res[i][0].save(f'C:/Users/jeppe/Desktop/imagesFolder/{i}.png')
+        
 
 def QuickDebug():
     """Small debug function

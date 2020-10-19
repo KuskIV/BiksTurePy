@@ -3,7 +3,7 @@ from PIL import Image
 current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parent_dir = os.path.dirname(current_dir)
 sys.path.insert(0, parent_dir)
-from General_image_func import changeImageSize,merge_two_images,convertToPILImg
+from general_image_func import changeImageSize,merge_two_images,convertToPILImg
 from Noise_Generators.Main_Noise import Noise
 
 def CreateDistination(dist):
@@ -49,6 +49,14 @@ def Generate_Dataset(path,dist,resolution, mode = "all"):
     subfolders = [ f.path for f in os.scandir(path) if f.is_dir() ]
     if mode == "all": #More modes can easyly be added with else if chaining
         AddNoiseToAllImg(subfolders,dist)
+
+def load_X_images(path):
+    subfolders = [ f.path for f in os.scandir(path) if f.is_dir() ]
+    newImgs = []
+    for folder in subfolders:
+        imgs = loadImags(folder)
+        newImgs.extend(imgs)
+    return newImgs
 
 path = 'C:/Users/jeppe/Desktop/FullIJCNN2013'
 dist = "C:/Users/jeppe/Desktop/Test/pls"
