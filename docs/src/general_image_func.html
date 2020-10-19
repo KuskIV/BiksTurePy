@@ -1,0 +1,558 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.9.1" />
+<title>src.general_image_func API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>src.general_image_func</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">import numpy as np
+import random as rd
+import re
+import tensorflow as tf
+from PIL import Image
+import random
+
+def changeImageSize(maxWidth: int, 
+                    maxHeight: int, 
+                    image:np.array)-&gt;Image.Image:
+    &#34;&#34;&#34;Resizes an image
+
+    Args:
+        maxWidth (int): The max width of the image
+        maxHeight (int): The max heigth of the image
+        image (np.array): The input image to resize
+
+    Returns:
+        Image.Image: The resized image
+    &#34;&#34;&#34;
+    
+
+    widthRatio  = maxWidth/image.size[0]
+    heightRatio = maxHeight/image.size[1]
+
+    newWidth    = int(widthRatio*image.size[0])
+    newHeight   = int(heightRatio*image.size[1])
+
+    return image.resize((newWidth, newHeight))
+
+def EnsureUniformImageShape(img1: Image.Image,img2: Image.Image, shape=None)-&gt;tuple:
+    &#34;&#34;&#34;This method ensure two imagse are uniform, and returns them
+
+    Args:
+        img1 (Image.Image): The first image
+        img2 (Image.Image): The second image
+        shape ([type], optional): The shape to set both image to. Defaults to None.
+
+    Returns:
+        tuple: A tuple containing both images
+    &#34;&#34;&#34;
+
+    size1 = img1.size
+    size2 = img2.size
+
+    if(shape != None):
+        img1 = changeImageSize(shape[0], shape[1], img1)
+        img2 = changeImageSize(shape[0], shape[1], img2)
+        return img1,img2
+    elif(size2 == size1):
+        return img1,img2
+    else:
+        img2 = changeImageSize(size1[0],size1[1],img2)
+        return img1,img2
+
+def merge_two_images(img1: Image.Image
+                    ,img2: Image.Image,
+                     alpha:float=0.25, 
+                     shape:tuple = None)-&gt;Image.Image:
+    &#34;&#34;&#34;Merges two images, and returns one image
+
+    Args:
+        img1 (Image.Image): The first image
+        img2 (Image.Image): The second imaeg
+        alpha (float, optional): The opacity of the imaeg when merging them. Defaults to 0.25.
+        shape (tuple, optional): The shape of the output image. Defaults to None.
+
+    Returns:
+        Image.Image: The two images merged
+    &#34;&#34;&#34;
+    image3,image4 = EnsureUniformImageShape(img1, img2,shape=shape)
+
+    image5 = image3.convert(&#34;RGBA&#34;)
+    image6 = image4.convert(&#34;RGBA&#34;)
+
+    return Image.blend(image5, image6, alpha=alpha)
+
+def convertToPILImg(img1: np.array, normilized = True)-&gt; Image.Image:
+    &#34;&#34;&#34;Converts a numpy array to a PIL image
+
+    Args:
+        img1 (np.array): The array to convert
+        normilized (bool, optional): If the value should be between 0-1. Defaults to True.
+
+    Returns:
+        Image.Image: The output image after it has been converted
+    &#34;&#34;&#34;
+
+    if normilized is True:
+        img1 = img1 * 255
+    # converting the dfloat64 numpy to a unit8 - is required by PIL
+    numpy_image_rescaled_uint8 = np.array(img1, np.uint8)
+    # convert to PIL and show
+    im = Image.fromarray(numpy_image_rescaled_uint8)
+    return im
+
+def get_class_names()-&gt;list:
+    &#34;&#34;&#34;Gets classification name for each label from the labels.txt, which is assumed to be in root.
+    
+    Returns:
+        list: A list of all the class names
+    &#34;&#34;&#34;
+    class_names = []
+    # RegEx to match for labels in labels.txt
+    labels_regex = re.compile(&#39;(?&lt;== )(.)*&#39;)
+
+    with open(&#39;labels.txt&#39;, &#39;r&#39;) as fp:
+        i = 0
+        for line in fp:
+            match = labels_regex.search(line).group(0)
+            class_names.append(match)
+
+    return class_names
+
+def make_prediction(model, image): # hopfully delete
+    img_reshaped = tf.reshape(image, (1, 32, 32, 3))
+    return model.predict_step(img_reshaped)
+
+def display_ppm_image(path: str)-&gt;None:
+    &#34;&#34;&#34;Input a path to original image to display it
+
+    Args:
+        path (str): The path to the original image
+    &#34;&#34;&#34;
+    im = Image.open(path)
+    im.show()
+
+def display_numpy_image(numpy_image:np.array)-&gt;None:
+    &#34;&#34;&#34;Input a (0 to 1) normalized numpy representation of a PIL image, to show it
+
+    Args:
+        numpy_image (np.array): The input image to normalize
+    &#34;&#34;&#34;
+    # Scaling the pixels back
+    numpy_image_rescaled = numpy_image * 255
+    # converting the dfloat64 numpy to a unit8 - is required by PIL
+    numpy_image_rescaled_uint8 = np.array(numpy_image_rescaled, np.uint8)
+    # convert to PIL and show
+    im = Image.fromarray(numpy_image_rescaled_uint8)
+    im.show()
+
+def convert_imgs_to_numpy_arrays(dataset: list)-&gt;list:
+    &#34;&#34;&#34;Receive a dataset in and return an numpy array of the images
+       converted to normalized (0 to 1) numpy arrays.
+
+    Args:
+        dataset (list): A list of PIL images to convert
+
+    Returns:
+        list: A list of numpu arrays after they have been converted
+    &#34;&#34;&#34;
+    converted_images = []
+    # Convert images to numpy arrays
+    for image in dataset:
+        im_ppm = Image.open(image[0]) # Open as PIL image
+        im_array = np.asarray(im_ppm) # Convert to numpy array
+        converted_images.append(im_array / 255.0) # Normalize pixel values to be between 0 and 1
+
+    return converted_images</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="src.general_image_func.EnsureUniformImageShape"><code class="name flex">
+<span>def <span class="ident">EnsureUniformImageShape</span></span>(<span>img1: PIL.Image.Image, img2: PIL.Image.Image, shape=None) ‑> tuple</span>
+</code></dt>
+<dd>
+<div class="desc"><p>This method ensure two imagse are uniform, and returns them</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>img1</code></strong> :&ensp;<code>Image.Image</code></dt>
+<dd>The first image</dd>
+<dt><strong><code>img2</code></strong> :&ensp;<code>Image.Image</code></dt>
+<dd>The second image</dd>
+<dt><strong><code>shape</code></strong> :&ensp;<code>[type]</code>, optional</dt>
+<dd>The shape to set both image to. Defaults to None.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tuple</code></dt>
+<dd>A tuple containing both images</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def EnsureUniformImageShape(img1: Image.Image,img2: Image.Image, shape=None)-&gt;tuple:
+    &#34;&#34;&#34;This method ensure two imagse are uniform, and returns them
+
+    Args:
+        img1 (Image.Image): The first image
+        img2 (Image.Image): The second image
+        shape ([type], optional): The shape to set both image to. Defaults to None.
+
+    Returns:
+        tuple: A tuple containing both images
+    &#34;&#34;&#34;
+
+    size1 = img1.size
+    size2 = img2.size
+
+    if(shape != None):
+        img1 = changeImageSize(shape[0], shape[1], img1)
+        img2 = changeImageSize(shape[0], shape[1], img2)
+        return img1,img2
+    elif(size2 == size1):
+        return img1,img2
+    else:
+        img2 = changeImageSize(size1[0],size1[1],img2)
+        return img1,img2</code></pre>
+</details>
+</dd>
+<dt id="src.general_image_func.changeImageSize"><code class="name flex">
+<span>def <span class="ident">changeImageSize</span></span>(<span>maxWidth: int, maxHeight: int, image: <built-in function array>) ‑> PIL.Image.Image</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Resizes an image</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>maxWidth</code></strong> :&ensp;<code>int</code></dt>
+<dd>The max width of the image</dd>
+<dt><strong><code>maxHeight</code></strong> :&ensp;<code>int</code></dt>
+<dd>The max heigth of the image</dd>
+<dt><strong><code>image</code></strong> :&ensp;<code>np.array</code></dt>
+<dd>The input image to resize</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Image.Image</code></dt>
+<dd>The resized image</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def changeImageSize(maxWidth: int, 
+                    maxHeight: int, 
+                    image:np.array)-&gt;Image.Image:
+    &#34;&#34;&#34;Resizes an image
+
+    Args:
+        maxWidth (int): The max width of the image
+        maxHeight (int): The max heigth of the image
+        image (np.array): The input image to resize
+
+    Returns:
+        Image.Image: The resized image
+    &#34;&#34;&#34;
+    
+
+    widthRatio  = maxWidth/image.size[0]
+    heightRatio = maxHeight/image.size[1]
+
+    newWidth    = int(widthRatio*image.size[0])
+    newHeight   = int(heightRatio*image.size[1])
+
+    return image.resize((newWidth, newHeight))</code></pre>
+</details>
+</dd>
+<dt id="src.general_image_func.convertToPILImg"><code class="name flex">
+<span>def <span class="ident">convertToPILImg</span></span>(<span>img1: <built-in function array>, normilized=True) ‑> PIL.Image.Image</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Converts a numpy array to a PIL image</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>img1</code></strong> :&ensp;<code>np.array</code></dt>
+<dd>The array to convert</dd>
+<dt><strong><code>normilized</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>If the value should be between 0-1. Defaults to True.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Image.Image</code></dt>
+<dd>The output image after it has been converted</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def convertToPILImg(img1: np.array, normilized = True)-&gt; Image.Image:
+    &#34;&#34;&#34;Converts a numpy array to a PIL image
+
+    Args:
+        img1 (np.array): The array to convert
+        normilized (bool, optional): If the value should be between 0-1. Defaults to True.
+
+    Returns:
+        Image.Image: The output image after it has been converted
+    &#34;&#34;&#34;
+
+    if normilized is True:
+        img1 = img1 * 255
+    # converting the dfloat64 numpy to a unit8 - is required by PIL
+    numpy_image_rescaled_uint8 = np.array(img1, np.uint8)
+    # convert to PIL and show
+    im = Image.fromarray(numpy_image_rescaled_uint8)
+    return im</code></pre>
+</details>
+</dd>
+<dt id="src.general_image_func.convert_imgs_to_numpy_arrays"><code class="name flex">
+<span>def <span class="ident">convert_imgs_to_numpy_arrays</span></span>(<span>dataset: list) ‑> list</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Receive a dataset in and return an numpy array of the images
+converted to normalized (0 to 1) numpy arrays.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>dataset</code></strong> :&ensp;<code>list</code></dt>
+<dd>A list of PIL images to convert</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>list</code></dt>
+<dd>A list of numpu arrays after they have been converted</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def convert_imgs_to_numpy_arrays(dataset: list)-&gt;list:
+    &#34;&#34;&#34;Receive a dataset in and return an numpy array of the images
+       converted to normalized (0 to 1) numpy arrays.
+
+    Args:
+        dataset (list): A list of PIL images to convert
+
+    Returns:
+        list: A list of numpu arrays after they have been converted
+    &#34;&#34;&#34;
+    converted_images = []
+    # Convert images to numpy arrays
+    for image in dataset:
+        im_ppm = Image.open(image[0]) # Open as PIL image
+        im_array = np.asarray(im_ppm) # Convert to numpy array
+        converted_images.append(im_array / 255.0) # Normalize pixel values to be between 0 and 1
+
+    return converted_images</code></pre>
+</details>
+</dd>
+<dt id="src.general_image_func.display_numpy_image"><code class="name flex">
+<span>def <span class="ident">display_numpy_image</span></span>(<span>numpy_image: <built-in function array>) ‑> NoneType</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Input a (0 to 1) normalized numpy representation of a PIL image, to show it</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>numpy_image</code></strong> :&ensp;<code>np.array</code></dt>
+<dd>The input image to normalize</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def display_numpy_image(numpy_image:np.array)-&gt;None:
+    &#34;&#34;&#34;Input a (0 to 1) normalized numpy representation of a PIL image, to show it
+
+    Args:
+        numpy_image (np.array): The input image to normalize
+    &#34;&#34;&#34;
+    # Scaling the pixels back
+    numpy_image_rescaled = numpy_image * 255
+    # converting the dfloat64 numpy to a unit8 - is required by PIL
+    numpy_image_rescaled_uint8 = np.array(numpy_image_rescaled, np.uint8)
+    # convert to PIL and show
+    im = Image.fromarray(numpy_image_rescaled_uint8)
+    im.show()</code></pre>
+</details>
+</dd>
+<dt id="src.general_image_func.display_ppm_image"><code class="name flex">
+<span>def <span class="ident">display_ppm_image</span></span>(<span>path: str) ‑> NoneType</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Input a path to original image to display it</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>path</code></strong> :&ensp;<code>str</code></dt>
+<dd>The path to the original image</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def display_ppm_image(path: str)-&gt;None:
+    &#34;&#34;&#34;Input a path to original image to display it
+
+    Args:
+        path (str): The path to the original image
+    &#34;&#34;&#34;
+    im = Image.open(path)
+    im.show()</code></pre>
+</details>
+</dd>
+<dt id="src.general_image_func.get_class_names"><code class="name flex">
+<span>def <span class="ident">get_class_names</span></span>(<span>) ‑> list</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Gets classification name for each label from the labels.txt, which is assumed to be in root.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>list</code></dt>
+<dd>A list of all the class names</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_class_names()-&gt;list:
+    &#34;&#34;&#34;Gets classification name for each label from the labels.txt, which is assumed to be in root.
+    
+    Returns:
+        list: A list of all the class names
+    &#34;&#34;&#34;
+    class_names = []
+    # RegEx to match for labels in labels.txt
+    labels_regex = re.compile(&#39;(?&lt;== )(.)*&#39;)
+
+    with open(&#39;labels.txt&#39;, &#39;r&#39;) as fp:
+        i = 0
+        for line in fp:
+            match = labels_regex.search(line).group(0)
+            class_names.append(match)
+
+    return class_names</code></pre>
+</details>
+</dd>
+<dt id="src.general_image_func.make_prediction"><code class="name flex">
+<span>def <span class="ident">make_prediction</span></span>(<span>model, image)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def make_prediction(model, image): # hopfully delete
+    img_reshaped = tf.reshape(image, (1, 32, 32, 3))
+    return model.predict_step(img_reshaped)</code></pre>
+</details>
+</dd>
+<dt id="src.general_image_func.merge_two_images"><code class="name flex">
+<span>def <span class="ident">merge_two_images</span></span>(<span>img1: PIL.Image.Image, img2: PIL.Image.Image, alpha: float = 0.25, shape: tuple = None) ‑> PIL.Image.Image</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Merges two images, and returns one image</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>img1</code></strong> :&ensp;<code>Image.Image</code></dt>
+<dd>The first image</dd>
+<dt><strong><code>img2</code></strong> :&ensp;<code>Image.Image</code></dt>
+<dd>The second imaeg</dd>
+<dt><strong><code>alpha</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>The opacity of the imaeg when merging them. Defaults to 0.25.</dd>
+<dt><strong><code>shape</code></strong> :&ensp;<code>tuple</code>, optional</dt>
+<dd>The shape of the output image. Defaults to None.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Image.Image</code></dt>
+<dd>The two images merged</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def merge_two_images(img1: Image.Image
+                    ,img2: Image.Image,
+                     alpha:float=0.25, 
+                     shape:tuple = None)-&gt;Image.Image:
+    &#34;&#34;&#34;Merges two images, and returns one image
+
+    Args:
+        img1 (Image.Image): The first image
+        img2 (Image.Image): The second imaeg
+        alpha (float, optional): The opacity of the imaeg when merging them. Defaults to 0.25.
+        shape (tuple, optional): The shape of the output image. Defaults to None.
+
+    Returns:
+        Image.Image: The two images merged
+    &#34;&#34;&#34;
+    image3,image4 = EnsureUniformImageShape(img1, img2,shape=shape)
+
+    image5 = image3.convert(&#34;RGBA&#34;)
+    image6 = image4.convert(&#34;RGBA&#34;)
+
+    return Image.blend(image5, image6, alpha=alpha)</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="src" href="index.html">src</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="src.general_image_func.EnsureUniformImageShape" href="#src.general_image_func.EnsureUniformImageShape">EnsureUniformImageShape</a></code></li>
+<li><code><a title="src.general_image_func.changeImageSize" href="#src.general_image_func.changeImageSize">changeImageSize</a></code></li>
+<li><code><a title="src.general_image_func.convertToPILImg" href="#src.general_image_func.convertToPILImg">convertToPILImg</a></code></li>
+<li><code><a title="src.general_image_func.convert_imgs_to_numpy_arrays" href="#src.general_image_func.convert_imgs_to_numpy_arrays">convert_imgs_to_numpy_arrays</a></code></li>
+<li><code><a title="src.general_image_func.display_numpy_image" href="#src.general_image_func.display_numpy_image">display_numpy_image</a></code></li>
+<li><code><a title="src.general_image_func.display_ppm_image" href="#src.general_image_func.display_ppm_image">display_ppm_image</a></code></li>
+<li><code><a title="src.general_image_func.get_class_names" href="#src.general_image_func.get_class_names">get_class_names</a></code></li>
+<li><code><a title="src.general_image_func.make_prediction" href="#src.general_image_func.make_prediction">make_prediction</a></code></li>
+<li><code><a title="src.general_image_func.merge_two_images" href="#src.general_image_func.merge_two_images">merge_two_images</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.1</a>.</p>
+</footer>
+</body>
+</html>

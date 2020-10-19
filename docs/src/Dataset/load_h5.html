@@ -1,0 +1,1121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.9.1" />
+<title>src.Dataset.load_h5 API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>src.Dataset.load_h5</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">import h5py
+import numpy as np
+import os
+import io
+from PIL import Image
+import math
+from os import path
+import os.path
+import sys
+import re
+from PIL import Image
+import random
+
+import os,sys,inspect
+current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+parent_dir = os.path.dirname(current_dir)
+sys.path.insert(0, parent_dir) 
+
+from src.global_paths import get_h5_path
+
+data = []
+group = []
+
+def sort_groups(name:int, obj:object)-&gt;None:
+    &#34;&#34;&#34;Used to sort objects in a H5PY file into grous and data
+
+    Args:
+        name (int): The name of the class
+        obj (object): the object we are looking at
+    &#34;&#34;&#34;
+    if isinstance(obj, h5py.Dataset):
+        data.append(name)
+    elif isinstance(obj, h5py.Group):
+        group.append(name)
+
+def get_h5(h5_path:str)-&gt;h5py._hl.files.File:
+    &#34;&#34;&#34;Given a path, a H5PY object is returned if it exists
+
+    Args:
+        h5_path (str): The path where the H5PY is located
+
+    Returns:
+        h5py._hl.files.File: The opend H5PY
+    &#34;&#34;&#34;
+    if not path.exists(h5_path):
+        print(f&#34;The path for the h5 file does not exist ({h5_path}). The program has exited.&#34;)
+        sys.exit()
+    else:
+        h5 = h5py.File(h5_path, &#39;r&#39;)
+        h5.visititems(sort_groups)
+        return h5
+
+
+## DONT DELETE THESE THREE LINES OF CODE!
+#img_as_arr = np.array(self.h5[keys[0]][keys[1]][ppm_names[i]])
+#img = Image.fromarray(img_as_arr.astype(&#39;uint8&#39;), &#39;RGB&#39;)
+#img.show()
+
+def Shuffle(img_dataset:int, img_labels:int)-&gt;tuple:
+    &#34;&#34;&#34;Given two lists, they are zipped together, are shuffled and returned
+
+    Args:
+        img_dataset (int): A list of arrays, representing the images
+        img_labels (int): A list of lables for each of the images
+
+    Returns:
+        tuple: A tuple consisting of the images and lables after they are shuffled
+    &#34;&#34;&#34;
+    img_dataset_in = img_dataset
+    img_labels_in = img_labels
+
+    z = zip(img_dataset, img_labels)
+    z_list = list(z)
+    random.shuffle(z_list)
+    img_dataset_tuple, img_labels_tuple = zip(*z_list)
+    img_dataset_in = np.array(img_dataset_tuple)
+    img_labels_in = np.array(img_labels_tuple)
+
+    return img_dataset_in, img_labels_in
+
+def get_slice(img_in_class:int, split:float, iteration:int, is_last=False)-&gt;int: # Not used anymore
+    return math.ceil((img_in_class * split) / iteration) if is_last else math.floor((img_in_class * split) / iteration)
+
+
+def get_keys(group:str)-&gt;list:
+    &#34;&#34;&#34;This method splits a string up into different substrings, each representing a key in the H5PY file 
+
+    Args:
+        group (str): the string to split
+
+    Returns:
+        list: The split string 
+    &#34;&#34;&#34;
+    return re.split(&#39;/&#39;, group)
+
+class h5_object():
+    
+    def generate_ppm_keys(self, start_val:int, end_val:int)-&gt;list:
+        &#34;&#34;&#34;Generates the names of the ppm images based on a start and end value
+
+        Args:
+            start_val (int): The first ppm image name to be generated
+            end_val (int): the last ppm image name to be generated
+
+        Returns:
+            list: a list of all the ppm image names
+        &#34;&#34;&#34;
+        names = []
+        for i in range(start_val, end_val):
+            ppm_start = str(math.floor(i / self.folder_batch_size)).zfill(5)
+            ppm_end = str(i % self.folder_batch_size).zfill(5)
+            ppm = f&#34;{ppm_start}_{ppm_end}.ppm&#34;
+            self.img_in_h5 += 1
+            names.append(ppm)
+        return names
+
+    def ppm_keys_to_list(self)-&gt;None:
+        &#34;&#34;&#34;Generates names for all ppm images based on how many ppm images there are in each folder
+        &#34;&#34;&#34;
+        for i in range(len(group)):
+            keys = get_keys(group[i])
+            if len(keys) == self.nested_level:
+                img_in_class = len(self.get_key(self.h5, keys))
+                self.ppm_names.append(self.generate_ppm_keys(0, img_in_class))
+                random.shuffle(self.ppm_names[-1])
+            else:
+                self.error_index += 1
+
+    def __init__(self, folder_batch_size:int, get_key, get_ppm_arr, train_set_start_end, val_set_start_end, training_split=0.7):
+        self.folder_batch_size = folder_batch_size
+        self.nested_level = len(get_h5_path().split(&#34;/&#34;))
+        self.h5 = get_h5(get_h5_path())
+        self.training_split = training_split
+        
+        self.get_key = get_key
+        self.get_ppm_arr = get_ppm_arr
+        self.train_set_start_end = train_set_start_end
+        self.val_set_start_end = val_set_start_end
+
+        self.error_index = 0
+        self.ppm_names = []
+        self.img_in_h5 = 0
+        self.ppm_keys_to_list()
+
+    def get_ppm_img_index(self, index:int)-&gt;int:
+        &#34;&#34;&#34;Returns the index of class currently in, subtracting the unused ones
+
+        Args:
+            index (int): the current index
+
+        Returns:
+            [type]: the index when the error index is subtracted
+        &#34;&#34;&#34;
+        return index - self.error_index
+
+    def get_val_size(self)-&gt;float:
+        &#34;&#34;&#34;Calculates and returns the valuation size, by subtracting the training split
+
+        Returns:
+            float: the valuation size
+        &#34;&#34;&#34;
+        return 1 - self.training_split
+
+    def append_to_list(self, ppm_names:list, keys:list, images:list, labels:list):
+        &#34;&#34;&#34;Given a list of ppm names, they are translated into their corresponding image, and added to a list, alongisde its lable
+
+        Args:
+            ppm_names (list): the list of names of ppm images
+            keys (list): The key for the list, containing the class
+            images (list): the list of image to add to
+            labels (list): the list of lables
+        &#34;&#34;&#34;
+        for j in range(len(ppm_names)):
+            arr = np.array(self.get_ppm_arr(self.h5, keys, ppm_names[j]))
+            images.append(arr / 255.0)
+            labels.append(int(keys[2]))
+
+    def print_class_data(self)-&gt;None:
+        &#34;&#34;&#34;A table generator method for latex, which prints out the amount of images in each class
+        &#34;&#34;&#34;
+        for i in range(len(group)):
+            keys = get_keys(group[i])
+            if len(keys) != self.nested_level:
+                continue
+            img_in_class = len(self.get_key(self.h5, keys))
+            print(f&#34;{i-2} &amp; {img_in_class} &amp; {math.floor(img_in_class * self.training_split)} &amp; {math.ceil(img_in_class * h5_object.get_val_size(self))} /&#34;)
+
+    def get_part_of_array(self, current_slize:int, max_slice:int, split:float, class_index:int, train_set:list, train_label:list, val_set:list, val_label:list, keys:list)-&gt;tuple:
+        &#34;&#34;&#34;Returns a part of the train_set, train_lable, val_set and val_label lists, based on how many slices the lists are split into and what slize we are currently on
+
+        Args:
+            current_slize (int): the current slize 
+            max_slice (int): how many slizes the array should be split itno
+            split (float): how the train and validation should be split
+            class_index (int): the class of images currently to be split
+            train_set (list): the list of train images
+            train_label (list): the list of train labesl
+            val_set (list): the list of validation images
+            val_label (list): the list of validation lables
+            keys (list): the key to the images from the h5 file
+        &#34;&#34;&#34;
+        is_last = current_slize == max_slice - 1
+        split_size = math.floor(len(self.ppm_names[class_index]) / max_slice)
+
+        train_size = math.floor(split_size * split)
+        val_size = split_size - train_size
+
+        train_start = split_size * current_slize
+        train_end = train_start + train_size
+        
+        val_start = train_end
+        val_end = val_start + val_size if not is_last else len(self.ppm_names[class_index])
+
+        print(f&#34;{class_index} - train: {train_start} - {train_end}. Val: {val_start} - {val_end}, {is_last}, length: {len(self.ppm_names[class_index])}, split: {split_size}, {class_index} &lt; {len(self.ppm_names)}&#34;)
+        
+        self.append_to_list(self.ppm_names[class_index][train_start:train_end], keys, train_set, train_label)
+        self.append_to_list(self.ppm_names[class_index][val_start:val_end], keys, val_set, val_label)
+
+        return train_set, train_label, val_set, val_label
+
+    def shuffle_and_lazyload(self, current_iteration:int, max_iteration:int, shuffle=True)-&gt;tuple:
+        &#34;&#34;&#34;This method iterates through all the different classes of images, and returns a part of the images based on the current iteration and the max iteratino
+
+        Args:
+            current_iteration (int): the current iteration
+            max_iteration (int): how many slizes the images should be split into
+            shuffle (bool, optional): whether or not the output tuple should be shuffled. Defaults to True.
+
+        Returns:
+            tuple: a tuple consisting of a train and validation set each containing images and labes.
+        &#34;&#34;&#34;
+        train_set = []
+        train_label = []
+
+        val_set = []
+        val_label = []
+
+        for i in range(len(group)):
+            keys = get_keys(group[i])
+            if len(keys) == self.nested_level:
+                h5_object.get_part_of_array(self, current_iteration, max_iteration, self.training_split, self.get_ppm_img_index(i), train_set, train_label, val_set, val_label, keys) 
+
+        print(f&#34;{current_iteration}: train set: {len(train_set)}, train lables: {len(train_label)}, val set: {len(val_set)}, val labels: {len(val_label)}&#34;) 
+
+        if shuffle:
+            train_set, train_label = Shuffle(train_set, train_label)
+            val_set, val_label = Shuffle(val_set, val_label)
+
+        return train_set, train_label, val_set, val_label
+
+    def lazyload_h5(self, current_iteration:int, max_iteration:int, shuffle=True)-&gt;tuple: # NOT USED ANYMORE
+        &#34;&#34;&#34;NOT USED ANYMORE
+
+        Args:
+            current_iteration (int): [description]
+            max_iteration (int): [description]
+            shuffle (bool, optional): [description]. Defaults to True.
+
+        Returns:
+            tuple: [description]
+        &#34;&#34;&#34;
+        is_last = current_iteration == max_iteration - 1
+
+        train_set = []
+        train_label = []
+
+        val_set = []
+        val_label = []
+
+        print(f&#34;groups: {len(group)}&#34;)
+        print(f&#34;data: {len(data)}&#34;)
+        print(f&#34;{current_iteration} / {max_iteration}&#34;)
+
+        for i in range(len(group)):
+            keys = get_keys(group[i])
+
+            if len(keys) == self.nested_level:
+                img_in_class = len(self.get_key(self.h5, keys))
+
+                train_slice = get_slice(img_in_class, self.training_split, max_iteration)
+                val_slice = get_slice(img_in_class, h5_object.get_val_size(self), max_iteration, is_last)
+                
+                start_val, end_val = self.train_set_start_end(self, train_slice, current_iteration, is_last, img_in_class)
+                ppm_names = h5_object.generate_ppm_keys(self, start_val, end_val)
+
+                h5_object.append_to_list(self, ppm_names, keys, train_set, train_label)
+                
+                start_val, end_val = self.val_set_start_end(self, train_slice, val_slice, current_iteration, is_last, img_in_class, max_iteration)
+                ppm_names = h5_object.generate_ppm_keys(self, start_val, end_val)
+
+                h5_object.append_to_list(self, ppm_names, keys, val_set, val_label)
+
+        if shuffle:
+            train_set, train_label = Shuffle(train_set, train_label)
+            val_set, val_label = Shuffle(val_set, val_label)
+
+        return train_set, train_label, val_set, val_label</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="src.Dataset.load_h5.Shuffle"><code class="name flex">
+<span>def <span class="ident">Shuffle</span></span>(<span>img_dataset: int, img_labels: int) ‑> tuple</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Given two lists, they are zipped together, are shuffled and returned</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>img_dataset</code></strong> :&ensp;<code>int</code></dt>
+<dd>A list of arrays, representing the images</dd>
+<dt><strong><code>img_labels</code></strong> :&ensp;<code>int</code></dt>
+<dd>A list of lables for each of the images</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tuple</code></dt>
+<dd>A tuple consisting of the images and lables after they are shuffled</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def Shuffle(img_dataset:int, img_labels:int)-&gt;tuple:
+    &#34;&#34;&#34;Given two lists, they are zipped together, are shuffled and returned
+
+    Args:
+        img_dataset (int): A list of arrays, representing the images
+        img_labels (int): A list of lables for each of the images
+
+    Returns:
+        tuple: A tuple consisting of the images and lables after they are shuffled
+    &#34;&#34;&#34;
+    img_dataset_in = img_dataset
+    img_labels_in = img_labels
+
+    z = zip(img_dataset, img_labels)
+    z_list = list(z)
+    random.shuffle(z_list)
+    img_dataset_tuple, img_labels_tuple = zip(*z_list)
+    img_dataset_in = np.array(img_dataset_tuple)
+    img_labels_in = np.array(img_labels_tuple)
+
+    return img_dataset_in, img_labels_in</code></pre>
+</details>
+</dd>
+<dt id="src.Dataset.load_h5.get_h5"><code class="name flex">
+<span>def <span class="ident">get_h5</span></span>(<span>h5_path: str) ‑> h5py._hl.files.File</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Given a path, a H5PY object is returned if it exists</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>h5_path</code></strong> :&ensp;<code>str</code></dt>
+<dd>The path where the H5PY is located</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>h5py._hl.files.File</code></dt>
+<dd>The opend H5PY</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_h5(h5_path:str)-&gt;h5py._hl.files.File:
+    &#34;&#34;&#34;Given a path, a H5PY object is returned if it exists
+
+    Args:
+        h5_path (str): The path where the H5PY is located
+
+    Returns:
+        h5py._hl.files.File: The opend H5PY
+    &#34;&#34;&#34;
+    if not path.exists(h5_path):
+        print(f&#34;The path for the h5 file does not exist ({h5_path}). The program has exited.&#34;)
+        sys.exit()
+    else:
+        h5 = h5py.File(h5_path, &#39;r&#39;)
+        h5.visititems(sort_groups)
+        return h5</code></pre>
+</details>
+</dd>
+<dt id="src.Dataset.load_h5.get_keys"><code class="name flex">
+<span>def <span class="ident">get_keys</span></span>(<span>group: str) ‑> list</span>
+</code></dt>
+<dd>
+<div class="desc"><p>This method splits a string up into different substrings, each representing a key in the H5PY file </p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>group</code></strong> :&ensp;<code>str</code></dt>
+<dd>the string to split</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>list</code></dt>
+<dd>The split string</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_keys(group:str)-&gt;list:
+    &#34;&#34;&#34;This method splits a string up into different substrings, each representing a key in the H5PY file 
+
+    Args:
+        group (str): the string to split
+
+    Returns:
+        list: The split string 
+    &#34;&#34;&#34;
+    return re.split(&#39;/&#39;, group)</code></pre>
+</details>
+</dd>
+<dt id="src.Dataset.load_h5.get_slice"><code class="name flex">
+<span>def <span class="ident">get_slice</span></span>(<span>img_in_class: int, split: float, iteration: int, is_last=False) ‑> int</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_slice(img_in_class:int, split:float, iteration:int, is_last=False)-&gt;int: # Not used anymore
+    return math.ceil((img_in_class * split) / iteration) if is_last else math.floor((img_in_class * split) / iteration)</code></pre>
+</details>
+</dd>
+<dt id="src.Dataset.load_h5.sort_groups"><code class="name flex">
+<span>def <span class="ident">sort_groups</span></span>(<span>name: int, obj: object) ‑> NoneType</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Used to sort objects in a H5PY file into grous and data</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong> :&ensp;<code>int</code></dt>
+<dd>The name of the class</dd>
+<dt><strong><code>obj</code></strong> :&ensp;<code>object</code></dt>
+<dd>the object we are looking at</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def sort_groups(name:int, obj:object)-&gt;None:
+    &#34;&#34;&#34;Used to sort objects in a H5PY file into grous and data
+
+    Args:
+        name (int): The name of the class
+        obj (object): the object we are looking at
+    &#34;&#34;&#34;
+    if isinstance(obj, h5py.Dataset):
+        data.append(name)
+    elif isinstance(obj, h5py.Group):
+        group.append(name)</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="src.Dataset.load_h5.h5_object"><code class="flex name class">
+<span>class <span class="ident">h5_object</span></span>
+<span>(</span><span>folder_batch_size: int, get_key, get_ppm_arr, train_set_start_end, val_set_start_end, training_split=0.7)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class h5_object():
+    
+    def generate_ppm_keys(self, start_val:int, end_val:int)-&gt;list:
+        &#34;&#34;&#34;Generates the names of the ppm images based on a start and end value
+
+        Args:
+            start_val (int): The first ppm image name to be generated
+            end_val (int): the last ppm image name to be generated
+
+        Returns:
+            list: a list of all the ppm image names
+        &#34;&#34;&#34;
+        names = []
+        for i in range(start_val, end_val):
+            ppm_start = str(math.floor(i / self.folder_batch_size)).zfill(5)
+            ppm_end = str(i % self.folder_batch_size).zfill(5)
+            ppm = f&#34;{ppm_start}_{ppm_end}.ppm&#34;
+            self.img_in_h5 += 1
+            names.append(ppm)
+        return names
+
+    def ppm_keys_to_list(self)-&gt;None:
+        &#34;&#34;&#34;Generates names for all ppm images based on how many ppm images there are in each folder
+        &#34;&#34;&#34;
+        for i in range(len(group)):
+            keys = get_keys(group[i])
+            if len(keys) == self.nested_level:
+                img_in_class = len(self.get_key(self.h5, keys))
+                self.ppm_names.append(self.generate_ppm_keys(0, img_in_class))
+                random.shuffle(self.ppm_names[-1])
+            else:
+                self.error_index += 1
+
+    def __init__(self, folder_batch_size:int, get_key, get_ppm_arr, train_set_start_end, val_set_start_end, training_split=0.7):
+        self.folder_batch_size = folder_batch_size
+        self.nested_level = len(get_h5_path().split(&#34;/&#34;))
+        self.h5 = get_h5(get_h5_path())
+        self.training_split = training_split
+        
+        self.get_key = get_key
+        self.get_ppm_arr = get_ppm_arr
+        self.train_set_start_end = train_set_start_end
+        self.val_set_start_end = val_set_start_end
+
+        self.error_index = 0
+        self.ppm_names = []
+        self.img_in_h5 = 0
+        self.ppm_keys_to_list()
+
+    def get_ppm_img_index(self, index:int)-&gt;int:
+        &#34;&#34;&#34;Returns the index of class currently in, subtracting the unused ones
+
+        Args:
+            index (int): the current index
+
+        Returns:
+            [type]: the index when the error index is subtracted
+        &#34;&#34;&#34;
+        return index - self.error_index
+
+    def get_val_size(self)-&gt;float:
+        &#34;&#34;&#34;Calculates and returns the valuation size, by subtracting the training split
+
+        Returns:
+            float: the valuation size
+        &#34;&#34;&#34;
+        return 1 - self.training_split
+
+    def append_to_list(self, ppm_names:list, keys:list, images:list, labels:list):
+        &#34;&#34;&#34;Given a list of ppm names, they are translated into their corresponding image, and added to a list, alongisde its lable
+
+        Args:
+            ppm_names (list): the list of names of ppm images
+            keys (list): The key for the list, containing the class
+            images (list): the list of image to add to
+            labels (list): the list of lables
+        &#34;&#34;&#34;
+        for j in range(len(ppm_names)):
+            arr = np.array(self.get_ppm_arr(self.h5, keys, ppm_names[j]))
+            images.append(arr / 255.0)
+            labels.append(int(keys[2]))
+
+    def print_class_data(self)-&gt;None:
+        &#34;&#34;&#34;A table generator method for latex, which prints out the amount of images in each class
+        &#34;&#34;&#34;
+        for i in range(len(group)):
+            keys = get_keys(group[i])
+            if len(keys) != self.nested_level:
+                continue
+            img_in_class = len(self.get_key(self.h5, keys))
+            print(f&#34;{i-2} &amp; {img_in_class} &amp; {math.floor(img_in_class * self.training_split)} &amp; {math.ceil(img_in_class * h5_object.get_val_size(self))} /&#34;)
+
+    def get_part_of_array(self, current_slize:int, max_slice:int, split:float, class_index:int, train_set:list, train_label:list, val_set:list, val_label:list, keys:list)-&gt;tuple:
+        &#34;&#34;&#34;Returns a part of the train_set, train_lable, val_set and val_label lists, based on how many slices the lists are split into and what slize we are currently on
+
+        Args:
+            current_slize (int): the current slize 
+            max_slice (int): how many slizes the array should be split itno
+            split (float): how the train and validation should be split
+            class_index (int): the class of images currently to be split
+            train_set (list): the list of train images
+            train_label (list): the list of train labesl
+            val_set (list): the list of validation images
+            val_label (list): the list of validation lables
+            keys (list): the key to the images from the h5 file
+        &#34;&#34;&#34;
+        is_last = current_slize == max_slice - 1
+        split_size = math.floor(len(self.ppm_names[class_index]) / max_slice)
+
+        train_size = math.floor(split_size * split)
+        val_size = split_size - train_size
+
+        train_start = split_size * current_slize
+        train_end = train_start + train_size
+        
+        val_start = train_end
+        val_end = val_start + val_size if not is_last else len(self.ppm_names[class_index])
+
+        print(f&#34;{class_index} - train: {train_start} - {train_end}. Val: {val_start} - {val_end}, {is_last}, length: {len(self.ppm_names[class_index])}, split: {split_size}, {class_index} &lt; {len(self.ppm_names)}&#34;)
+        
+        self.append_to_list(self.ppm_names[class_index][train_start:train_end], keys, train_set, train_label)
+        self.append_to_list(self.ppm_names[class_index][val_start:val_end], keys, val_set, val_label)
+
+        return train_set, train_label, val_set, val_label
+
+    def shuffle_and_lazyload(self, current_iteration:int, max_iteration:int, shuffle=True)-&gt;tuple:
+        &#34;&#34;&#34;This method iterates through all the different classes of images, and returns a part of the images based on the current iteration and the max iteratino
+
+        Args:
+            current_iteration (int): the current iteration
+            max_iteration (int): how many slizes the images should be split into
+            shuffle (bool, optional): whether or not the output tuple should be shuffled. Defaults to True.
+
+        Returns:
+            tuple: a tuple consisting of a train and validation set each containing images and labes.
+        &#34;&#34;&#34;
+        train_set = []
+        train_label = []
+
+        val_set = []
+        val_label = []
+
+        for i in range(len(group)):
+            keys = get_keys(group[i])
+            if len(keys) == self.nested_level:
+                h5_object.get_part_of_array(self, current_iteration, max_iteration, self.training_split, self.get_ppm_img_index(i), train_set, train_label, val_set, val_label, keys) 
+
+        print(f&#34;{current_iteration}: train set: {len(train_set)}, train lables: {len(train_label)}, val set: {len(val_set)}, val labels: {len(val_label)}&#34;) 
+
+        if shuffle:
+            train_set, train_label = Shuffle(train_set, train_label)
+            val_set, val_label = Shuffle(val_set, val_label)
+
+        return train_set, train_label, val_set, val_label
+
+    def lazyload_h5(self, current_iteration:int, max_iteration:int, shuffle=True)-&gt;tuple: # NOT USED ANYMORE
+        &#34;&#34;&#34;NOT USED ANYMORE
+
+        Args:
+            current_iteration (int): [description]
+            max_iteration (int): [description]
+            shuffle (bool, optional): [description]. Defaults to True.
+
+        Returns:
+            tuple: [description]
+        &#34;&#34;&#34;
+        is_last = current_iteration == max_iteration - 1
+
+        train_set = []
+        train_label = []
+
+        val_set = []
+        val_label = []
+
+        print(f&#34;groups: {len(group)}&#34;)
+        print(f&#34;data: {len(data)}&#34;)
+        print(f&#34;{current_iteration} / {max_iteration}&#34;)
+
+        for i in range(len(group)):
+            keys = get_keys(group[i])
+
+            if len(keys) == self.nested_level:
+                img_in_class = len(self.get_key(self.h5, keys))
+
+                train_slice = get_slice(img_in_class, self.training_split, max_iteration)
+                val_slice = get_slice(img_in_class, h5_object.get_val_size(self), max_iteration, is_last)
+                
+                start_val, end_val = self.train_set_start_end(self, train_slice, current_iteration, is_last, img_in_class)
+                ppm_names = h5_object.generate_ppm_keys(self, start_val, end_val)
+
+                h5_object.append_to_list(self, ppm_names, keys, train_set, train_label)
+                
+                start_val, end_val = self.val_set_start_end(self, train_slice, val_slice, current_iteration, is_last, img_in_class, max_iteration)
+                ppm_names = h5_object.generate_ppm_keys(self, start_val, end_val)
+
+                h5_object.append_to_list(self, ppm_names, keys, val_set, val_label)
+
+        if shuffle:
+            train_set, train_label = Shuffle(train_set, train_label)
+            val_set, val_label = Shuffle(val_set, val_label)
+
+        return train_set, train_label, val_set, val_label</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="src.Dataset.load_h5.h5_object.append_to_list"><code class="name flex">
+<span>def <span class="ident">append_to_list</span></span>(<span>self, ppm_names: list, keys: list, images: list, labels: list)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Given a list of ppm names, they are translated into their corresponding image, and added to a list, alongisde its lable</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>ppm_names</code></strong> :&ensp;<code>list</code></dt>
+<dd>the list of names of ppm images</dd>
+<dt><strong><code>keys</code></strong> :&ensp;<code>list</code></dt>
+<dd>The key for the list, containing the class</dd>
+<dt><strong><code>images</code></strong> :&ensp;<code>list</code></dt>
+<dd>the list of image to add to</dd>
+<dt><strong><code>labels</code></strong> :&ensp;<code>list</code></dt>
+<dd>the list of lables</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def append_to_list(self, ppm_names:list, keys:list, images:list, labels:list):
+    &#34;&#34;&#34;Given a list of ppm names, they are translated into their corresponding image, and added to a list, alongisde its lable
+
+    Args:
+        ppm_names (list): the list of names of ppm images
+        keys (list): The key for the list, containing the class
+        images (list): the list of image to add to
+        labels (list): the list of lables
+    &#34;&#34;&#34;
+    for j in range(len(ppm_names)):
+        arr = np.array(self.get_ppm_arr(self.h5, keys, ppm_names[j]))
+        images.append(arr / 255.0)
+        labels.append(int(keys[2]))</code></pre>
+</details>
+</dd>
+<dt id="src.Dataset.load_h5.h5_object.generate_ppm_keys"><code class="name flex">
+<span>def <span class="ident">generate_ppm_keys</span></span>(<span>self, start_val: int, end_val: int) ‑> list</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Generates the names of the ppm images based on a start and end value</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>start_val</code></strong> :&ensp;<code>int</code></dt>
+<dd>The first ppm image name to be generated</dd>
+<dt><strong><code>end_val</code></strong> :&ensp;<code>int</code></dt>
+<dd>the last ppm image name to be generated</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>list</code></dt>
+<dd>a list of all the ppm image names</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def generate_ppm_keys(self, start_val:int, end_val:int)-&gt;list:
+    &#34;&#34;&#34;Generates the names of the ppm images based on a start and end value
+
+    Args:
+        start_val (int): The first ppm image name to be generated
+        end_val (int): the last ppm image name to be generated
+
+    Returns:
+        list: a list of all the ppm image names
+    &#34;&#34;&#34;
+    names = []
+    for i in range(start_val, end_val):
+        ppm_start = str(math.floor(i / self.folder_batch_size)).zfill(5)
+        ppm_end = str(i % self.folder_batch_size).zfill(5)
+        ppm = f&#34;{ppm_start}_{ppm_end}.ppm&#34;
+        self.img_in_h5 += 1
+        names.append(ppm)
+    return names</code></pre>
+</details>
+</dd>
+<dt id="src.Dataset.load_h5.h5_object.get_part_of_array"><code class="name flex">
+<span>def <span class="ident">get_part_of_array</span></span>(<span>self, current_slize: int, max_slice: int, split: float, class_index: int, train_set: list, train_label: list, val_set: list, val_label: list, keys: list) ‑> tuple</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns a part of the train_set, train_lable, val_set and val_label lists, based on how many slices the lists are split into and what slize we are currently on</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>current_slize</code></strong> :&ensp;<code>int</code></dt>
+<dd>the current slize </dd>
+<dt><strong><code>max_slice</code></strong> :&ensp;<code>int</code></dt>
+<dd>how many slizes the array should be split itno</dd>
+<dt><strong><code>split</code></strong> :&ensp;<code>float</code></dt>
+<dd>how the train and validation should be split</dd>
+<dt><strong><code>class_index</code></strong> :&ensp;<code>int</code></dt>
+<dd>the class of images currently to be split</dd>
+<dt><strong><code>train_set</code></strong> :&ensp;<code>list</code></dt>
+<dd>the list of train images</dd>
+<dt><strong><code>train_label</code></strong> :&ensp;<code>list</code></dt>
+<dd>the list of train labesl</dd>
+<dt><strong><code>val_set</code></strong> :&ensp;<code>list</code></dt>
+<dd>the list of validation images</dd>
+<dt><strong><code>val_label</code></strong> :&ensp;<code>list</code></dt>
+<dd>the list of validation lables</dd>
+<dt><strong><code>keys</code></strong> :&ensp;<code>list</code></dt>
+<dd>the key to the images from the h5 file</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_part_of_array(self, current_slize:int, max_slice:int, split:float, class_index:int, train_set:list, train_label:list, val_set:list, val_label:list, keys:list)-&gt;tuple:
+    &#34;&#34;&#34;Returns a part of the train_set, train_lable, val_set and val_label lists, based on how many slices the lists are split into and what slize we are currently on
+
+    Args:
+        current_slize (int): the current slize 
+        max_slice (int): how many slizes the array should be split itno
+        split (float): how the train and validation should be split
+        class_index (int): the class of images currently to be split
+        train_set (list): the list of train images
+        train_label (list): the list of train labesl
+        val_set (list): the list of validation images
+        val_label (list): the list of validation lables
+        keys (list): the key to the images from the h5 file
+    &#34;&#34;&#34;
+    is_last = current_slize == max_slice - 1
+    split_size = math.floor(len(self.ppm_names[class_index]) / max_slice)
+
+    train_size = math.floor(split_size * split)
+    val_size = split_size - train_size
+
+    train_start = split_size * current_slize
+    train_end = train_start + train_size
+    
+    val_start = train_end
+    val_end = val_start + val_size if not is_last else len(self.ppm_names[class_index])
+
+    print(f&#34;{class_index} - train: {train_start} - {train_end}. Val: {val_start} - {val_end}, {is_last}, length: {len(self.ppm_names[class_index])}, split: {split_size}, {class_index} &lt; {len(self.ppm_names)}&#34;)
+    
+    self.append_to_list(self.ppm_names[class_index][train_start:train_end], keys, train_set, train_label)
+    self.append_to_list(self.ppm_names[class_index][val_start:val_end], keys, val_set, val_label)
+
+    return train_set, train_label, val_set, val_label</code></pre>
+</details>
+</dd>
+<dt id="src.Dataset.load_h5.h5_object.get_ppm_img_index"><code class="name flex">
+<span>def <span class="ident">get_ppm_img_index</span></span>(<span>self, index: int) ‑> int</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns the index of class currently in, subtracting the unused ones</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>index</code></strong> :&ensp;<code>int</code></dt>
+<dd>the current index</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>[type]</code></dt>
+<dd>the index when the error index is subtracted</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_ppm_img_index(self, index:int)-&gt;int:
+    &#34;&#34;&#34;Returns the index of class currently in, subtracting the unused ones
+
+    Args:
+        index (int): the current index
+
+    Returns:
+        [type]: the index when the error index is subtracted
+    &#34;&#34;&#34;
+    return index - self.error_index</code></pre>
+</details>
+</dd>
+<dt id="src.Dataset.load_h5.h5_object.get_val_size"><code class="name flex">
+<span>def <span class="ident">get_val_size</span></span>(<span>self) ‑> float</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Calculates and returns the valuation size, by subtracting the training split</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>float</code></dt>
+<dd>the valuation size</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_val_size(self)-&gt;float:
+    &#34;&#34;&#34;Calculates and returns the valuation size, by subtracting the training split
+
+    Returns:
+        float: the valuation size
+    &#34;&#34;&#34;
+    return 1 - self.training_split</code></pre>
+</details>
+</dd>
+<dt id="src.Dataset.load_h5.h5_object.lazyload_h5"><code class="name flex">
+<span>def <span class="ident">lazyload_h5</span></span>(<span>self, current_iteration: int, max_iteration: int, shuffle=True) ‑> tuple</span>
+</code></dt>
+<dd>
+<div class="desc"><p>NOT USED ANYMORE</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>current_iteration</code></strong> :&ensp;<code>int</code></dt>
+<dd>[description]</dd>
+<dt><strong><code>max_iteration</code></strong> :&ensp;<code>int</code></dt>
+<dd>[description]</dd>
+<dt><strong><code>shuffle</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>[description]. Defaults to True.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tuple</code></dt>
+<dd>[description]</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def lazyload_h5(self, current_iteration:int, max_iteration:int, shuffle=True)-&gt;tuple: # NOT USED ANYMORE
+    &#34;&#34;&#34;NOT USED ANYMORE
+
+    Args:
+        current_iteration (int): [description]
+        max_iteration (int): [description]
+        shuffle (bool, optional): [description]. Defaults to True.
+
+    Returns:
+        tuple: [description]
+    &#34;&#34;&#34;
+    is_last = current_iteration == max_iteration - 1
+
+    train_set = []
+    train_label = []
+
+    val_set = []
+    val_label = []
+
+    print(f&#34;groups: {len(group)}&#34;)
+    print(f&#34;data: {len(data)}&#34;)
+    print(f&#34;{current_iteration} / {max_iteration}&#34;)
+
+    for i in range(len(group)):
+        keys = get_keys(group[i])
+
+        if len(keys) == self.nested_level:
+            img_in_class = len(self.get_key(self.h5, keys))
+
+            train_slice = get_slice(img_in_class, self.training_split, max_iteration)
+            val_slice = get_slice(img_in_class, h5_object.get_val_size(self), max_iteration, is_last)
+            
+            start_val, end_val = self.train_set_start_end(self, train_slice, current_iteration, is_last, img_in_class)
+            ppm_names = h5_object.generate_ppm_keys(self, start_val, end_val)
+
+            h5_object.append_to_list(self, ppm_names, keys, train_set, train_label)
+            
+            start_val, end_val = self.val_set_start_end(self, train_slice, val_slice, current_iteration, is_last, img_in_class, max_iteration)
+            ppm_names = h5_object.generate_ppm_keys(self, start_val, end_val)
+
+            h5_object.append_to_list(self, ppm_names, keys, val_set, val_label)
+
+    if shuffle:
+        train_set, train_label = Shuffle(train_set, train_label)
+        val_set, val_label = Shuffle(val_set, val_label)
+
+    return train_set, train_label, val_set, val_label</code></pre>
+</details>
+</dd>
+<dt id="src.Dataset.load_h5.h5_object.ppm_keys_to_list"><code class="name flex">
+<span>def <span class="ident">ppm_keys_to_list</span></span>(<span>self) ‑> NoneType</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Generates names for all ppm images based on how many ppm images there are in each folder</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def ppm_keys_to_list(self)-&gt;None:
+    &#34;&#34;&#34;Generates names for all ppm images based on how many ppm images there are in each folder
+    &#34;&#34;&#34;
+    for i in range(len(group)):
+        keys = get_keys(group[i])
+        if len(keys) == self.nested_level:
+            img_in_class = len(self.get_key(self.h5, keys))
+            self.ppm_names.append(self.generate_ppm_keys(0, img_in_class))
+            random.shuffle(self.ppm_names[-1])
+        else:
+            self.error_index += 1</code></pre>
+</details>
+</dd>
+<dt id="src.Dataset.load_h5.h5_object.print_class_data"><code class="name flex">
+<span>def <span class="ident">print_class_data</span></span>(<span>self) ‑> NoneType</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A table generator method for latex, which prints out the amount of images in each class</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def print_class_data(self)-&gt;None:
+    &#34;&#34;&#34;A table generator method for latex, which prints out the amount of images in each class
+    &#34;&#34;&#34;
+    for i in range(len(group)):
+        keys = get_keys(group[i])
+        if len(keys) != self.nested_level:
+            continue
+        img_in_class = len(self.get_key(self.h5, keys))
+        print(f&#34;{i-2} &amp; {img_in_class} &amp; {math.floor(img_in_class * self.training_split)} &amp; {math.ceil(img_in_class * h5_object.get_val_size(self))} /&#34;)</code></pre>
+</details>
+</dd>
+<dt id="src.Dataset.load_h5.h5_object.shuffle_and_lazyload"><code class="name flex">
+<span>def <span class="ident">shuffle_and_lazyload</span></span>(<span>self, current_iteration: int, max_iteration: int, shuffle=True) ‑> tuple</span>
+</code></dt>
+<dd>
+<div class="desc"><p>This method iterates through all the different classes of images, and returns a part of the images based on the current iteration and the max iteratino</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>current_iteration</code></strong> :&ensp;<code>int</code></dt>
+<dd>the current iteration</dd>
+<dt><strong><code>max_iteration</code></strong> :&ensp;<code>int</code></dt>
+<dd>how many slizes the images should be split into</dd>
+<dt><strong><code>shuffle</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>whether or not the output tuple should be shuffled. Defaults to True.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tuple</code></dt>
+<dd>a tuple consisting of a train and validation set each containing images and labes.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def shuffle_and_lazyload(self, current_iteration:int, max_iteration:int, shuffle=True)-&gt;tuple:
+    &#34;&#34;&#34;This method iterates through all the different classes of images, and returns a part of the images based on the current iteration and the max iteratino
+
+    Args:
+        current_iteration (int): the current iteration
+        max_iteration (int): how many slizes the images should be split into
+        shuffle (bool, optional): whether or not the output tuple should be shuffled. Defaults to True.
+
+    Returns:
+        tuple: a tuple consisting of a train and validation set each containing images and labes.
+    &#34;&#34;&#34;
+    train_set = []
+    train_label = []
+
+    val_set = []
+    val_label = []
+
+    for i in range(len(group)):
+        keys = get_keys(group[i])
+        if len(keys) == self.nested_level:
+            h5_object.get_part_of_array(self, current_iteration, max_iteration, self.training_split, self.get_ppm_img_index(i), train_set, train_label, val_set, val_label, keys) 
+
+    print(f&#34;{current_iteration}: train set: {len(train_set)}, train lables: {len(train_label)}, val set: {len(val_set)}, val labels: {len(val_label)}&#34;) 
+
+    if shuffle:
+        train_set, train_label = Shuffle(train_set, train_label)
+        val_set, val_label = Shuffle(val_set, val_label)
+
+    return train_set, train_label, val_set, val_label</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="src.Dataset" href="index.html">src.Dataset</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="src.Dataset.load_h5.Shuffle" href="#src.Dataset.load_h5.Shuffle">Shuffle</a></code></li>
+<li><code><a title="src.Dataset.load_h5.get_h5" href="#src.Dataset.load_h5.get_h5">get_h5</a></code></li>
+<li><code><a title="src.Dataset.load_h5.get_keys" href="#src.Dataset.load_h5.get_keys">get_keys</a></code></li>
+<li><code><a title="src.Dataset.load_h5.get_slice" href="#src.Dataset.load_h5.get_slice">get_slice</a></code></li>
+<li><code><a title="src.Dataset.load_h5.sort_groups" href="#src.Dataset.load_h5.sort_groups">sort_groups</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="src.Dataset.load_h5.h5_object" href="#src.Dataset.load_h5.h5_object">h5_object</a></code></h4>
+<ul class="">
+<li><code><a title="src.Dataset.load_h5.h5_object.append_to_list" href="#src.Dataset.load_h5.h5_object.append_to_list">append_to_list</a></code></li>
+<li><code><a title="src.Dataset.load_h5.h5_object.generate_ppm_keys" href="#src.Dataset.load_h5.h5_object.generate_ppm_keys">generate_ppm_keys</a></code></li>
+<li><code><a title="src.Dataset.load_h5.h5_object.get_part_of_array" href="#src.Dataset.load_h5.h5_object.get_part_of_array">get_part_of_array</a></code></li>
+<li><code><a title="src.Dataset.load_h5.h5_object.get_ppm_img_index" href="#src.Dataset.load_h5.h5_object.get_ppm_img_index">get_ppm_img_index</a></code></li>
+<li><code><a title="src.Dataset.load_h5.h5_object.get_val_size" href="#src.Dataset.load_h5.h5_object.get_val_size">get_val_size</a></code></li>
+<li><code><a title="src.Dataset.load_h5.h5_object.lazyload_h5" href="#src.Dataset.load_h5.h5_object.lazyload_h5">lazyload_h5</a></code></li>
+<li><code><a title="src.Dataset.load_h5.h5_object.ppm_keys_to_list" href="#src.Dataset.load_h5.h5_object.ppm_keys_to_list">ppm_keys_to_list</a></code></li>
+<li><code><a title="src.Dataset.load_h5.h5_object.print_class_data" href="#src.Dataset.load_h5.h5_object.print_class_data">print_class_data</a></code></li>
+<li><code><a title="src.Dataset.load_h5.h5_object.shuffle_and_lazyload" href="#src.Dataset.load_h5.h5_object.shuffle_and_lazyload">shuffle_and_lazyload</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.1</a>.</p>
+</footer>
+</body>
+</html>
