@@ -18,6 +18,32 @@ sys.path.insert(0, parent_dir)
 
 from global_paths import get_h5_path
 
+
+def get_ppm_arr(h5:h5py._hl.files.File, keys:list, ppm_name:str)->list:
+    """Get the ppm array from h5 file
+
+    Args:
+        h5 (h5py._hl.files.File): h5py file that should be read
+        keys (list): list of keys
+        ppm_name (str): the name of the wanted ppm
+
+    Returns:
+        list: array represnting the ppm image form the h5py file
+    """
+    return h5[keys[0]][keys[1]][keys[2]][ppm_name]
+
+def get_key(h5:h5py._hl.files.File, keys:list)->str:
+    """Get the key for a image
+
+    Args:
+        h5 (h5py._hl.files.File): the h5py file
+        keys (list): a list of the keys
+
+    Returns:
+        str: the key in string from
+    """
+    return h5[keys[0]][keys[1]][keys[2]]
+
 data = []
 group = []
 
@@ -126,7 +152,8 @@ class h5_object():
             else:
                 self.error_index += 1
 
-    def __init__(self, folder_batch_size:int, get_key, get_ppm_arr, train_set_start_end, val_set_start_end, training_split=0.7):
+
+    def __init__(self, folder_batch_size:int, get_key=get_key, get_ppm_arr=get_ppm_arr, training_split=0.7):
         self.folder_batch_size = folder_batch_size
         self.nested_level = len(get_h5_path().split("/"))
         self.h5 = get_h5(get_h5_path())
@@ -134,8 +161,6 @@ class h5_object():
         
         self.get_key = get_key
         self.get_ppm_arr = get_ppm_arr
-        self.train_set_start_end = train_set_start_end
-        self.val_set_start_end = val_set_start_end
 
         self.error_index = 0
         self.ppm_names = []

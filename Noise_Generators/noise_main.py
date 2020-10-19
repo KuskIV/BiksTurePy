@@ -1,8 +1,16 @@
 from weather import weather
-from perlin_noise import perlin
+from Perlin_noise import perlin
 from brightness import brightness
 from PIL import Image
 import random
+
+import os,sys,inspect
+current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+parent_dir = os.path.dirname(current_dir)
+sys.path.insert(0, parent_dir) 
+
+from general_image_func import convertToPILImg
+from Dataset.load_h5 import h5_object
 
 class Filter:
     """The filter class is a combination the three noises fog, 
@@ -127,22 +135,32 @@ def premade_single_filter(str:str)->Filter:
         config = {'factor':0.3}
         result = Filter({'day_set':config})
     return result
+
 def QuickDebugL():
-    imgs = Image.open("C:\\Users\\jeppe\\Desktop\\GTSRB_Final_Training_Images\\GTSRB\\Final_Training\\Images\\00000\\00002_00029.ppm")
+    h5_obj = h5_object(30, training_split=0.7)
+    train_images, _, _, _ = h5_obj.shuffle_and_lazyload(1, 100)
+
+    for img in range(len(train_images)):
+        train_images[img] = convertToPILImg(train_images[img], normilized=False)
+
+    #imgs = Image.open("C:\\Users\\jeppe\\Desktop\\GTSRB_Final_Training_Images\\GTSRB\\Final_Training\\Images\\00000\\00002_00029.ppm")
+    imgs = train_images
     F = premade_single_filter('fog')
     R = premade_single_filter('rain')
     S = premade_single_filter('snow')
     D = premade_single_filter('day')
     N = premade_single_filter('night')
     dict = {'fog':F,'rain':R,'snow':S,'day':D,'night':N}
-    res = apply_multiple_filters([imgs],filters=dict, mode='normal')
-    for tuple in res:
-        tuple[0].show()
+    res = apply_multiple_filters(imgs,filters=dict, mode='normal')
+    for i in range(len(res)):
+        res[i][0].show()
+        res[i][0].save(f'/home/biks/Desktop/YEET/{i}.png')
+        break
 
 def QuickDebug():
     """Small debug function
     """
-    img = Image.open("C:\\Users\\jeppe\\Desktop\\GTSRB_Final_Training_Images\\GTSRB\\Final_Training\\Images\\00000\\00002_00029.ppm")
+    img = Image.open('Dataset/images/00000/00000_00000.ppm')
     imgs = [img,img]
     p = {'octaves':8, 'persistence':0.8, 'lacunarity': 8, 'alpha': 0.4}
     day = {'factor':1.0} 
@@ -153,7 +171,7 @@ def QuickDebug():
     F = Filter(Filter_Con)
 
     snow = premade_single_filter('fog')
-    (snow + img).show()
+    (F + img).show()
     #newImage = F*imgs
     #newImage[0].show()
     #newImage[1].show()

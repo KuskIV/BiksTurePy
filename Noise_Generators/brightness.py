@@ -7,7 +7,7 @@ import numpy
 current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parent_dir = os.path.dirname(current_dir)
 sys.path.insert(0, parent_dir) 
-from general_image_func import changeImageSize,merge_two_images
+from general_image_func import changeImageSize,merge_two_images,EnsureUniformImageShape
 from global_paths import get_paths
 
 import tensorflow as tf
@@ -75,6 +75,7 @@ class brightness:
         if self.factor < 1:
             img = self.AdjustColor(img)
             blue = self.GetRGB(0,0,220, 800, 500)
+            img, blue = EnsureUniformImageShape(img,blue)
             return merge_two_images(img, blue,alpha=0.2)
         else:
             return img

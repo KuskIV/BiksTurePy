@@ -93,10 +93,12 @@ class weather:
 def QuickDebug()->None:
     """Small function to test the weather class
     """
-    img = Image.open(get_paths("dataset"))
+    #img = Image.open(get_paths("dataset"))
+    img = Image.open('Dataset/images/00000/00000_00000.ppm')
     p = {'rain_drops':300, 'drop_length':7,'drop_width':2,'blurr':(2,2),'color':(130,130,130)}
     pn = weather(p)
     img = pn.add_rain(img).show()
 
+QuickDebug()
 #AddParticels("C:/Users/madsh/OneDrive/Code/Python/BiksTurePy/FullIJCNN2013/00/00000.ppm", frequency=10, LoopJumpX=3, LoopJumpY=2)
 #AddParticels("C:/Users/madsh/OneDrive/Code/Python/BiksTurePy/FullIJCNN2013/00000.ppm", size=0.8, frequency=80, Opacity=50, LoopJumpX=5, LoopJumpY=5)
