@@ -2,6 +2,7 @@ from weather import weather
 from perlin_noise import perlin
 from brightness import brightness
 from PIL import Image
+import random
 
 class Filter:
     """The filter class is a combination the three noises fog, 
@@ -75,10 +76,39 @@ class Filter:
         Returns:
             list: List of Pil images with the filter
         """
-        returnLiSt = []
+        returnList = []
         for img in imgs:
-            returnLiSt.append(self + img)
-        return returnLiSt
+            returnList.append(self + img)
+        return returnList
+
+def normal_distribution(lst:list):
+    mean = (len(lst) - 1) / 2
+    stddev = len(lst) / 6
+    while True:
+        index = int(random.normalvariate(mean, stddev) + 0.5)
+        if 0 <= index < len(lst):
+            return lst[index]
+
+def apply_multiple_filters(Imgs:list,mode = 'rand',KeepOriginal:bool=True,filters:dict=None,**kwargs):
+    result = []    
+    if filters is None:
+        filters = {}
+        for key, value in kwargs.items():
+            filters[key] = value
+
+    fil = list(filters.items())
+    for img in Imgs:
+        result.append((img,'Original'))
+        if mode == 'rand':
+            tuple = random.choice(fil)
+            result.append((tuple[1]+img,tuple[0]))
+        
+        if mode == 'normal':
+            filter_and_lable = normal_distribution(fil)
+            result.append((filter_and_lable[1]+img,filter_and_lable[0]))
+
+    return result
+
 def premade_single_filter(str:str)->Filter:
     config = {}
     if str == 'fog':
@@ -97,6 +127,17 @@ def premade_single_filter(str:str)->Filter:
         config = {'factor':0.3}
         result = Filter({'day_set':config})
     return result
+def QuickDebugL():
+    imgs = Image.open("C:\\Users\\jeppe\\Desktop\\GTSRB_Final_Training_Images\\GTSRB\\Final_Training\\Images\\00000\\00002_00029.ppm")
+    F = premade_single_filter('fog')
+    R = premade_single_filter('rain')
+    S = premade_single_filter('snow')
+    D = premade_single_filter('day')
+    N = premade_single_filter('night')
+    dict = {'fog':F,'rain':R,'snow':S,'day':D,'night':N}
+    res = apply_multiple_filters([imgs],filters=dict, mode='normal')
+    for tuple in res:
+        tuple[0].show()
 
 def QuickDebug():
     """Small debug function
@@ -117,7 +158,7 @@ def QuickDebug():
     #newImage[0].show()
     #newImage[1].show()
 
-QuickDebug()
+QuickDebugL()
 #fog_set=(1)
 #day_set=(0.5)
 #wh_set = (70,7,2,(2,2),(130,130,130))
