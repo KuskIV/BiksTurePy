@@ -13,58 +13,12 @@ sys.path.insert(0, parent_dir)
 from general_image_func import get_class_names                          # Not an error
 from Models.create_model import flatten_and_dense          # Not an error
 
-def default_model()->tf.python.keras.engine.sequential.Sequential:
-    """default model also known as small model since it uses image of the size 32x32.
+# def default_model()->tf.python.keras.engine.sequential.Sequential:
+#     """default model also known as small model since it uses image of the size 32x32.
 
-    Returns:
-        tf.python.keras.engine.sequential.Sequential: A cnn trained on 32x32 images
-    """
-    img_shape=(32, 32, 3)
-    model = models.Sequential()
-    model.add(layers.Conv2D(32, (3, 3), activation='relu', input_shape=img_shape))
-    model.add(layers.MaxPooling2D((2, 2)))
-    model.add(layers.Conv2D(64, (3, 3), activation='relu'))
-    model.add(layers.MaxPooling2D(2, 2))
-    model.add(layers.Conv2D(64, (3, 3), activation='relu'))
-    return model
-
-def medium_model()->tf.python.keras.engine.sequential.Sequential:
-    """medium model since it uses image of the size 128x128.
-
-    Returns:
-        tf.python.keras.engine.sequential.Sequential: A cnn trained on 128x128 images
-    """
-    img_shape=(128, 128, 3)
-    model = models.Sequential()
-    model.add(layers.Conv2D(32, (15, 15), activation='relu', input_shape=img_shape))
-    model.add(layers.MaxPooling2D((2, 2)))
-    model.add(layers.Conv2D(64, (3, 3), activation='relu'))
-    model.add(layers.MaxPooling2D(2, 2))
-    model.add(layers.Conv2D(64, (3, 3), activation='relu'))
-    model.add(layers.MaxPooling2D(2, 2))
-    model.add(layers.Conv2D(64, (3, 3), activation='relu'))
-    return model
-
-def large_model()->tf.python.keras.engine.sequential.Sequential:
-    """large model since it uses image of the size 200x200.
-
-    Returns:
-        tf.python.keras.engine.sequential.Sequential: A cnn trained on 200x200 images
-    """
-    img_shape=(200, 200, 3)
-    model = models.Sequential()
-    model.add(layers.Conv2D(32, (21, 21), activation='relu', input_shape=img_shape))
-    model.add(layers.MaxPooling2D((2, 2)))
-    model.add(layers.Conv2D(64, (3, 3), activation='relu'))
-    model.add(layers.MaxPooling2D(2, 2))
-    model.add(layers.Conv2D(64, (3, 3), activation='relu'))
-    model.add(layers.MaxPooling2D(2, 2))
-    model.add(layers.Conv2D(64, (3, 3), activation='relu'))
-    model.add(layers.MaxPooling2D(2, 2))
-    model.add(layers.Conv2D(64, (3, 3), activation='relu'))
-    return model
-
-# def default_model():
+#     Returns:
+#         tf.python.keras.engine.sequential.Sequential: A cnn trained on 32x32 images
+#     """
 #     img_shape=(32, 32, 3)
 #     model = models.Sequential()
 #     model.add(layers.Conv2D(32, (3, 3), activation='relu', input_shape=img_shape))
@@ -74,26 +28,101 @@ def large_model()->tf.python.keras.engine.sequential.Sequential:
 #     model.add(layers.Conv2D(64, (3, 3), activation='relu'))
 #     return model
 
-# def medium_model():
+# def medium_model()->tf.python.keras.engine.sequential.Sequential:
+#     """medium model since it uses image of the size 128x128.
+
+#     Returns:
+#         tf.python.keras.engine.sequential.Sequential: A cnn trained on 128x128 images
+#     """
 #     img_shape=(128, 128, 3)
 #     model = models.Sequential()
-#     model.add(layers.Conv2D(32, (3,3), activation='relu', padding='same', input_shape=img_shape))
-#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
-#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
-#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+#     model.add(layers.Conv2D(32, (15, 15), activation='relu', input_shape=img_shape))
 #     model.add(layers.MaxPooling2D((2, 2)))
-#     model.add(layers.Conv2D(64, (3, 3), padding='same', activation='relu'))
-#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
-#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
-#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+#     model.add(layers.Conv2D(64, (3, 3), activation='relu'))
 #     model.add(layers.MaxPooling2D(2, 2))
 #     model.add(layers.Conv2D(64, (3, 3), activation='relu'))
-#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
-#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
-#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
 #     model.add(layers.MaxPooling2D(2, 2))
 #     model.add(layers.Conv2D(64, (3, 3), activation='relu'))
 #     return model
+
+# def large_model()->tf.python.keras.engine.sequential.Sequential:
+#     """large model since it uses image of the size 200x200.
+
+#     Returns:
+#         tf.python.keras.engine.sequential.Sequential: A cnn trained on 200x200 images
+#     """
+#     img_shape=(200, 200, 3)
+#     model = models.Sequential()
+#     model.add(layers.Conv2D(32, (21, 21), activation='relu', input_shape=img_shape))
+#     model.add(layers.MaxPooling2D((2, 2)))
+#     model.add(layers.Conv2D(64, (3, 3), activation='relu'))
+#     model.add(layers.MaxPooling2D(2, 2))
+#     model.add(layers.Conv2D(64, (3, 3), activation='relu'))
+#     model.add(layers.MaxPooling2D(2, 2))
+#     model.add(layers.Conv2D(64, (3, 3), activation='relu'))
+#     model.add(layers.MaxPooling2D(2, 2))
+#     model.add(layers.Conv2D(64, (3, 3), activation='relu'))
+#     return model
+
+def default_model():
+    img_shape=(32, 32, 3)
+    model = models.Sequential()
+    model.add(layers.Conv2D(32, (3, 3), activation='relu', input_shape=img_shape))
+    model.add(layers.MaxPooling2D((2, 2)))
+    model.add(layers.Conv2D(64, (3, 3), activation='relu'))
+    model.add(layers.MaxPooling2D(2, 2))
+    model.add(layers.Conv2D(64, (3, 3), activation='relu'))
+    return model
+
+def medium_model():
+    img_shape=(128, 128, 3)
+    model = models.Sequential()
+    model.add(layers.Conv2D(32, (3,3), activation='relu', padding='same', input_shape=img_shape))
+    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+    model.add(layers.Conv2D(32, (3, 3), padding='valid', activation='relu'))
+    model.add(layers.MaxPooling2D((2, 2)))
+    model.add(layers.Conv2D(64, (3, 3), padding='same', activation='relu'))
+    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+    model.add(layers.Conv2D(32, (3, 3), padding='valid', activation='relu'))
+    model.add(layers.MaxPooling2D(2, 2))
+    model.add(layers.Conv2D(64, (3, 3), activation='relu'))
+    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+    model.add(layers.Conv2D(32, (3, 3), padding='valid', activation='relu'))
+    model.add(layers.MaxPooling2D(2, 2))
+    model.add(layers.Conv2D(64, (3, 3), activation='relu'))
+    return model
+
+def large_model():
+    img_shape=(200, 200, 3)
+    model = models.Sequential()
+    model.add(layers.Conv2D(32, (5, 5), activation='relu', padding='same', input_shape=img_shape))
+    model.add(layers.Conv2D(32, (5, 5), padding='same', activation='relu'))
+    model.add(layers.Conv2D(32, (5, 5), padding='same', activation='relu'))
+    model.add(layers.Conv2D(32, (5, 5), padding='valid', activation='relu'))
+    model.add(layers.MaxPooling2D((2, 2)))
+    model.add(layers.Conv2D(32, (5, 5), padding='same', activation='relu'))
+    model.add(layers.Conv2D(32, (5, 5), padding='same', activation='relu'))
+    model.add(layers.Conv2D(32, (5, 5), padding='same', activation='relu'))
+    model.add(layers.Conv2D(32, (5, 5), padding='valid', activation='relu'))
+    model.add(layers.MaxPooling2D(2, 2))
+    model.add(layers.Conv2D(32, (5, 5), padding='same', activation='relu'))
+    model.add(layers.Conv2D(32, (5, 5), padding='same', activation='relu'))
+    model.add(layers.Conv2D(32, (5, 5), padding='same', activation='relu'))
+    model.add(layers.Conv2D(32, (5, 5), padding='valid', activation='relu'))
+    model.add(layers.MaxPooling2D(2, 2))
+    model.add(layers.Conv2D(32, (5, 5), padding='same', activation='relu'))
+    model.add(layers.Conv2D(32, (5, 5), padding='same', activation='relu'))
+    model.add(layers.Conv2D(32, (5, 5), padding='same', activation='relu'))
+    model.add(layers.Conv2D(32, (5, 5), padding='valid', activation='relu'))
+    model.add(layers.MaxPooling2D(2, 2))
+    model.add(layers.Conv2D(64, (3, 3), activation='relu'))
+    return model
+    
+
+
 
 # def large_model():
 #     img_shape=(200, 200, 3)
@@ -103,31 +132,32 @@ def large_model()->tf.python.keras.engine.sequential.Sequential:
 #     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
 #     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
 #     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
-#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+#     model.add(layers.Conv2D(32, (3, 3), padding='valid', activation='relu'))
 #     model.add(layers.MaxPooling2D((2, 2)))
 #     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
 #     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
 #     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
 #     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
 #     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
-#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+#     model.add(layers.Conv2D(32, (3, 3), padding='valid', activation='relu'))
 #     model.add(layers.MaxPooling2D(2, 2))
 #     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
 #     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
 #     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
 #     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
 #     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
-#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+#     model.add(layers.Conv2D(32, (3, 3), padding='valid', activation='relu'))
 #     model.add(layers.MaxPooling2D(2, 2))
 #     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
 #     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
 #     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
 #     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
 #     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
-#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+#     model.add(layers.Conv2D(32, (3, 3), padding='valid', activation='relu'))
 #     model.add(layers.MaxPooling2D(2, 2))
 #     model.add(layers.Conv2D(64, (3, 3), activation='relu'))
 #     return model
+
 
 def reshape_numpy_array_of_images(images:numpy.array, size:tuple)->numpy.array:
     """Reshapes all images contained in a numpy array, to some specefied size

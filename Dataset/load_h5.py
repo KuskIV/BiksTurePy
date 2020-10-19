@@ -211,7 +211,7 @@ class h5_object():
         val_start = train_end
         val_end = val_start + val_size if not is_last else len(self.ppm_names[class_index])
 
-        print(f"{class_index} - train: {train_start} - {train_end}. Val: {val_start} - {val_end}, {is_last}, length: {len(self.ppm_names[class_index])}, split: {split_size}, {class_index} < {len(self.ppm_names)}")
+        print(f"{str(class_index).zfill(2)} - train: {str(train_end - train_start).rjust(2, ' ')} ({str(train_start).rjust(3, ' ')} - {str(train_end).ljust(3, ' ')}), val: {str(val_end - val_start).rjust(2, ' ')} ({str(val_start).rjust(3, ' ')} - {str(val_end).ljust(3, ' ')})")
         
         self.append_to_list(self.ppm_names[class_index][train_start:train_end], keys, train_set, train_label)
         self.append_to_list(self.ppm_names[class_index][val_start:val_end], keys, val_set, val_label)
@@ -248,50 +248,50 @@ class h5_object():
 
         return train_set, train_label, val_set, val_label
 
-    def lazyload_h5(self, current_iteration:int, max_iteration:int, shuffle=True)->tuple: # NOT USED ANYMORE
-        """NOT USED ANYMORE
+    # def lazyload_h5(self, current_iteration:int, max_iteration:int, shuffle=True)->tuple: # NOT USED ANYMORE
+    #     """NOT USED ANYMORE
 
-        Args:
-            current_iteration (int): [description]
-            max_iteration (int): [description]
-            shuffle (bool, optional): [description]. Defaults to True.
+    #     Args:
+    #         current_iteration (int): [description]
+    #         max_iteration (int): [description]
+    #         shuffle (bool, optional): [description]. Defaults to True.
 
-        Returns:
-            tuple: [description]
-        """
-        is_last = current_iteration == max_iteration - 1
+    #     Returns:
+    #         tuple: [description]
+    #     """
+    #     is_last = current_iteration == max_iteration - 1
 
-        train_set = []
-        train_label = []
+    #     train_set = []
+    #     train_label = []
 
-        val_set = []
-        val_label = []
+    #     val_set = []
+    #     val_label = []
 
-        print(f"groups: {len(group)}")
-        print(f"data: {len(data)}")
-        print(f"{current_iteration} / {max_iteration}")
+    #     print(f"groups: {len(group)}")
+    #     print(f"data: {len(data)}")
+    #     print(f"{current_iteration} / {max_iteration}")
 
-        for i in range(len(group)):
-            keys = get_keys(group[i])
+    #     for i in range(len(group)):
+    #         keys = get_keys(group[i])
 
-            if len(keys) == self.nested_level:
-                img_in_class = len(self.get_key(self.h5, keys))
+    #         if len(keys) == self.nested_level:
+    #             img_in_class = len(self.get_key(self.h5, keys))
 
-                train_slice = get_slice(img_in_class, self.training_split, max_iteration)
-                val_slice = get_slice(img_in_class, h5_object.get_val_size(self), max_iteration, is_last)
+    #             train_slice = get_slice(img_in_class, self.training_split, max_iteration)
+    #             val_slice = get_slice(img_in_class, h5_object.get_val_size(self), max_iteration, is_last)
                 
-                start_val, end_val = self.train_set_start_end(self, train_slice, current_iteration, is_last, img_in_class)
-                ppm_names = h5_object.generate_ppm_keys(self, start_val, end_val)
+    #             start_val, end_val = self.train_set_start_end(self, train_slice, current_iteration, is_last, img_in_class)
+    #             ppm_names = h5_object.generate_ppm_keys(self, start_val, end_val)
 
-                h5_object.append_to_list(self, ppm_names, keys, train_set, train_label)
+    #             h5_object.append_to_list(self, ppm_names, keys, train_set, train_label)
                 
-                start_val, end_val = self.val_set_start_end(self, train_slice, val_slice, current_iteration, is_last, img_in_class, max_iteration)
-                ppm_names = h5_object.generate_ppm_keys(self, start_val, end_val)
+    #             start_val, end_val = self.val_set_start_end(self, train_slice, val_slice, current_iteration, is_last, img_in_class, max_iteration)
+    #             ppm_names = h5_object.generate_ppm_keys(self, start_val, end_val)
 
-                h5_object.append_to_list(self, ppm_names, keys, val_set, val_label)
+    #             h5_object.append_to_list(self, ppm_names, keys, val_set, val_label)
 
-        if shuffle:
-            train_set, train_label = Shuffle(train_set, train_label)
-            val_set, val_label = Shuffle(val_set, val_label)
+    #     if shuffle:
+    #         train_set, train_label = Shuffle(train_set, train_label)
+    #         val_set, val_label = Shuffle(val_set, val_label)
 
-        return train_set, train_label, val_set, val_label
+    #     return train_set, train_label, val_set, val_label
