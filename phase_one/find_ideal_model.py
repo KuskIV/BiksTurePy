@@ -64,6 +64,71 @@ def large_model()->tf.python.keras.engine.sequential.Sequential:
     model.add(layers.Conv2D(64, (3, 3), activation='relu'))
     return model
 
+# def default_model():
+#     img_shape=(32, 32, 3)
+#     model = models.Sequential()
+#     model.add(layers.Conv2D(32, (3, 3), activation='relu', input_shape=img_shape))
+#     model.add(layers.MaxPooling2D((2, 2)))
+#     model.add(layers.Conv2D(64, (3, 3), activation='relu'))
+#     model.add(layers.MaxPooling2D(2, 2))
+#     model.add(layers.Conv2D(64, (3, 3), activation='relu'))
+#     return model
+
+# def medium_model():
+#     img_shape=(128, 128, 3)
+#     model = models.Sequential()
+#     model.add(layers.Conv2D(32, (3,3), activation='relu', padding='same', input_shape=img_shape))
+#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+#     model.add(layers.MaxPooling2D((2, 2)))
+#     model.add(layers.Conv2D(64, (3, 3), padding='same', activation='relu'))
+#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+#     model.add(layers.MaxPooling2D(2, 2))
+#     model.add(layers.Conv2D(64, (3, 3), activation='relu'))
+#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+#     model.add(layers.MaxPooling2D(2, 2))
+#     model.add(layers.Conv2D(64, (3, 3), activation='relu'))
+#     return model
+
+# def large_model():
+#     img_shape=(200, 200, 3)
+#     model = models.Sequential()
+#     model.add(layers.Conv2D(32, (3, 3), activation='relu', padding='same', input_shape=img_shape))
+#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+#     model.add(layers.MaxPooling2D((2, 2)))
+#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+#     model.add(layers.MaxPooling2D(2, 2))
+#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+#     model.add(layers.MaxPooling2D(2, 2))
+#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+#     model.add(layers.MaxPooling2D(2, 2))
+#     model.add(layers.Conv2D(64, (3, 3), activation='relu'))
+#     return model
+
 def reshape_numpy_array_of_images(images:numpy.array, size:tuple)->numpy.array:
     """Reshapes all images contained in a numpy array, to some specefied size
 

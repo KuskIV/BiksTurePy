@@ -185,7 +185,7 @@ class h5_object():
             img_in_class = len(self.get_key(self.h5, keys))
             print(f"{i-2} & {img_in_class} & {math.floor(img_in_class * self.training_split)} & {math.ceil(img_in_class * h5_object.get_val_size(self))} /")
 
-    def get_part_of_array(self, current_slize:int, max_slice:int, split:float, class_index:int, train_set:list, train_label:list, val_set:list, val_label:list, keys:list)->:
+    def get_part_of_array(self, current_slize:int, max_slice:int, split:float, class_index:int, train_set:list, train_label:list, val_set:list, val_label:list, keys:list)->tuple:
         """Returns a part of the train_set, train_lable, val_set and val_label lists, based on how many slices the lists are split into and what slize we are currently on
 
         Args:

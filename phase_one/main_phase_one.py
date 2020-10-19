@@ -11,7 +11,7 @@ sys.path.insert(0, parent_dir)
 
 from Dataset.load_h5 import h5_object
 from Models.create_model import store_model
-from Models.test_model import accumilate_distribution
+from Models.test_model import partial_accumilate_distribution
 from global_paths import get_test_model_paths
 
 lazy_split = 10
@@ -55,12 +55,18 @@ def val_set_start_end(self, train_slice:int, val_slice:int, current_iteration:in
     end_val = math.ceil(img_in_class * self.training_split) + (val_slice * current_iteration + val_slice) if not is_last else img_in_class
     return start_val, end_val
 
-def acc_dist_for_images(h5_obj:object)->None:
-    train_images, train_labels, _, _ = h5_obj.shuffle_and_lazyload(0, 1)
-    large_model_path, medium_model_path, small_model_path = get_test_model_paths()
-    accumilate_distribution(large_model_path, train_images, train_labels)
-    accumilate_distribution(medium_model_path, train_images, train_labels)
-    accumilate_distribution(small_model_path, train_images, train_labels)
+def acc_dist_for_images(h5_obj:object, models, lazy_split)->None:
+    
+    accArr = np.zeros((3, 43, 2))
+    image_sizes = [(200, 200), (128, 128), (32, 32)]
+
+    for j in range(lazy_split):
+        train_images, train_labels, _, _ = h5_obj.shuffle_and_lazyload(j, lazy_split)
+        for i in range(len(models)):
+            arr = partial_accumilate_distribution(models[i], train_images, train_labels)
+            for j in range(len(arr)):
+                accArr[i][j][0] += arr[j][0]
+                accArr[i][j][0] += arr[j][0]
 
 
 def find_ideal_model(h5_obj:object)->None:
@@ -98,8 +104,10 @@ def find_ideal_model(h5_obj:object)->None:
 
 if __name__ == "__main__":
     h5_obj = h5_object(folder_batch_size, get_key, get_ppm_arr, train_set_start_end, val_set_start_end, dataset_split)
-    #find_ideal_model(h5_obj)
-    acc_dist_for_images(h5_obj)
+    find_ideal_model(h5_obj)
+    #large_model_path, medium_model_path, small_model_path = get_test_model_paths()
+    #acc_dist_for_images(h5_obj, [small_model_path], 10)
+    # acc_dist_for_images(h5_obj, [large_model_path, medium_model_path, small_model_path], 10)
     
     # # This was a table generator for roni
     # h5_obj.print_class_data()

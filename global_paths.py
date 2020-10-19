@@ -5,9 +5,9 @@ paths = {
             'model':'Models/saved_models',
             'current_model':'Models/saved_models/YEET8.h5',
             'test_img_path':'Dataset/FullJCNN2013',
-            'large': 'large200',
-            'medium':'medium128',
-            'small':'small32'
+            'large': 'Models/saved_models/large200.h5',
+            'medium':'Models/saved_models/medium128.h5',
+            'small':'Models/saved_models/small32.h5'
     }
 
 def get_paths(key:str)->str:
