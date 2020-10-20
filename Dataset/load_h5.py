@@ -18,6 +18,8 @@ sys.path.insert(0, parent_dir)
 
 from global_paths import get_h5_path
 
+def key_to_string(self, key):
+    return f"{key[0]}/{key[1]}/{key[2]}"
 
 def get_ppm_arr(h5:h5py._hl.files.File, keys:list, ppm_name:str)->list:
     """Get the ppm array from h5 file
@@ -153,7 +155,7 @@ class h5_object():
                 self.error_index += 1
 
 
-    def __init__(self, folder_batch_size:int, get_key=get_key, get_ppm_arr=get_ppm_arr, training_split=0.7):
+    def __init__(self, folder_batch_size:int, get_key=get_key, get_ppm_arr=get_ppm_arr, training_split=0.7, key_to_string=key_to_string):
         self.folder_batch_size = folder_batch_size
         self.nested_level = len(get_h5_path().split("/"))
         self.h5 = get_h5(get_h5_path())
@@ -166,6 +168,9 @@ class h5_object():
         self.ppm_names = []
         self.img_in_h5 = 0
         self.ppm_keys_to_list()
+        #self.unique_images = {}
+        self.key_to_string = key_to_string
+
 
     def get_ppm_img_index(self, index:int)->int:
         """Returns the index of class currently in, subtracting the unused ones
@@ -177,6 +182,8 @@ class h5_object():
             [type]: the index when the error index is subtracted
         """
         return index - self.error_index
+    
+
 
     def get_val_size(self)->float:
         """Calculates and returns the valuation size, by subtracting the training split
@@ -197,7 +204,13 @@ class h5_object():
         """
         for j in range(len(ppm_names)):
             arr = np.array(self.get_ppm_arr(self.h5, keys, ppm_names[j]))
-            images.append(arr / 255.0)
+            u_name = f"{self.key_to_string(self, keys)}/{ppm_names[j]}"
+            # if u_name in self.unique_images:
+            #     print(f"The following key added is not unique: {u_name}. Bye.")
+            #     sys.exit()
+            # else:
+            #     self.unique_images[u_name] = u_name
+            images.append(arr)
             labels.append(int(keys[2]))
 
     def print_class_data(self)->None:

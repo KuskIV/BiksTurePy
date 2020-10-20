@@ -1,6 +1,8 @@
-import numpy
+import numpy as np
+from PIL import Image
 import tensorflow as tf
 import math
+
 
 from tensorflow.keras import datasets, layers, models
 import matplotlib.pyplot as plt
@@ -159,7 +161,7 @@ def large_model():
 #     return model
 
 
-def reshape_numpy_array_of_images(images:numpy.array, size:tuple)->numpy.array:
+def reshape_numpy_array_of_images(images:np.array, size:tuple)->np.array:
     """Reshapes all images contained in a numpy array, to some specefied size
 
     Args:
@@ -173,13 +175,14 @@ def reshape_numpy_array_of_images(images:numpy.array, size:tuple)->numpy.array:
     #print(type(images[0]), " ", type(images[0][0]), " ", type(images[0][0][0]), " ", type(images[0][0][0][0]))
     for image in images:
         reshaped_images.append(tf.keras.preprocessing.image.smart_resize(image, size))
-    return numpy.array(reshaped_images)
+    return np.array(reshaped_images)
 
 def train_model(model:tf.python.keras.engine.sequential.Sequential, 
-                train_images:numpy.array,
-                train_labels:numpy.array, 
-                test_images:numpy.array, 
-                test_labels:numpy.array)->None:
+                train_images:np.array,
+                train_labels:np.array, 
+                test_images:np.array, 
+                test_labels:np.array,
+                epochs:int)->None:
     """Method for using the data set on some input model
 
     Args:
@@ -195,7 +198,7 @@ def train_model(model:tf.python.keras.engine.sequential.Sequential,
                 loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
                 metrics=['sparse_categorical_accuracy'])
 
-    history = model.fit(train_images, train_labels, epochs=10,
+    history = model.fit(train_images, train_labels, epochs=epochs,
             validation_data=(test_images, test_labels))
     print (train_images[0].shape, " ---")
 
@@ -224,10 +227,11 @@ def train_and_eval_models_for_size(#TODO pls help
         size:list,
         model:tf.python.keras.engine.sequential.Sequential,
         model_id:int,
-        train_images:numpy.array,
-        train_labels:numpy.array,
-        test_images:numpy.array,
-        test_labels:numpy.array,
+        train_images:np.array,
+        train_labels:np.array,
+        test_images:np.array,
+        test_labels:np.array,
+        epochs=10,
         save_model=True)->None:
     """Trains and evaluates models based on the size of images used
 
@@ -245,11 +249,14 @@ def train_and_eval_models_for_size(#TODO pls help
         # reshape training and test images
     reshaped_train_images = reshape_numpy_array_of_images(train_images, size)
     reshaped_test_images = reshape_numpy_array_of_images(test_images, size)
+    print(size, "-------------------------")
+
+
     #print(type(train_labels), " ", type(train_labels[0]), " ", type(test_labels), " ", type(test_labels[0]))
     # train model
     print("image size")
     print(size)
-    train_model(model, reshaped_train_images, train_labels, reshaped_test_images, test_labels)
+    train_model(model, reshaped_train_images, train_labels, reshaped_test_images, test_labels, epochs)
 
     # evaluate each model
     print("Evaluation for model")

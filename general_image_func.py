@@ -7,7 +7,7 @@ import random
 
 def changeImageSize(maxWidth: int, 
                     maxHeight: int, 
-                    image:np.array)->Image.Image:
+                    image:Image.Image)->Image.Image:
     """Resizes an image
 
     Args:
@@ -19,7 +19,6 @@ def changeImageSize(maxWidth: int,
         Image.Image: The resized image
     """
     
-
     widthRatio  = maxWidth/image.size[0]
     heightRatio = maxHeight/image.size[1]
 
@@ -112,9 +111,9 @@ def get_class_names()->list:
 
     return class_names
 
-def make_prediction(model, image): # hopfully delete
-    img_reshaped = tf.reshape(image, (1, 32, 32, 3))
-    return model.predict_step(img_reshaped)
+# def make_prediction(model, image): # hopfully delete
+#     img_reshaped = tf.reshape(image, (1, 32, 32, 3))
+#     return model.predict_step(img_reshaped)
 
 def display_ppm_image(path: str)->None:
     """Input a path to original image to display it
@@ -125,19 +124,27 @@ def display_ppm_image(path: str)->None:
     im = Image.open(path)
     im.show()
 
-def display_numpy_image(numpy_image:np.array)->None:
-    """Input a (0 to 1) normalized numpy representation of a PIL image, to show it
-
-    Args:
-        numpy_image (np.array): The input image to normalize
-    """
+def convert_numpy_image_to_image(numpy_image:np.array):
     # Scaling the pixels back
     numpy_image_rescaled = numpy_image * 255
     # converting the dfloat64 numpy to a unit8 - is required by PIL
     numpy_image_rescaled_uint8 = np.array(numpy_image_rescaled, np.uint8)
     # convert to PIL and show
     im = Image.fromarray(numpy_image_rescaled_uint8)
+    return im
+
+def display_numpy_image(numpy_image:np.array)->None:
+    """Input a (0 to 1) normalized numpy representation of a PIL image, to show it
+
+    Args:
+        numpy_image (np.array): The input image to normalize
+    """
+
+    im = convert_imgs_to_numpy_arrays(numpy_image)
     im.show()
+
+
+
 
 def convert_imgs_to_numpy_arrays(dataset: list)->list:
     """Receive a dataset in and return an numpy array of the images
