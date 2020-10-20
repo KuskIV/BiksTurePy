@@ -1,6 +1,6 @@
 
 paths = {
-            'h5':'Dataset/h5Dataset/h5set.h5py', 
+            'h5':'Dataset/h5Dataset/h5set.h5py',
             'dataset':'Dataset/images',
             'model':'Models/saved_models',
             'current_model':'Models/saved_models/YEET8.h5',
@@ -8,8 +8,10 @@ paths = {
             'large': 'Models/saved_models/large200.h5',
             'medium':'Models/saved_models/medium128.h5',
             'small':'Models/saved_models/small32.h5',
+            'phase_one_csv':'phase_one/csv_data',
+            'txt_file':'labels.txt'
             'phase_one_csv':'phase_one/csv_data'
-    }
+        }
 
 def get_paths(key:str)->str:
     """Given a key, the value for that key is returned
@@ -38,7 +40,7 @@ def get_dataset_path()->str:
     """Returns the path to the dataset
 
     Returns:
-        str: the path to the dataset 
+        str: the path to the dataset
     """
     return paths.get("dataset")
 
@@ -51,7 +53,7 @@ def get_current_model_path()->str:
     return paths.get("current_model")
 
 def get_test_img_path()->str:
-    """Returns the path to the test images 
+    """Returns the path to the test images
 
     Returns:
         str: the path to the test images
@@ -64,7 +66,7 @@ def get_model_path()->str:
     Returns:
         str: the path to the model
     """
-    return paths.get("model") 
+    return paths.get("model")
 
 def get_test_model_paths()->tuple:
     return paths.get("large"), paths.get("medium"), paths.get("small")

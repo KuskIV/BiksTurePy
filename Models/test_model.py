@@ -20,11 +20,6 @@ def make_prediction(model:tf.python.keras.engine.sequential.Sequential, image:Im
     Returns:
         list: The probability of the given image beign each class. Softmax not yet applied
     """
-    #image = convertToPILImg(image, normilized=False)
-    #image = changeImageSize(32, 32, image)
-    #image = np.array(image)
-    #print(image.size)
-    
     shape = (1, shape[0], shape[1], shape[2])
     #img_reshaped = tf.reshape(image, (1, 32, 32, 3))
     img_reshaped = tf.reshape(image, shape)
@@ -41,7 +36,7 @@ def partial_accumilate_distribution(test_images:list, test_labels:list, size:tup
     """
     if model == None:
         if SAVE_LOAD_PATH == None:
-                print("partial_accumilate_distribution has been called without a model or a path to a model. The program will now execute.")
+                print("partial_accumilate_distribution has been called without a model or a path to a model. The program will now exit.")
                 sys.exit()
         model = tf.keras.models.load_model(SAVE_LOAD_PATH)
         model.summary()
@@ -49,12 +44,14 @@ def partial_accumilate_distribution(test_images:list, test_labels:list, size:tup
     accArr = np.zeros((43, 2))
 
     for i in range(len(test_images)):
+        print(type(test_images[i]), " -----------", test_images[i].size)
         prediction = make_prediction(model, test_images[i], shape=(size[0], size[1], 3))
         softmaxed = tf.keras.activations.softmax(prediction)
         if test_labels[i] == np.argmax(softmaxed):
             accArr[int(test_labels[i])][1] = accArr[int(test_labels[i])][1] + 1
         else:
             accArr[int(test_labels[i])][0] = accArr[int(test_labels[i])][0] + 1
+        break
 
     return accArr
 

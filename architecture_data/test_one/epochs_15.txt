@@ -1,0 +1,27 @@
+Right: 2381, wrong: 455, percent correct: 83.95627644569817
+class: 39 | right:   16 | wrong:   47 | procent: 25.4
+class: 36 | right:    4 | wrong:   14 | procent: 22.22
+class: 09 | right:  140 | wrong:    9 | procent: 93.96
+class: 14 | right:   80 | wrong:    8 | procent: 90.91
+class: 35 | right:   53 | wrong:    2 | procent: 96.36
+class: 28 | right:  191 | wrong:   56 | procent: 77.33
+class: 22 | right:   18 | wrong:    3 | procent: 85.71
+class: 19 | right:    8 | wrong:   13 | procent: 38.1
+class: 13 | right:  377 | wrong:   17 | procent: 95.69
+class: 23 | right:    9 | wrong:   11 | procent: 45.0
+class: 26 | right:    6 | wrong:    1 | procent: 85.71
+class: 24 | right:   21 | wrong:    0 | procent: 100.0
+class: 40 | right:  108 | wrong:   21 | procent: 83.72
+class: 01 | right:    0 | wrong:    1 | procent: 0.0
+class: 18 | right:  117 | wrong:   12 | procent: 90.7
+class: 02 | right:   85 | wrong:   26 | procent: 76.58
+class: 11 | right:  236 | wrong:   26 | procent: 90.08
+class: 04 | right:  269 | wrong:   35 | procent: 88.49
+class: 38 | right:  132 | wrong:   19 | procent: 87.42
+class: 15 | right:  106 | wrong:   70 | procent: 60.23
+class: 20 | right:   13 | wrong:   14 | procent: 48.15
+class: 12 | right:  344 | wrong:   32 | procent: 91.49
+class: 00 | right:    0 | wrong:    3 | procent: 0.0
+class: 21 | right:    7 | wrong:    7 | procent: 50.0
+class: 25 | right:   41 | wrong:    8 | procent: 83.67
+
