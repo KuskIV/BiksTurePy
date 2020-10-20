@@ -7,7 +7,8 @@ paths = {
             'test_img_path':'Dataset/FullJCNN2013',
             'large': 'Models/saved_models/large200.h5',
             'medium':'Models/saved_models/medium128.h5',
-            'small':'Models/saved_models/small32.h5'
+            'small':'Models/saved_models/small32.h5',
+            'phase_one_csv':'phase_one/csv_data'
     }
 
 def get_paths(key:str)->str:
