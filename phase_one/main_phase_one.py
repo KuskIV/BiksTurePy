@@ -15,7 +15,7 @@ from Dataset.load_h5 import h5_object
 from Models.create_model import store_model
 from Models.test_model import partial_accumilate_distribution, print_accumilate_distribution, make_prediction
 from global_paths import get_test_model_paths, get_paths
-from general_image_func import auto_reshape_images, changeImageSize, convert_numpy_image_to_image
+from general_image_func import auto_reshape_images, changeImageSize, convert_numpy_image_to_image, load_images_from_folders
 
 lazy_split = 10
 dataset_split = 0.7
@@ -68,36 +68,7 @@ def find_ideal_model(h5_obj:object, epochs=10)->None:
     #store_model(models[1], medium_model_path)
     store_model(models[0], small_model_path) # SHOULD BE INDEX 2
 
-def get_rid_of_a(arr:np.array):
-    w, h = arr.size
-    if arr.getdata().mode == 'RGBA':
-        arr = arr.convert('RGB')
-    nparray = np.array(arr.getdata())
-    reshaped = nparray.reshape((w, h, 3))
-    return reshaped.astype(np.uint8)
 
-def loadImags(folder, lable):
-    loaded_img = []
-    lable_names = []
-    with os.scandir(folder) as imgs:
-        for ppm_path in imgs:
-            if ppm_path.name.endswith(".jpg") or ppm_path.name.endswith('.jpeg') or ppm_path.name.endswith('.ppm'):
-                lable_names.append(lable)
-                #print(ppm_path.path)
-                # loaded_img.append(get_rid_of_a(Image.open(ppm_path.path)))
-                loaded_img.append(np.asanyarray(Image.open(ppm_path.path)) / 255.0)
-    return lable_names, auto_reshape_images((32, 32), loaded_img)  
-
-def load_X_images(path):
-    subfolders = [ f.path for f in os.scandir(path) if f.is_dir() ]
-    newImgs = []
-    lable_names = []
-    for folder in subfolders:
-        lable = folder.split('/')[-1]
-        returned_lables, imgs = loadImags(folder, lable)
-        newImgs.extend(imgs)
-        lable_names.extend(returned_lables)
-    return newImgs, lable_names
 
 if __name__ == "__main__":
     h5_obj = h5_object(folder_batch_size, training_split=dataset_split)
@@ -107,11 +78,11 @@ if __name__ == "__main__":
 
     class_names = open(get_paths("txt_file"), 'r').readlines()
 
-    image_dataset, lable_dataset = load_X_images(path + test_path)
+    image_dataset, lable_dataset = load_images_from_folders(path + test_path)
     label_dict = {}
     
     for i in range(3, 15):
-        print(f"Run {i} / {15}")
+        print(f"\n----------------\nRun {i} / {15}\n----------------\n")
         find_ideal_model(h5_obj, epochs=i)
         
         large_model_path, medium_model_path, small_model_path = get_test_model_paths()

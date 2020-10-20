@@ -10,7 +10,6 @@ paths = {
             'small':'Models/saved_models/small32.h5',
             'phase_one_csv':'phase_one/csv_data',
             'txt_file':'labels.txt'
-            'phase_one_csv':'phase_one/csv_data'
         }
 
 def get_paths(key:str)->str:
