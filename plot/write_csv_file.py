@@ -31,6 +31,7 @@ class cvs_object():
         self.set_x_y_lables = set_x_y_lables
 
     def write(self, data:list, path=""):
+        return_object = False if path == "" else True
 
         path = self.path if path == "" else path
 
@@ -39,6 +40,11 @@ class cvs_object():
                             quotechar='|', quoting=csv.QUOTE_MINIMAL)
             for line in data:
                 filewriter.writerow(line)
+
+        if return_object:
+            return cvs_object(path)
+        
+
     
 def plot(cvs_list:object, title="_", lable="_")->None:
     
@@ -65,7 +71,7 @@ def plot(cvs_list:object, title="_", lable="_")->None:
                 y.append(float(cvs.get_y_row(row)))
 
         plt.plot(x, y, label=f"Resolution: {cvs.label}")
-
+    plt.ylim(80, 90)
     plt.xlabel(x_label)
     plt.ylabel(y_label)
     plt.title(title)

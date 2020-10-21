@@ -27,8 +27,7 @@ def sum_csv(csv_obj):
     reader = csv.reader(f)
     headers = next(reader, None)
 
-    new_cvs_file = [[headers[0], 'model_accuracy', headers[1]]]
-
+    new_cvs_file = [[headers[0], 'Model_accuracy', headers[1]]]
 
     with open(csv_obj.path, 'r') as csvfile:
             if not path.exists(csv_obj.path):
@@ -36,7 +35,6 @@ def sum_csv(csv_obj):
                 sys.exit()
             
             first_row = next(reader, None)
-            print(first_row)
             
             current_resolution = first_row[1]
             current_class_accuracy = [first_row[3]]
@@ -65,9 +63,9 @@ def sum_csv(csv_obj):
 
 obj = cvs_object(f"{get_paths('phase_one_csv')}/big_boi.csv")
 data = sum_csv(obj)
-obj.write(data, path=f"{get_paths('phase_one_csv')}/big_boi_to_small_boi.csv")
-obj.path = f"{get_paths('phase_one_csv')}/big_boi_to_small_boi.csv"
-plot([obj], lable="32")
+
+new_obj = obj.write(data, path=f"{get_paths('phase_one_csv')}/big_boi_to_small_boi.csv")
+plot([new_obj], lable="32")
 
 
                 
