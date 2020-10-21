@@ -12,15 +12,29 @@ sys.path.insert(0, parent_dir)
 
 from global_paths import get_paths
 
-class cvs_object():
-    def __init__(self, path:str, x_row=0, y_row=1, label="UNKNOWN"):
-        self.path = path
-        self.x_row = x_row
-        self.y_row = y_row
-        self.label = label
+def get_x_row(row):
+    return row[0]
 
-    def write(self, data:list):
-        with open(self.path, 'w') as csvfile:
+def get_y_row(row):
+    return row[1]
+
+def set_x_y_lables(headers):
+    return headers[0], headers[1]
+
+
+class cvs_object():
+    def __init__(self, path:str, get_x_row=get_x_row, get_y_row=get_y_row, label="UNKNOWN", set_x_y_lables=set_x_y_lables):
+        self.path = path
+        self.get_x_row = get_x_row
+        self.get_y_row = get_y_row
+        self.label = label
+        self.set_x_y_lables = set_x_y_lables
+
+    def write(self, data:list, path=""):
+
+        path = self.path if path == "" else path
+
+        with open(path, 'w', newline="") as csvfile:
             filewriter = csv.writer(csvfile, delimiter=',',
                             quotechar='|', quoting=csv.QUOTE_MINIMAL)
             for line in data:
@@ -28,12 +42,15 @@ class cvs_object():
     
 def plot(cvs_list:object, title="_", lable="_")->None:
     
+    f = open(cvs_list[0].path, 'r')
+    reader = csv.reader(f)
+    headers = next(reader, None)
+
+    x_label, y_label = cvs_list[0].set_x_y_lables(headers)
+
     for cvs in cvs_list:
         x = []
         y = []
-
-        x_label = ""
-        y_label = ""
 
         with open(cvs.path, 'r') as csvfile:
             if not path.exists(cvs.path):
@@ -42,19 +59,13 @@ def plot(cvs_list:object, title="_", lable="_")->None:
 
             plots = csv.reader(csvfile, delimiter=',')
             
-            if not x_label == "":
-                next(plots)
+            next(plots)
             for row in plots:
-                if len(row) >= int(cvs.x_row) and len(row) >= int(cvs.y_row):
-                    if x_label == "":
-                        x_label = row[cvs.x_row]
-                        y_label = row[cvs.y_row]
-                    else:
-                        x.append(int(row[cvs.x_row]))
-                        y.append(int(row[cvs.y_row]))
+                x.append(float(cvs.get_x_row(row)))
+                y.append(float(cvs.get_y_row(row)))
 
         plt.plot(x, y, label=f"Resolution: {cvs.label}")
-    
+
     plt.xlabel(x_label)
     plt.ylabel(y_label)
     plt.title(title)
@@ -72,3 +83,14 @@ def plot(cvs_list:object, title="_", lable="_")->None:
 # csv_obj02.write(data02)
 
 # plot([csv_obj01, csv_obj02], title="This is the title", lable="This is the lable")
+
+# def get_y_colum(row):
+#     #total_in_class = row[4]
+#     #class_accuicy
+#     return row[1]
+
+# def set_x_y_lables_2(headers):
+#     return headers[0], headers[1]
+
+# obj = cvs_object(f"{get_paths('phase_one_csv')}/big_boi.csv", get_y_row=get_y_colum, set_x_y_lables=set_x_y_lables_2)
+# plot([obj], title="This is a big table")
