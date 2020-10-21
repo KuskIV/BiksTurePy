@@ -4,6 +4,7 @@ import re
 import  tensorflow as tf
 from PIL import Image
 import random
+import os
 
 def changeImageSize(maxWidth: int, 
                     maxHeight: int, 
@@ -43,7 +44,7 @@ def load_images(folder, lable):
             if ppm_path.name.endswith(".jpg") or ppm_path.name.endswith('.jpeg') or ppm_path.name.endswith('.ppm'):
                 lable_names.append(lable)
                 loaded_img.append(np.asanyarray(Image.open(ppm_path.path)) / 255.0)
-    return lable_names, auto_reshape_images((32, 32), loaded_img)  
+    return lable_names, loaded_img   
 
 def load_images_from_folders(path):
     subfolders = [ f.path for f in os.scandir(path) if f.is_dir() ]
@@ -51,7 +52,7 @@ def load_images_from_folders(path):
     lable_names = []
     for folder in subfolders:
         lable = folder.split('/')[-1]
-        returned_lables, imgs = loadImags(folder, lable)
+        returned_lables, imgs = load_images(folder, lable)
         newImgs.extend(imgs)
         lable_names.extend(returned_lables)
     return newImgs, lable_names

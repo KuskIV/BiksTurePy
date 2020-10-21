@@ -62,13 +62,13 @@ def plot(cvs_list:object, title="_", lable="_")->None:
     plt.show()
 
 
-csv_obj01 = cvs_object(get_paths('phase_one_csv') + "/" + 'test01.cvs', label="200")
-csv_obj02 = cvs_object(get_paths('phase_one_csv') + "/" + 'test02.cvs')
+# csv_obj01 = cvs_object(get_paths('phase_one_csv') + "/" + 'test01.cvs', label="200")
+# csv_obj02 = cvs_object(get_paths('phase_one_csv') + "/" + 'test02.cvs')
 
-data01 = [['epochs', 'class', 'accury', 'resolution'], ['1', '1', '40', '32'], ['2', '3', '50', '32'], ['4', '5', '100', '200'], ['5', '7', '40', '32'], ['5', '7', '40', '32']]
-data02 = [['epochs', 'class', 'accury', 'resolution'], ['1', '2', '40', '32'], ['2', '4', '50', '32'], ['4', '6', '100', '200'], ['5', '8', '40', '32'], ['5', '9', '40', '32']]
+# data01 = [['epochs', 'class', 'accury', 'resolution'], ['1', '1', '40', '32'], ['2', '3', '50', '32'], ['4', '5', '100', '200'], ['5', '7', '40', '32'], ['5', '7', '40', '32']]
+# data02 = [['epochs', 'class', 'accury', 'resolution'], ['1', '2', '40', '32'], ['2', '4', '50', '32'], ['4', '6', '100', '200'], ['5', '8', '40', '32'], ['5', '9', '40', '32']]
 
-csv_obj01.write(data01)
-csv_obj02.write(data02)
+# csv_obj01.write(data01)
+# csv_obj02.write(data02)
 
-plot([csv_obj01, csv_obj02], title="This is the title", lable="This is the lable")
+# plot([csv_obj01, csv_obj02], title="This is the title", lable="This is the lable")
