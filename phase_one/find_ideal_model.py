@@ -260,6 +260,7 @@ def train_and_eval_models_for_size(#TODO pls help
 
 
     #print(type(train_labels), " ", type(train_labels[0]), " ", type(test_labels), " ", type(test_labels[0]))
+    
     # train model
     print("image size")
     print(size)
@@ -270,9 +271,6 @@ def train_and_eval_models_for_size(#TODO pls help
 
     print(reshaped_test_images.shape, "  ", reshaped_train_images[0].shape)
     #print(model.evaluate(reshaped_test_images, test_labels))
-
-    
-
 
 def get_processed_models():
     return [flatten_and_dense(large_model()), flatten_and_dense(medium_model()), flatten_and_dense(default_model())]

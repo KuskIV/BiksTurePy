@@ -46,18 +46,17 @@ def find_ideal_model(h5_obj:object, image_sizes, models, epochs=10)->None:
     Args:
         h5_obj (object): h5 object
     """
-    #image_sizes = [(200, 200), (128, 128), (32, 32)]
-    #image_sizes = [(32, 32)]
-
-    
 
     train_images = []
     test_images = []
     for j in range(lazy_split):
+        
         # generate models
         train_images, train_labels, test_images, test_labels = h5_obj.shuffle_and_lazyload(j, lazy_split)
+        
         print(f"Images in train_set: {len(train_images)} ({len(train_images) == len(train_labels)}), Images in val_set: {len(test_images)} ({len(test_images) == len(test_labels)})")
         print(f"This version will split the dataset in {lazy_split} sizes.")
+        
         # zip together with its size
         model_and_size = list(zip(models, image_sizes))
 

@@ -10,6 +10,8 @@ import sys
 import re
 from PIL import Image
 import random
+from os_constructor import get_os_constructor
+
 
 import os,sys,inspect
 current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
@@ -17,34 +19,6 @@ parent_dir = os.path.dirname(current_dir)
 sys.path.insert(0, parent_dir) 
 
 from global_paths import get_h5_path
-
-def key_to_string(self, key):
-    return f"{key[0]}/{key[1]}/{key[2]}"
-
-def get_ppm_arr(h5:h5py._hl.files.File, keys:list, ppm_name:str)->list:
-    """Get the ppm array from h5 file
-
-    Args:
-        h5 (h5py._hl.files.File): h5py file that should be read
-        keys (list): list of keys
-        ppm_name (str): the name of the wanted ppm
-
-    Returns:
-        list: array represnting the ppm image form the h5py file
-    """
-    return h5[keys[0]][keys[1]][keys[2]][keys[3]][ppm_name]
-
-def get_key(h5:h5py._hl.files.File, keys:list)->str:
-    """Get the key for a image
-
-    Args:
-        h5 (h5py._hl.files.File): the h5py file
-        keys (list): a list of the keys
-
-    Returns:
-        str: the key in string from
-    """
-    return h5[keys[0]][keys[1]][keys[2]][keys[3]]
 
 data = []
 group = []
@@ -161,20 +135,23 @@ class h5_object():
         #         self.error_index += 1
 
 
-    def __init__(self, folder_batch_size:int, h5_path:str, get_key=get_key, get_ppm_arr=get_ppm_arr, training_split=0.7, key_to_string=key_to_string):
+    # def __init__(self, folder_batch_size:int, h5_path:str, training_split=0.7, os_constructor=, get_key=get_key, get_ppm_arr=get_ppm_arr, key_to_string=key_to_string):
+    def __init__(self, folder_batch_size:int, h5_path:str, training_split=0.7, os_constructor=get_os_constructor()):
         self.folder_batch_size = folder_batch_size
         self.nested_level = len(get_h5_path().split("/"))
         self.h5 = get_h5(h5_path)
         self.training_split = training_split
         
-        self.get_key = get_key
-        self.get_ppm_arr = get_ppm_arr
+        os_tuple = get_os_constructor()
+
+        self.get_key = os_tuple[1]
+        self.get_ppm_arr = os_tuple[1]
 
         self.error_index = 3 #FIX, NOT HARDCODE
         self.ppm_names = []
         self.img_in_h5 = 0
         self.ppm_keys_to_list()
-        self.key_to_string = key_to_string
+        self.key_to_string = os_tuple[0]
 
 
     def get_ppm_img_index(self, index:int)->int:
@@ -208,16 +185,9 @@ class h5_object():
             labels (list): the list of lables
         """
         for j in range(len(ppm_names)):
-            #print(keys, "/", ppm_names[j], " --------")
             arr = np.array(self.get_ppm_arr(self.h5, keys, ppm_names[j]))
-            u_name = f"{self.key_to_string(self, keys)}/{ppm_names[j]}"
-            # if u_name in self.unique_images:
-            #     print(f"The following key added is not unique: {u_name}. Bye.")
-            #     sys.exit()
-            # else:
-            #     self.unique_images[u_name] = u_name
             images.append(arr)
-            labels.append(int(keys[-1])) #Maybe this should be 3
+            labels.append(int(keys[-1]))
 
     def print_class_data(self)->None:
         """A table generator method for latex, which prints out the amount of images in each class
@@ -296,51 +266,3 @@ class h5_object():
                 val_set, val_label = Shuffle(val_set, val_label)
 
         return train_set, train_label, val_set, val_label
-
-    # def lazyload_h5(self, current_iteration:int, max_iteration:int, shuffle=True)->tuple: # NOT USED ANYMORE
-    #     """NOT USED ANYMORE
-
-    #     Args:
-    #         current_iteration (int): [description]
-    #         max_iteration (int): [description]
-    #         shuffle (bool, optional): [description]. Defaults to True.
-
-    #     Returns:
-    #         tuple: [description]
-    #     """
-    #     is_last = current_iteration == max_iteration - 1
-
-    #     train_set = []
-    #     train_label = []
-
-    #     val_set = []
-    #     val_label = []
-
-    #     print(f"groups: {len(group)}")
-    #     print(f"data: {len(data)}")
-    #     print(f"{current_iteration} / {max_iteration}")
-
-    #     for i in range(len(group)):
-    #         keys = get_keys(group[i])
-
-    #         if len(keys) == self.nested_level:
-    #             img_in_class = len(self.get_key(self.h5, keys))
-
-    #             train_slice = get_slice(img_in_class, self.training_split, max_iteration)
-    #             val_slice = get_slice(img_in_class, h5_object.get_val_size(self), max_iteration, is_last)
-                
-    #             start_val, end_val = self.train_set_start_end(self, train_slice, current_iteration, is_last, img_in_class)
-    #             ppm_names = h5_object.generate_ppm_keys(self, start_val, end_val)
-
-    #             h5_object.append_to_list(self, ppm_names, keys, train_set, train_label)
-                
-    #             start_val, end_val = self.val_set_start_end(self, train_slice, val_slice, current_iteration, is_last, img_in_class, max_iteration)
-    #             ppm_names = h5_object.generate_ppm_keys(self, start_val, end_val)
-
-    #             h5_object.append_to_list(self, ppm_names, keys, val_set, val_label)
-
-    #     if shuffle:
-    #         train_set, train_label = Shuffle(train_set, train_label)
-    #         val_set, val_label = Shuffle(val_set, val_label)
-
-    #     return train_set, train_label, val_set, val_label
