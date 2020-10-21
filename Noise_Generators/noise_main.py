@@ -8,6 +8,7 @@ current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentfra
 parent_dir = os.path.dirname(current_dir)
 sys.path.insert(0, parent_dir)
 import global_paths
+from general_image_func import changeImageSize
 
 class Filter:
     """The filter class is a combination the three noises fog, 
@@ -46,6 +47,8 @@ class Filter:
         Returns:
             Image.Image: Image with filters on it
         """
+        old_size = img.size
+        img = changeImageSize(200,200,img)
         if(self.wh_set != None):
             wn =  weather(self.wh_set)
             img = wn.add_rain(img)
@@ -57,7 +60,7 @@ class Filter:
         if(self.day_set != None):
             bn = brightness(self.day_set)
             img = bn.DayAdjustment(img)
-        
+        img = changeImageSize(old_size[0],old_size[1],img)
         return img
 
     def __add__(self,img:Image.Image)->Image.Image:
