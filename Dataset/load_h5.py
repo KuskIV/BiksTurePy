@@ -32,7 +32,7 @@ def get_ppm_arr(h5:h5py._hl.files.File, keys:list, ppm_name:str)->list:
     Returns:
         list: array represnting the ppm image form the h5py file
     """
-    return h5[keys[0]][keys[1]][keys[2]][ppm_name]
+    return h5[keys[0]][keys[1]][keys[2]][keys[3]][ppm_name]
 
 def get_key(h5:h5py._hl.files.File, keys:list)->str:
     """Get the key for a image
@@ -44,7 +44,7 @@ def get_key(h5:h5py._hl.files.File, keys:list)->str:
     Returns:
         str: the key in string from
     """
-    return h5[keys[0]][keys[1]][keys[2]]
+    return h5[keys[0]][keys[1]][keys[2]][keys[3]]
 
 data = []
 group = []
@@ -145,30 +145,35 @@ class h5_object():
     def ppm_keys_to_list(self)->None:
         """Generates names for all ppm images based on how many ppm images there are in each folder
         """
-        for i in range(len(group)):
-            keys = get_keys(group[i])
-            if len(keys) == self.nested_level:
-                img_in_class = len(self.get_key(self.h5, keys))
-                self.ppm_names.append(self.generate_ppm_keys(0, img_in_class))
-                random.shuffle(self.ppm_names[-1])
-            else:
-                self.error_index += 1
+        for k1 in self.h5['Dataset']['belgian_images']['training']:
+            self.ppm_names.append([])
+            for k2 in self.h5['Dataset']['belgian_images']['training'][k1].keys():
+                self.ppm_names[-1].append(k2)
+            random.shuffle(self.ppm_names[-1])
+
+        # for i in range(len(group)):
+        #     keys = get_keys(group[i])
+        #     if len(keys) > self.nested_level:
+        #         img_in_class = len(self.get_key(self.h5, keys))
+        #         self.ppm_names.append(self.generate_ppm_keys(0, img_in_class))
+        #         random.shuffle(self.ppm_names[-1])
+        #     else:
+        #         self.error_index += 1
 
 
-    def __init__(self, folder_batch_size:int, get_key=get_key, get_ppm_arr=get_ppm_arr, training_split=0.7, key_to_string=key_to_string):
+    def __init__(self, folder_batch_size:int, h5_path:str, get_key=get_key, get_ppm_arr=get_ppm_arr, training_split=0.7, key_to_string=key_to_string):
         self.folder_batch_size = folder_batch_size
         self.nested_level = len(get_h5_path().split("/"))
-        self.h5 = get_h5(get_h5_path())
+        self.h5 = get_h5(h5_path)
         self.training_split = training_split
         
         self.get_key = get_key
         self.get_ppm_arr = get_ppm_arr
 
-        self.error_index = 0
+        self.error_index = 3 #FIX, NOT HARDCODE
         self.ppm_names = []
         self.img_in_h5 = 0
         self.ppm_keys_to_list()
-        #self.unique_images = {}
         self.key_to_string = key_to_string
 
 
@@ -203,6 +208,7 @@ class h5_object():
             labels (list): the list of lables
         """
         for j in range(len(ppm_names)):
+            #print(keys, "/", ppm_names[j], " --------")
             arr = np.array(self.get_ppm_arr(self.h5, keys, ppm_names[j]))
             u_name = f"{self.key_to_string(self, keys)}/{ppm_names[j]}"
             # if u_name in self.unique_images:
@@ -211,7 +217,7 @@ class h5_object():
             # else:
             #     self.unique_images[u_name] = u_name
             images.append(arr)
-            labels.append(int(keys[2]))
+            labels.append(int(keys[-1])) #Maybe this should be 3
 
     def print_class_data(self)->None:
         """A table generator method for latex, which prints out the amount of images in each class
@@ -238,6 +244,7 @@ class h5_object():
             keys (list): the key to the images from the h5 file
         """
         is_last = current_slize == max_slice - 1
+
         split_size = math.floor(len(self.ppm_names[class_index]) / max_slice)
 
         train_size = math.floor(split_size * split)
@@ -275,14 +282,18 @@ class h5_object():
 
         for i in range(len(group)):
             keys = get_keys(group[i])
-            if len(keys) == self.nested_level:
+            print(keys)
+            if len(keys) > self.nested_level:
+
                 h5_object.get_part_of_array(self, current_iteration, max_iteration, self.training_split, self.get_ppm_img_index(i), train_set, train_label, val_set, val_label, keys) 
 
         print(f"{current_iteration}: train set: {len(train_set)}, train lables: {len(train_label)}, val set: {len(val_set)}, val labels: {len(val_label)}") 
 
         if shuffle:
-            train_set, train_label = Shuffle(train_set, train_label)
-            val_set, val_label = Shuffle(val_set, val_label)
+            if len(train_set) > 0:
+                train_set, train_label = Shuffle(train_set, train_label)
+            if len(val_set) > 0:
+                val_set, val_label = Shuffle(val_set, val_label)
 
         return train_set, train_label, val_set, val_label
 

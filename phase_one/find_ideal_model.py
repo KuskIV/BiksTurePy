@@ -2,6 +2,7 @@ import numpy as np
 from PIL import Image
 import tensorflow as tf
 import math
+from matplotlib import pyplot as plt
 
 
 from tensorflow.keras import datasets, layers, models
@@ -12,7 +13,7 @@ current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentfra
 parent_dir = os.path.dirname(current_dir)
 sys.path.insert(0, parent_dir) 
 
-from general_image_func import get_class_names                          # Not an error
+from general_image_func import get_class_names, display_numpy_image                        # Not an error
 from Models.create_model import flatten_and_dense          # Not an error
 
 # def default_model()->tf.python.keras.engine.sequential.Sequential:
@@ -197,10 +198,16 @@ def train_model(model:tf.python.keras.engine.sequential.Sequential,
     model.compile(optimizer='adam',
                 loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
                 metrics=['sparse_categorical_accuracy'])
+    train_images = train_images/255
+    # for i in range(len(train_labels)):
+    #     print(train_labels[i])
+    #     plt.imshow(train_images[i],interpolation = 'nearest')
+    #     plt.show()
+    #     if i > 10:
+    #         break
 
     history = model.fit(train_images, train_labels, epochs=epochs,
             validation_data=(test_images, test_labels))
-    print (train_images[0].shape, " ---")
 
 
             #print(f'batch number: {i}')
@@ -247,9 +254,9 @@ def train_and_eval_models_for_size(#TODO pls help
         save_model (bool, optional): wheter it should save ot not. Defaults to True.
     """
         # reshape training and test images
+    print(size, "-------------------------")
     reshaped_train_images = reshape_numpy_array_of_images(train_images, size)
     reshaped_test_images = reshape_numpy_array_of_images(test_images, size)
-    print(size, "-------------------------")
 
 
     #print(type(train_labels), " ", type(train_labels[0]), " ", type(test_labels), " ", type(test_labels[0]))

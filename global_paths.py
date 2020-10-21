@@ -1,7 +1,10 @@
 
 paths = {
             'h5':'Dataset/h5Dataset/h5set.h5py',
-            'dataset':'Dataset/images',
+            'h5_train':'Dataset/h5Dataset/h5_train.h5py',
+            'h5_test':'Dataset/h5Dataset/h5_test.h5py',
+            'train_set':'Dataset/belgian_images/training',
+            'test_set':'Dataset/belgian_images/testing',
             'model':'Models/saved_models',
             'current_model':'Models/saved_models/YEET8.h5',
             'test_img_path':'Dataset/FullJCNN2013',
@@ -35,13 +38,26 @@ def get_h5_path()->str:
     """
     return paths.get("h5")
 
-def get_dataset_path()->str:
+def get_h5_train()->str:
+    return paths.get('h5_train')
+
+def get_h5_test()->str:
+    return paths.get('h5_test')
+
+
+def get_training_set_path()->str:
+    return paths.get('train_set')
+
+def get_data_set_path()->str:
     """Returns the path to the dataset
 
     Returns:
         str: the path to the dataset
     """
-    return paths.get("dataset")
+    return get_training_set_path()
+
+def get_test_set_path()->str:
+    return paths.get('test_set')
 
 def get_current_model_path()->str:
     """Returns the path to the current model
