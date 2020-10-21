@@ -163,11 +163,6 @@ def convert_numpy_image_to_image(numpy_image:np.array):
     im = Image.fromarray(numpy_image_rescaled_uint8)
     return im
 
-
-
-
-
-
 def convert_imgs_to_numpy_arrays(dataset: list)->list:
     """Receive a dataset in and return an numpy array of the images
        converted to normalized (0 to 1) numpy arrays.

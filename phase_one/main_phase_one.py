@@ -1,13 +1,10 @@
 from find_ideal_model import get_processed_models, train_and_eval_models_for_size
 import numpy as np
 from PIL import Image
-import math
-import h5py
-from matplotlib import pyplot as plt
 import tensorflow as tf
 from tqdm import tqdm
 from tqdm import trange
-import os, logging
+import os
 import sys,inspect
 current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parent_dir = os.path.dirname(current_dir)
@@ -18,11 +15,7 @@ from Dataset.load_h5 import h5_object
 from Models.create_model import store_model
 from Models.test_model import partial_accumilate_distribution, print_accumilate_distribution, make_prediction
 from global_paths import get_test_model_paths, get_paths, get_h5_test, get_h5_train
-from general_image_func import auto_reshape_images, changeImageSize, convert_numpy_image_to_image, load_images_from_folders
-
-lazy_split = 1
-dataset_split = 0.8
-folder_batch_size = 3
+from general_image_func import auto_reshape_images, convert_numpy_image_to_image, load_images_from_folders
 
 def acc_dist_for_images(h5_obj:object, models:list, sizes:list, lazy_split)->None:
     accArr = np.zeros((3, 43, 2))
@@ -40,7 +33,7 @@ def acc_dist_for_images(h5_obj:object, models:list, sizes:list, lazy_split)->Non
         print_accumilate_distribution(accArr[i], size=sizes[i])
 
 
-def find_ideal_model(h5_obj:object, image_sizes, models, epochs=10)->None:
+def find_ideal_model(h5_obj:object, image_sizes, models, epochs=10, lazy_split=10)->None:
     """finds the ideal model
 
     Args:
@@ -62,8 +55,9 @@ def find_ideal_model(h5_obj:object, image_sizes, models, epochs=10)->None:
 
         # train models
         for i in range(len(model_and_size)):
-            print(f"Training model {i} / {len(model_and_size) - 1} for time {j} / {lazy_split - 1}")
+            print(f"Training model {i + 1} / {len(model_and_size) } for epoch {j + 1} / {lazy_split}")
             train_and_eval_models_for_size(models, model_and_size[i][1], model_and_size[i][0], i, train_images, train_labels, test_images, test_labels, epochs)
+    
     large_model_path, medium_model_path, small_model_path = get_test_model_paths()
 
     #store_model(models[0], large_model_path)
@@ -73,16 +67,22 @@ def find_ideal_model(h5_obj:object, image_sizes, models, epochs=10)->None:
 
 
 if __name__ == "__main__":
+    lazy_split = 1
+    dataset_split = 0.8
+
     image_sizes = [(32, 32)]
-    models = [get_processed_models()[2]] # SHOULD NOT BE A LIST
 
     test_path = get_h5_test()
     train_path = get_h5_train()
 
     #image_dataset = auto_reshape_images(image_sizes[0], image_dataset)
 
-    h5_obj = h5_object(folder_batch_size, train_path, training_split=dataset_split)
-    find_ideal_model(h5_obj, image_sizes, models, epochs=50)
+    h5_obj = h5_object(train_path, training_split=dataset_split)
+
+    models = [get_processed_models(input_layer_size=h5_obj.class_in_h5)[2]] # SHOULD NOT BE A LIST
+
+
+    find_ideal_model(h5_obj, image_sizes, models, epochs=50, lazy_split=lazy_split)
 
 
     # path = "/home/biks/Desktop"

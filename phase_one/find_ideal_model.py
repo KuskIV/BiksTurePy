@@ -198,36 +198,13 @@ def train_model(model:tf.python.keras.engine.sequential.Sequential,
     model.compile(optimizer='adam',
                 loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
                 metrics=['sparse_categorical_accuracy'])
-    train_images = train_images/255
-    # for i in range(len(train_labels)):
-    #     print(train_labels[i])
-    #     plt.imshow(train_images[i],interpolation = 'nearest')
-    #     plt.show()
-    #     if i > 10:
-    #         break
-
+    
+    test_images = test_images / 255
+    train_images = train_images / 255
+    
     history = model.fit(train_images, train_labels, epochs=epochs,
             validation_data=(test_images, test_labels))
 
-
-            #print(f'batch number: {i}')
-
-           # for i in range(epoch_size):
-            #    train_data = model.train_on_batch(train_images[start:end], test_labels[start:end])
-
-            #[print(element) for element in train_data]
-
-            #if i % batches == 0:
-            #    print("897 have been trained")
-
-           # print(f'total_examples = {total_examples} | subset = {subset} | start = {start} | end = {end}')
-           # history = model.fit(train_images[start:end], train_labels[start:end], epochs=10,
-            #                validation_data=(test_images, test_labels))
-
-
-
-    #history = model.fit(train_images, train_labels, epochs=10,
-    #                    validation_data=(test_images, test_labels))
 
 def train_and_eval_models_for_size(#TODO pls help
         models:list,
@@ -254,7 +231,6 @@ def train_and_eval_models_for_size(#TODO pls help
         save_model (bool, optional): wheter it should save ot not. Defaults to True.
     """
         # reshape training and test images
-    print(size, "-------------------------")
     reshaped_train_images = reshape_numpy_array_of_images(train_images, size)
     reshaped_test_images = reshape_numpy_array_of_images(test_images, size)
 
@@ -272,5 +248,5 @@ def train_and_eval_models_for_size(#TODO pls help
     print(reshaped_test_images.shape, "  ", reshaped_train_images[0].shape)
     #print(model.evaluate(reshaped_test_images, test_labels))
 
-def get_processed_models():
-    return [flatten_and_dense(large_model()), flatten_and_dense(medium_model()), flatten_and_dense(default_model())]
+def get_processed_models(input_layer_size=62):
+    return [flatten_and_dense(large_model(), input_layer_size=input_layer_size), flatten_and_dense(medium_model(), input_layer_size=input_layer_size), flatten_and_dense(default_model(), input_layer_size=input_layer_size)]
