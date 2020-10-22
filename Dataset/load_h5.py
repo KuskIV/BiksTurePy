@@ -16,38 +16,17 @@ current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentfra
 parent_dir = os.path.dirname(current_dir)
 sys.path.insert(0, parent_dir) 
 
+import Dataset.os_h5_constructor as osc
 from global_paths import get_h5_path
 
-def key_to_string(self, key):
-    return f"{key[0]}/{key[1]}/{key[2]}"
-
-def get_ppm_arr(h5:h5py._hl.files.File, keys:list, ppm_name:str)->list:
-    """Get the ppm array from h5 file
-
-    Args:
-        h5 (h5py._hl.files.File): h5py file that should be read
-        keys (list): list of keys
-        ppm_name (str): the name of the wanted ppm
-
-    Returns:
-        list: array represnting the ppm image form the h5py file
-    """
-    return h5[keys[0]][keys[1]][keys[2]][ppm_name]
-
-def get_key(h5:h5py._hl.files.File, keys:list)->str:
-    """Get the key for a image
-
-    Args:
-        h5 (h5py._hl.files.File): the h5py file
-        keys (list): a list of the keys
-
-    Returns:
-        str: the key in string from
-    """
-    return h5[keys[0]][keys[1]][keys[2]]
-
-data = []
 group = []
+data = []
+
+def reset_read_h5():
+    global group, data
+
+    group = []
+    data = []
 
 def sort_groups(name:int, obj:object)->None:
     """Used to sort objects in a H5PY file into grous and data
@@ -60,6 +39,7 @@ def sort_groups(name:int, obj:object)->None:
         data.append(name)
     elif isinstance(obj, h5py.Group):
         group.append(name)
+
 
 def get_h5(h5_path:str)->h5py._hl.files.File:
     """Given a path, a H5PY object is returned if it exists
@@ -77,6 +57,23 @@ def get_h5(h5_path:str)->h5py._hl.files.File:
         h5 = h5py.File(h5_path, 'r')
         h5.visititems(sort_groups)
         return h5
+
+def get_h5_and_lists(h5_path:str)->h5py._hl.files.File:
+    """Given a path, a H5PY object is returned if it exists
+
+    Args:
+        h5_path (str): The path where the H5PY is located
+
+    Returns:
+        h5py._hl.files.File: The opend H5PY
+    """
+    if not path.exists(h5_path):
+        print(f"The path for the h5 file does not exist ({h5_path}). The program has exited.")
+        sys.exit()
+    else:
+        h5 = h5py.File(h5_path, 'r')
+        h5.visititems(sort_groups)
+        return h5, group, data
 
 
 ## DONT DELETE THESE THREE LINES OF CODE!
@@ -106,70 +103,62 @@ def Shuffle(img_dataset:int, img_labels:int)->tuple:
 
     return img_dataset_in, img_labels_in
 
-def get_slice(img_in_class:int, split:float, iteration:int, is_last=False)->int: # Not used anymore
-    return math.ceil((img_in_class * split) / iteration) if is_last else math.floor((img_in_class * split) / iteration)
-
-
-def get_keys(group:str)->list:
-    """This method splits a string up into different substrings, each representing a key in the H5PY file 
-
-    Args:
-        group (str): the string to split
-
-    Returns:
-        list: The split string 
-    """
-    return re.split('/', group)
-
 class h5_object():
     
-    def generate_ppm_keys(self, start_val:int, end_val:int)->list:
-        """Generates the names of the ppm images based on a start and end value
+    # def generate_ppm_keys(self, start_val:int, end_val:int)->list: # Not used anymore
+    #     """Generates the names of the ppm images based on a start and end value
 
-        Args:
-            start_val (int): The first ppm image name to be generated
-            end_val (int): the last ppm image name to be generated
+    #     Args:
+    #         start_val (int): The first ppm image name to be generated
+    #         end_val (int): the last ppm image name to be generated
 
-        Returns:
-            list: a list of all the ppm image names
-        """
-        names = []
-        for i in range(start_val, end_val):
-            ppm_start = str(math.floor(i / self.folder_batch_size)).zfill(5)
-            ppm_end = str(i % self.folder_batch_size).zfill(5)
-            ppm = f"{ppm_start}_{ppm_end}.ppm"
-            self.img_in_h5 += 1
-            names.append(ppm)
-        return names
+    #     Returns:
+    #         list: a list of all the ppm image names
+    #     """
+    #     names = []
+    #     for i in range(start_val, end_val):
+    #         ppm_start = str(math.floor(i / self.folder_batch_size)).zfill(5)
+    #         ppm_end = str(i % self.folder_batch_size).zfill(5)
+    #         ppm = f"{ppm_start}_{ppm_end}.ppm"
+    #         self.img_in_h5 += 1
+    #         names.append(ppm)
+    #     return names
 
     def ppm_keys_to_list(self)->None:
         """Generates names for all ppm images based on how many ppm images there are in each folder
         """
-        for i in range(len(group)):
-            keys = get_keys(group[i])
-            if len(keys) == self.nested_level:
-                img_in_class = len(self.get_key(self.h5, keys))
-                self.ppm_names.append(self.generate_ppm_keys(0, img_in_class))
+
+        for i in range(len(self.group)):
+            keys = self.get_keys(self.group[i])
+            if len(keys) > self.nested_level:
+                self.ppm_names.append([])
+                self.class_in_h5 += 1
+                for j in self.get_key(self.h5, keys):
+                    self.ppm_names[-1].append(j)
                 random.shuffle(self.ppm_names[-1])
-            else:
-                self.error_index += 1
 
+    def __init__(self, h5_path:str, training_split=0.7, os_constructor=osc.get_os_constructor):
+        self.h5, self.group, self.data = get_h5_and_lists(h5_path)
+        reset_read_h5()
 
-    def __init__(self, folder_batch_size:int, get_key=get_key, get_ppm_arr=get_ppm_arr, training_split=0.7, key_to_string=key_to_string):
-        self.folder_batch_size = folder_batch_size
-        self.nested_level = len(get_h5_path().split("/"))
-        self.h5 = get_h5(get_h5_path())
         self.training_split = training_split
         
-        self.get_key = get_key
-        self.get_ppm_arr = get_ppm_arr
+        os_tuple = os_constructor()
 
-        self.error_index = 0
+        self.os = os_tuple[0]
+        self.key_to_string = os_tuple[1]
+        self.get_ppm_arr = os_tuple[2]
+        self.get_key = os_tuple[3]
+        self.get_keys = os_tuple[4]
+
+        self.error_index = 2 if self.os == 'windows' else 3 #FIX, NOT HARDCODE
+        self.nested_level = len(re.split('/', get_h5_path())) - (1 if self.os == 'windows' else 0) # FIX FOR WINDOWS
+
         self.ppm_names = []
         self.img_in_h5 = 0
+        self.class_in_h5 = 0
+        
         self.ppm_keys_to_list()
-        #self.unique_images = {}
-        self.key_to_string = key_to_string
 
 
     def get_ppm_img_index(self, index:int)->int:
@@ -204,20 +193,14 @@ class h5_object():
         """
         for j in range(len(ppm_names)):
             arr = np.array(self.get_ppm_arr(self.h5, keys, ppm_names[j]))
-            u_name = f"{self.key_to_string(self, keys)}/{ppm_names[j]}"
-            # if u_name in self.unique_images:
-            #     print(f"The following key added is not unique: {u_name}. Bye.")
-            #     sys.exit()
-            # else:
-            #     self.unique_images[u_name] = u_name
             images.append(arr)
-            labels.append(int(keys[2]))
+            labels.append(int(keys[-1]) if self.os == 'linux' else int(keys[-1].split('\\')[1]))
 
     def print_class_data(self)->None:
         """A table generator method for latex, which prints out the amount of images in each class
         """
-        for i in range(len(group)):
-            keys = get_keys(group[i])
+        for i in range(len(self.group)):
+            keys = self.get_keys(self.group[i])
             if len(keys) != self.nested_level:
                 continue
             img_in_class = len(self.get_key(self.h5, keys))
@@ -238,6 +221,7 @@ class h5_object():
             keys (list): the key to the images from the h5 file
         """
         is_last = current_slize == max_slice - 1
+
         split_size = math.floor(len(self.ppm_names[class_index]) / max_slice)
 
         train_size = math.floor(split_size * split)
@@ -249,7 +233,7 @@ class h5_object():
         val_start = train_end
         val_end = val_start + val_size if not is_last else len(self.ppm_names[class_index])
 
-        print(f"{str(class_index).zfill(2)} - train: {str(train_end - train_start).rjust(2, ' ')} ({str(train_start).rjust(3, ' ')} - {str(train_end).ljust(3, ' ')}), val: {str(val_end - val_start).rjust(2, ' ')} ({str(val_start).rjust(3, ' ')} - {str(val_end).ljust(3, ' ')})")
+        print(f"{str(class_index).zfill(2)} - train: {str(train_end - train_start).rjust(5, ' ')} | {str(train_start).rjust(6, ' ')} - {str(train_end).ljust(6, ' ')} - val: {str(val_end - val_start).rjust(5, ' ')} | {str(val_start).rjust(6, ' ')} - {str(val_end).ljust(6, ' ')}")
         
         self.append_to_list(self.ppm_names[class_index][train_start:train_end], keys, train_set, train_label)
         self.append_to_list(self.ppm_names[class_index][val_start:val_end], keys, val_set, val_label)
@@ -273,63 +257,19 @@ class h5_object():
         val_set = []
         val_label = []
 
-        for i in range(len(group)):
-            keys = get_keys(group[i])
-            if len(keys) == self.nested_level:
+        for i in range(len(self.group)):
+            keys = self.get_keys(self.group[i])
+
+            if len(keys) > self.nested_level:
                 h5_object.get_part_of_array(self, current_iteration, max_iteration, self.training_split, self.get_ppm_img_index(i), train_set, train_label, val_set, val_label, keys) 
 
         print(f"{current_iteration}: train set: {len(train_set)}, train lables: {len(train_label)}, val set: {len(val_set)}, val labels: {len(val_label)}") 
 
         if shuffle:
-            train_set, train_label = Shuffle(train_set, train_label)
-            val_set, val_label = Shuffle(val_set, val_label)
+            if len(train_set) > 0:
+                train_set, train_label = Shuffle(train_set, train_label)
+            if len(val_set) > 0:
+                val_set, val_label = Shuffle(val_set, val_label)
 
         return train_set, train_label, val_set, val_label
 
-    # def lazyload_h5(self, current_iteration:int, max_iteration:int, shuffle=True)->tuple: # NOT USED ANYMORE
-    #     """NOT USED ANYMORE
-
-    #     Args:
-    #         current_iteration (int): [description]
-    #         max_iteration (int): [description]
-    #         shuffle (bool, optional): [description]. Defaults to True.
-
-    #     Returns:
-    #         tuple: [description]
-    #     """
-    #     is_last = current_iteration == max_iteration - 1
-
-    #     train_set = []
-    #     train_label = []
-
-    #     val_set = []
-    #     val_label = []
-
-    #     print(f"groups: {len(group)}")
-    #     print(f"data: {len(data)}")
-    #     print(f"{current_iteration} / {max_iteration}")
-
-    #     for i in range(len(group)):
-    #         keys = get_keys(group[i])
-
-    #         if len(keys) == self.nested_level:
-    #             img_in_class = len(self.get_key(self.h5, keys))
-
-    #             train_slice = get_slice(img_in_class, self.training_split, max_iteration)
-    #             val_slice = get_slice(img_in_class, h5_object.get_val_size(self), max_iteration, is_last)
-                
-    #             start_val, end_val = self.train_set_start_end(self, train_slice, current_iteration, is_last, img_in_class)
-    #             ppm_names = h5_object.generate_ppm_keys(self, start_val, end_val)
-
-    #             h5_object.append_to_list(self, ppm_names, keys, train_set, train_label)
-                
-    #             start_val, end_val = self.val_set_start_end(self, train_slice, val_slice, current_iteration, is_last, img_in_class, max_iteration)
-    #             ppm_names = h5_object.generate_ppm_keys(self, start_val, end_val)
-
-    #             h5_object.append_to_list(self, ppm_names, keys, val_set, val_label)
-
-    #     if shuffle:
-    #         train_set, train_label = Shuffle(train_set, train_label)
-    #         val_set, val_label = Shuffle(val_set, val_label)
-
-    #     return train_set, train_label, val_set, val_label

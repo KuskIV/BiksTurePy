@@ -163,19 +163,6 @@ def convert_numpy_image_to_image(numpy_image:np.array):
     im = Image.fromarray(numpy_image_rescaled_uint8)
     return im
 
-def display_numpy_image(numpy_image:np.array)->None:
-    """Input a (0 to 1) normalized numpy representation of a PIL image, to show it
-
-    Args:
-        numpy_image (np.array): The input image to normalize
-    """
-
-    im = convert_imgs_to_numpy_arrays(numpy_image)
-    im.show()
-
-
-
-
 def convert_imgs_to_numpy_arrays(dataset: list)->list:
     """Receive a dataset in and return an numpy array of the images
        converted to normalized (0 to 1) numpy arrays.
@@ -194,6 +181,15 @@ def convert_imgs_to_numpy_arrays(dataset: list)->list:
         converted_images.append(im_array / 255.0) # Normalize pixel values to be between 0 and 1
 
     return converted_images
+def display_numpy_image(numpy_image:np.array)->None:
+    """Input a (0 to 1) normalized numpy representation of a PIL image, to show it
+
+    Args:
+        numpy_image (np.array): The input image to normalize
+    """
+
+    im = convert_imgs_to_numpy_arrays(numpy_image)
+    im.show()
 
 def auto_reshape_images(fixed_size: tuple, numpy_images: list, smart_resize:bool = True)->np.array:
     """Reshapes the entire dataset in the minimal needed reshaping, by reshaping

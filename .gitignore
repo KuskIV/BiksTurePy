@@ -12,8 +12,11 @@ images/
 h5Dataset/
 Dataset/FULLIJCNN2013/
 Dataset/images/
+Dataset/images_old/
 Dataset/h5Dataset/
 Models/saved_models
+Dataset/belgian_images/
+phase_one/csv_data/
 # Distribution / packaging
 .Python
 build/

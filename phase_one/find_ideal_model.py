@@ -2,6 +2,7 @@ import numpy as np
 from PIL import Image
 import tensorflow as tf
 import math
+from matplotlib import pyplot as plt
 
 
 from tensorflow.keras import datasets, layers, models
@@ -12,7 +13,7 @@ current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentfra
 parent_dir = os.path.dirname(current_dir)
 sys.path.insert(0, parent_dir) 
 
-from general_image_func import get_class_names                          # Not an error
+from general_image_func import get_class_names, display_numpy_image                        # Not an error
 from Models.create_model import flatten_and_dense          # Not an error
 
 # def default_model()->tf.python.keras.engine.sequential.Sequential:
@@ -65,6 +66,22 @@ from Models.create_model import flatten_and_dense          # Not an error
 #     model.add(layers.MaxPooling2D(2, 2))
 #     model.add(layers.Conv2D(64, (3, 3), activation='relu'))
 #     return model
+
+def best_model_for_belgiums():
+    img_shape = (82,82,3)
+    den_danske_model = models.Sequential()
+    den_danske_model.add(layers.Conv2D(32, (4, 4), activation='relu', padding='same', input_shape=img_shape))
+    den_danske_model.add(layers.Conv2D(32, (4, 4), activation='relu', padding='valid'))
+    den_danske_model.add(layers.MaxPool2D((2,2)))
+    den_danske_model.add(layers.Conv2D(32, (4, 4), activation='relu', padding='same'))
+    den_danske_model.add(layers.Conv2D(32, (4, 4), activation='relu', padding='valid'))
+    den_danske_model.add(layers.MaxPool2D((2,2)))
+    den_danske_model.add(layers.Conv2D(32, (4, 4), activation='relu', padding='same'))
+    den_danske_model.add(layers.Conv2D(32, (4, 4), activation='relu', padding='valid'))
+    den_danske_model.add(layers.MaxPool2D((2,2)))
+    den_danske_model.add(layers.Conv2D(64, (4, 4), activation='relu'))
+    return den_danske_model
+
 
 def default_model():
     img_shape=(32, 32, 3)
@@ -197,30 +214,13 @@ def train_model(model:tf.python.keras.engine.sequential.Sequential,
     model.compile(optimizer='adam',
                 loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
                 metrics=['sparse_categorical_accuracy'])
-
+    
+    test_images = test_images
+    train_images = train_images #TODO ask toi about this
+    
     history = model.fit(train_images, train_labels, epochs=epochs,
             validation_data=(test_images, test_labels))
-    print (train_images[0].shape, " ---")
 
-
-            #print(f'batch number: {i}')
-
-           # for i in range(epoch_size):
-            #    train_data = model.train_on_batch(train_images[start:end], test_labels[start:end])
-
-            #[print(element) for element in train_data]
-
-            #if i % batches == 0:
-            #    print("897 have been trained")
-
-           # print(f'total_examples = {total_examples} | subset = {subset} | start = {start} | end = {end}')
-           # history = model.fit(train_images[start:end], train_labels[start:end], epochs=10,
-            #                validation_data=(test_images, test_labels))
-
-
-
-    #history = model.fit(train_images, train_labels, epochs=10,
-    #                    validation_data=(test_images, test_labels))
 
 def train_and_eval_models_for_size(#TODO pls help
         models:list,
@@ -249,10 +249,10 @@ def train_and_eval_models_for_size(#TODO pls help
         # reshape training and test images
     reshaped_train_images = reshape_numpy_array_of_images(train_images, size)
     reshaped_test_images = reshape_numpy_array_of_images(test_images, size)
-    print(size, "-------------------------")
 
 
     #print(type(train_labels), " ", type(train_labels[0]), " ", type(test_labels), " ", type(test_labels[0]))
+    
     # train model
     print("image size")
     print(size)
@@ -264,8 +264,8 @@ def train_and_eval_models_for_size(#TODO pls help
     print(reshaped_test_images.shape, "  ", reshaped_train_images[0].shape)
     #print(model.evaluate(reshaped_test_images, test_labels))
 
-    
+def get_belgium_model(input_layer_size):
+    return flatten_and_dense(best_model_for_belgiums(), input_layer_size=input_layer_size)
 
-
-def get_processed_models():
-    return [flatten_and_dense(large_model()), flatten_and_dense(medium_model()), flatten_and_dense(default_model())]
+def get_processed_models(input_layer_size=62):
+    return [flatten_and_dense(large_model(), input_layer_size=input_layer_size), flatten_and_dense(medium_model(), input_layer_size=input_layer_size), flatten_and_dense(default_model(), input_layer_size=input_layer_size)]
