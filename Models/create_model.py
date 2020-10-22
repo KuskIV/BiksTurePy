@@ -66,10 +66,10 @@ def store_model(model:tf.python.keras.engine.sequential.Sequential, path:str)->N
 #     if save_model:
 #         store_model(model, SAVE_LOAD_PATH)
 
-def flatten_and_dense(model:tf.python.keras.engine.sequential.Sequential, input_layer_size=62):
+def flatten_and_dense(model:tf.python.keras.engine.sequential.Sequential, output_layer_size=62):
     """Returns a model flattened and densed to 43 categories of prediction"""
     model.add(layers.Flatten())
     model.add(layers.Dense(64, activation='relu'))
-    model.add(layers.Dense(input_layer_size)) # TODO: IMPORTANT, should be input. Represents the amount of classes
+    model.add(layers.Dense(output_layer_size)) # TODO: IMPORTANT, should be input. Represents the amount of classes
     return model
 
