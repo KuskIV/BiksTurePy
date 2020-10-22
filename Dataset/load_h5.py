@@ -19,8 +19,14 @@ sys.path.insert(0, parent_dir)
 import Dataset.os_h5_constructor as osc
 from global_paths import get_h5_path
 
-data = []
 group = []
+data = []
+
+def reset_read_h5():
+    global group, data
+
+    group = []
+    data = []
 
 def sort_groups(name:int, obj:object)->None:
     """Used to sort objects in a H5PY file into grous and data
@@ -33,6 +39,7 @@ def sort_groups(name:int, obj:object)->None:
         data.append(name)
     elif isinstance(obj, h5py.Group):
         group.append(name)
+
 
 def get_h5(h5_path:str)->h5py._hl.files.File:
     """Given a path, a H5PY object is returned if it exists
@@ -50,6 +57,23 @@ def get_h5(h5_path:str)->h5py._hl.files.File:
         h5 = h5py.File(h5_path, 'r')
         h5.visititems(sort_groups)
         return h5
+
+def get_h5_and_lists(h5_path:str)->h5py._hl.files.File:
+    """Given a path, a H5PY object is returned if it exists
+
+    Args:
+        h5_path (str): The path where the H5PY is located
+
+    Returns:
+        h5py._hl.files.File: The opend H5PY
+    """
+    if not path.exists(h5_path):
+        print(f"The path for the h5 file does not exist ({h5_path}). The program has exited.")
+        sys.exit()
+    else:
+        h5 = h5py.File(h5_path, 'r')
+        h5.visititems(sort_groups)
+        return h5, group, data
 
 
 ## DONT DELETE THESE THREE LINES OF CODE!
@@ -104,8 +128,8 @@ class h5_object():
         """Generates names for all ppm images based on how many ppm images there are in each folder
         """
 
-        for i in range(len(group)):
-            keys = self.get_keys(group[i])
+        for i in range(len(self.group)):
+            keys = self.get_keys(self.group[i])
             if len(keys) > self.nested_level:
                 self.ppm_names.append([])
                 self.class_in_h5 += 1
@@ -114,7 +138,9 @@ class h5_object():
                 random.shuffle(self.ppm_names[-1])
 
     def __init__(self, h5_path:str, training_split=0.7, os_constructor=osc.get_os_constructor):
-        self.h5 = get_h5(h5_path)
+        self.h5, self.group, self.data = get_h5_and_lists(h5_path)
+        reset_read_h5()
+
         self.training_split = training_split
         
         os_tuple = os_constructor()
@@ -173,8 +199,8 @@ class h5_object():
     def print_class_data(self)->None:
         """A table generator method for latex, which prints out the amount of images in each class
         """
-        for i in range(len(group)):
-            keys = self.get_keys(group[i])
+        for i in range(len(self.group)):
+            keys = self.get_keys(self.group[i])
             if len(keys) != self.nested_level:
                 continue
             img_in_class = len(self.get_key(self.h5, keys))
@@ -231,10 +257,10 @@ class h5_object():
         val_set = []
         val_label = []
 
-        for i in range(len(group)):
-            keys = self.get_keys(group[i])
-            if len(keys) > self.nested_level:
+        for i in range(len(self.group)):
+            keys = self.get_keys(self.group[i])
 
+            if len(keys) > self.nested_level:
                 h5_object.get_part_of_array(self, current_iteration, max_iteration, self.training_split, self.get_ppm_img_index(i), train_set, train_label, val_set, val_label, keys) 
 
         print(f"{current_iteration}: train set: {len(train_set)}, train lables: {len(train_label)}, val set: {len(val_set)}, val labels: {len(val_label)}") 
@@ -246,3 +272,4 @@ class h5_object():
                 val_set, val_label = Shuffle(val_set, val_label)
 
         return train_set, train_label, val_set, val_label
+

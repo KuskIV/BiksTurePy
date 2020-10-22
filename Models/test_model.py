@@ -10,7 +10,7 @@ sys.path.insert(0, parent_dir)
 
 from general_image_func import changeImageSize, convertToPILImg, convert_imgs_to_numpy_arrays
 
-def make_prediction(model:tf.python.keras.engine.sequential.Sequential, image:Image.Image, shape=(32, 32, 3))->list:
+def make_prediction(model:tf.python.keras.engine.sequential.Sequential, image:Image.Image, shape)->list:
     """Based on one image, a model makes a prediction to what it is
 
     Args:
@@ -20,6 +20,7 @@ def make_prediction(model:tf.python.keras.engine.sequential.Sequential, image:Im
     Returns:
         list: The probability of the given image beign each class. Softmax not yet applied
     """
+
     shape = (1, shape[0], shape[1], shape[2])
     #img_reshaped = tf.reshape(image, (1, 32, 32, 3))
     img_reshaped = tf.reshape(image, shape)

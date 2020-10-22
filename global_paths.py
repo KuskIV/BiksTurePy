@@ -11,6 +11,7 @@ paths = {
             'large': 'Models/saved_models/large200.h5',
             'medium':'Models/saved_models/medium128.h5',
             'small':'Models/saved_models/small32.h5',
+            'belgium':'Models/saved_models/belgium.h5',
             'phase_one_csv':'phase_one/csv_data',
             'txt_file':'labels.txt'
         }
@@ -84,4 +85,4 @@ def get_model_path()->str:
     return paths.get("model")
 
 def get_test_model_paths()->tuple:
-    return paths.get("large"), paths.get("medium"), paths.get("small")
+    return paths.get("large"), paths.get("medium"), paths.get("small"), paths.get("belgium")

@@ -67,6 +67,22 @@ from Models.create_model import flatten_and_dense          # Not an error
 #     model.add(layers.Conv2D(64, (3, 3), activation='relu'))
 #     return model
 
+def best_model_for_belgiums():
+    img_shape = (82,82,3)
+    den_danske_model = models.Sequential()
+    den_danske_model.add(layers.Conv2D(32, (4, 4), activation='relu', padding='same', input_shape=img_shape))
+    den_danske_model.add(layers.Conv2D(32, (4, 4), activation='relu', padding='valid'))
+    den_danske_model.add(layers.MaxPool2D((2,2)))
+    den_danske_model.add(layers.Conv2D(32, (4, 4), activation='relu', padding='same'))
+    den_danske_model.add(layers.Conv2D(32, (4, 4), activation='relu', padding='valid'))
+    den_danske_model.add(layers.MaxPool2D((2,2)))
+    den_danske_model.add(layers.Conv2D(32, (4, 4), activation='relu', padding='same'))
+    den_danske_model.add(layers.Conv2D(32, (4, 4), activation='relu', padding='valid'))
+    den_danske_model.add(layers.MaxPool2D((2,2)))
+    den_danske_model.add(layers.Conv2D(64, (4, 4), activation='relu'))
+    return den_danske_model
+
+
 def default_model():
     img_shape=(32, 32, 3)
     model = models.Sequential()
@@ -199,8 +215,8 @@ def train_model(model:tf.python.keras.engine.sequential.Sequential,
                 loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
                 metrics=['sparse_categorical_accuracy'])
     
-    test_images = test_images / 255
-    train_images = train_images / 255
+    test_images = test_images
+    train_images = train_images #TODO ask toi about this
     
     history = model.fit(train_images, train_labels, epochs=epochs,
             validation_data=(test_images, test_labels))
@@ -247,6 +263,9 @@ def train_and_eval_models_for_size(#TODO pls help
 
     print(reshaped_test_images.shape, "  ", reshaped_train_images[0].shape)
     #print(model.evaluate(reshaped_test_images, test_labels))
+
+def get_belgium_model(input_layer_size):
+    return flatten_and_dense(best_model_for_belgiums(), input_layer_size=input_layer_size)
 
 def get_processed_models(input_layer_size=62):
     return [flatten_and_dense(large_model(), input_layer_size=input_layer_size), flatten_and_dense(medium_model(), input_layer_size=input_layer_size), flatten_and_dense(default_model(), input_layer_size=input_layer_size)]
