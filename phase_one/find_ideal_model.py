@@ -265,7 +265,7 @@ def train_and_eval_models_for_size(#TODO pls help
     #print(model.evaluate(reshaped_test_images, test_labels))
 
 def get_belgium_model(input_layer_size):
-    return flatten_and_dense(best_model_for_belgiums(), input_layer_size=input_layer_size)
+    return flatten_and_dense(best_model_for_belgiums(), output_layer_size=input_layer_size)
 
 def get_processed_models(input_layer_size=62):
-    return [flatten_and_dense(large_model(), input_layer_size=input_layer_size), flatten_and_dense(medium_model(), input_layer_size=input_layer_size), flatten_and_dense(default_model(), input_layer_size=input_layer_size)]
+    return [flatten_and_dense(large_model(), output_layer_size=input_layer_size), flatten_and_dense(medium_model(), output_layer_size=input_layer_size), flatten_and_dense(default_model(), output_layer_size=input_layer_size)]
