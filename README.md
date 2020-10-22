@@ -16,3 +16,5 @@
 ## Test published models
 - Use guide here: https://www.tensorflow.org/tutorials/keras/save_and_load
 
+## Documentaion 
+- Documentation is hosted on http://kuskiv.github.io/BiksTurePy/
