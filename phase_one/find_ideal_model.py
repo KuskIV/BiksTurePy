@@ -248,5 +248,5 @@ def train_and_eval_models_for_size(#TODO pls help
     print(reshaped_test_images.shape, "  ", reshaped_train_images[0].shape)
     #print(model.evaluate(reshaped_test_images, test_labels))
 
-def get_processed_models(input_layer_size=62):
-    return [flatten_and_dense(large_model(), input_layer_size=input_layer_size), flatten_and_dense(medium_model(), input_layer_size=input_layer_size), flatten_and_dense(default_model(), input_layer_size=input_layer_size)]
+def get_processed_models(output_layer_size=62):
+    return [flatten_and_dense(large_model(), output_layer_size=output_layer_size), flatten_and_dense(medium_model(), output_layer_size=output_layer_size), flatten_and_dense(default_model(), output_layer_size=output_layer_size)]

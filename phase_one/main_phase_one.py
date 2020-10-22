@@ -79,7 +79,7 @@ if __name__ == "__main__":
 
     h5_obj = h5_object(train_path, training_split=dataset_split)
 
-    models = [get_processed_models(input_layer_size=h5_obj.class_in_h5)[2]] # SHOULD NOT BE A LIST
+    models = [get_processed_models(output_layer_size=h5_obj.class_in_h5)[2]] # SHOULD NOT BE A LIST
 
 
     find_ideal_model(h5_obj, image_sizes, models, epochs=50, lazy_split=lazy_split)
