@@ -84,5 +84,17 @@ def get_model_path()->str:
     """
     return paths.get("model")
 
+def get_large_model_path()->str:
+    return paths.get("large")
+
+def get_medium_model_path()->str:
+    return paths.get('medium')
+
+def get_small_model_path()->str:
+    return paths.get('small')
+
+def get_belgium_model_path()->str:
+    return paths.get('belgium')
+
 def get_test_model_paths()->tuple:
-    return paths.get("large"), paths.get("medium"), paths.get("small"), paths.get("belgium")
+    return get_large_model_path(), get_medium_model_path(), get_small_model_path(), get_belgium_model_path()

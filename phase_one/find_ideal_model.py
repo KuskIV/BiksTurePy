@@ -15,6 +15,26 @@ sys.path.insert(0, parent_dir)
 
 from general_image_func import get_class_names, display_numpy_image                        # Not an error
 from Models.create_model import flatten_and_dense          # Not an error
+from global_paths import get_small_model_path, get_medium_model_path, get_large_model_path, get_belgium_model_path
+
+
+class return_model(object):
+    """
+    docstring
+    """
+    def __init__(self, get_model, path, out_layer_size):
+        self.model, self.img_shape = get_model()
+        self.model = flatten_and_dense(self.model, input_layer_size=out_layer_size)
+        self.path = path
+
+    def get_size_tuple(self, last_size:int):
+        return (self.img_shape[0], self.img_shape[1], last_size)
+
+    def get_size(self):
+        return self.img_shape[0]
+
+
+
 
 # def default_model()->tf.python.keras.engine.sequential.Sequential:
 #     """default model also known as small model since it uses image of the size 32x32.
@@ -67,7 +87,10 @@ from Models.create_model import flatten_and_dense          # Not an error
 #     model.add(layers.Conv2D(64, (3, 3), activation='relu'))
 #     return model
 
-def best_model_for_belgiums():
+def get_2d_image_shape(shape:tuple)->tuple:
+    return shape[0], shape[1]
+
+def get_belgium_model():
     img_shape = (82,82,3)
     den_danske_model = models.Sequential()
     den_danske_model.add(layers.Conv2D(32, (4, 4), activation='relu', padding='same', input_shape=img_shape))
@@ -80,10 +103,10 @@ def best_model_for_belgiums():
     den_danske_model.add(layers.Conv2D(32, (4, 4), activation='relu', padding='valid'))
     den_danske_model.add(layers.MaxPool2D((2,2)))
     den_danske_model.add(layers.Conv2D(64, (4, 4), activation='relu'))
-    return den_danske_model
+    return den_danske_model, (get_2d_image_shape(img_shape))
 
 
-def default_model():
+def get_default_model():
     img_shape=(32, 32, 3)
     model = models.Sequential()
     model.add(layers.Conv2D(32, (3, 3), activation='relu', input_shape=img_shape))
@@ -91,9 +114,9 @@ def default_model():
     model.add(layers.Conv2D(64, (3, 3), activation='relu'))
     model.add(layers.MaxPooling2D(2, 2))
     model.add(layers.Conv2D(64, (3, 3), activation='relu'))
-    return model
+    return model, (get_2d_image_shape(img_shape))
 
-def medium_model():
+def get_medium_model():
     img_shape=(128, 128, 3)
     model = models.Sequential()
     model.add(layers.Conv2D(32, (3,3), activation='relu', padding='same', input_shape=img_shape))
@@ -112,9 +135,9 @@ def medium_model():
     model.add(layers.Conv2D(32, (3, 3), padding='valid', activation='relu'))
     model.add(layers.MaxPooling2D(2, 2))
     model.add(layers.Conv2D(64, (3, 3), activation='relu'))
-    return model
+    return model, (get_2d_image_shape(img_shape))
 
-def large_model():
+def get_large_model():
     img_shape=(200, 200, 3)
     model = models.Sequential()
     model.add(layers.Conv2D(32, (5, 5), activation='relu', padding='same', input_shape=img_shape))
@@ -138,7 +161,7 @@ def large_model():
     model.add(layers.Conv2D(32, (5, 5), padding='valid', activation='relu'))
     model.add(layers.MaxPooling2D(2, 2))
     model.add(layers.Conv2D(64, (3, 3), activation='relu'))
-    return model
+    return model, (get_2d_image_shape(img_shape))
     
 
 
@@ -189,7 +212,7 @@ def reshape_numpy_array_of_images(images:np.array, size:tuple)->np.array:
         numpy.array: numpy array of the re-sized images
     """
     reshaped_images = []
-    #print(type(images[0]), " ", type(images[0][0]), " ", type(images[0][0][0]), " ", type(images[0][0][0][0]))
+
     for image in images:
         reshaped_images.append(tf.keras.preprocessing.image.smart_resize(image, size))
     return np.array(reshaped_images)
@@ -223,8 +246,7 @@ def train_model(model:tf.python.keras.engine.sequential.Sequential,
 
 
 def train_and_eval_models_for_size(#TODO pls help
-        models:list,
-        size:list,
+        size:int,
         model:tf.python.keras.engine.sequential.Sequential,
         model_id:int,
         train_images:np.array,
@@ -246,7 +268,7 @@ def train_and_eval_models_for_size(#TODO pls help
         test_labels (numpy.array): test labels
         save_model (bool, optional): wheter it should save ot not. Defaults to True.
     """
-        # reshape training and test images
+    # reshape training and test images
     reshaped_train_images = reshape_numpy_array_of_images(train_images, size)
     reshaped_test_images = reshape_numpy_array_of_images(test_images, size)
 
@@ -264,8 +286,22 @@ def train_and_eval_models_for_size(#TODO pls help
     print(reshaped_test_images.shape, "  ", reshaped_train_images[0].shape)
     #print(model.evaluate(reshaped_test_images, test_labels))
 
-def get_belgium_model(input_layer_size):
-    return flatten_and_dense(best_model_for_belgiums(), output_layer_size=input_layer_size)
 
-def get_processed_models(input_layer_size=62):
-    return [flatten_and_dense(large_model(), output_layer_size=input_layer_size), flatten_and_dense(medium_model(), output_layer_size=input_layer_size), flatten_and_dense(default_model(), output_layer_size=input_layer_size)]
+def get_models(shape:int):
+    large_model = return_model(get_large_model, get_large_model_path(), shape)
+    medium_model = return_model(get_medium_model, get_medium_model_path(), shape)
+    small_model = return_model(get_default_model, get_small_model_path(), shape)
+    belgium_model = return_model(get_belgium_model, get_belgium_model_path(), shape)
+
+    return [large_model, medium_model, belgium_model, small_model]
+
+# def get_processed_models(input_layer_size=62):
+#     large_model, large_size, large_path = get_large_model()
+#     medium_model, medium_size, medium_path = get_medium_model()
+#     default_model, default_size, default_path = get_default_model()
+#     belgium_model, belgium_size, belgium_path = get_belgium_model()
+
+#     return [(flatten_and_dense(large_model, input_layer_size=input_layer_size), large_size), 
+#             (flatten_and_dense(medium_model, input_layer_size=input_layer_size), medium_size), 
+#             (flatten_and_dense(default_model, input_layer_size=input_layer_size), default_size),
+#             (flatten_and_dense(belgium_model, input_layer_size=input_layer_size), belgium_size)]

@@ -35,7 +35,7 @@ def acc_dist_for_images(h5_obj:object, models:list, sizes:list, lazy_split)->Non
     for i in range(len(models)):
         print_accumilate_distribution(accArr[i], size=sizes[i])
 
-def find_ideal_model(h5_obj:object, image_sizes, models, epochs=10, lazy_split=10)->None:
+def find_ideal_model(h5_obj:object, model_object_list, epochs=10, lazy_split=10)->None:
     """finds the ideal model
 
     Args:
@@ -51,21 +51,22 @@ def find_ideal_model(h5_obj:object, image_sizes, models, epochs=10, lazy_split=1
         
         print(f"Images in train_set: {len(train_images)} ({len(train_images) == len(train_labels)}), Images in val_set: {len(test_images)} ({len(test_images) == len(test_labels)})")
         print(f"This version will split the dataset in {lazy_split} sizes.")
-        
-        # zip together with its size
-        model_and_size = list(zip(models, image_sizes))
 
         # train models
-        for i in range(len(model_and_size)):
-            print(f"Training model {i + 1} / {len(model_and_size) } for epoch {j + 1} / {lazy_split}")
-            train_and_eval_models_for_size(models, model_and_size[i][1], model_and_size[i][0], i, train_images, train_labels, test_images, test_labels, epochs)
+        for i in range(len(model_object_list)):
+            print(f"Training model {i + 1} / {len(model_object_list) } for epoch {j + 1} / {lazy_split}")
+            train_and_eval_models_for_size(model_object_list[i].model, model_object_list[i].size, i, train_images, train_labels, test_images, test_labels, epochs)
     
-    large_model_path, medium_model_path, small_model_path, belgium_model_path = get_test_model_paths()
+    for models in model_object_list:
+        store_model(models.model, models.path)
 
-    #store_model(models[0], large_model_path)
-    #store_model(models[1], medium_model_path)
-    # store_model(models[0], small_model_path) # SHOULD BE INDEX 2
-    store_model(models[0],belgium_model_path)
+
+    # large_model_path, medium_model_path, small_model_path, belgium_model_path = get_test_model_paths()
+
+    # #store_model(models[0], large_model_path)
+    # #store_model(models[1], medium_model_path)
+    # # store_model(models[0], small_model_path) # SHOULD BE INDEX 2
+    # store_model(models[0],belgium_model_path)
 
 
 if __name__ == "__main__":
