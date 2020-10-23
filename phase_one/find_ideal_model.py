@@ -24,7 +24,7 @@ class return_model(object):
     """
     def __init__(self, get_model, path, out_layer_size):
         self.model, self.img_shape = get_model()
-        self.model = flatten_and_dense(self.model, input_layer_size=out_layer_size)
+        self.model = flatten_and_dense(self.model, output_layer_size=out_layer_size)
         self.path = path
 
     def get_size_tuple(self, last_size:int):
@@ -215,6 +215,7 @@ def reshape_numpy_array_of_images(images:np.array, size:tuple)->np.array:
 
     for image in images:
         reshaped_images.append(tf.keras.preprocessing.image.smart_resize(image, size))
+    
     return np.array(reshaped_images)
 
 def train_model(model:tf.python.keras.engine.sequential.Sequential, 
@@ -287,13 +288,13 @@ def train_and_eval_models_for_size(#TODO pls help
     #print(model.evaluate(reshaped_test_images, test_labels))
 
 
-def get_models(shape:int):
+def get_model_object_list(shape:int):
     large_model = return_model(get_large_model, get_large_model_path(), shape)
     medium_model = return_model(get_medium_model, get_medium_model_path(), shape)
     small_model = return_model(get_default_model, get_small_model_path(), shape)
     belgium_model = return_model(get_belgium_model, get_belgium_model_path(), shape)
 
-    return [large_model, medium_model, belgium_model, small_model]
+    return [belgium_model, small_model]
 
 # def get_processed_models(input_layer_size=62):
 #     large_model, large_size, large_path = get_large_model()

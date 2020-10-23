@@ -3,8 +3,7 @@ import numpy as np
 from tqdm import tqdm
 from tqdm import trange
 
-from main_phase_one import find_ideal_model
-from find_ideal_model import get_processed_models, get_models
+from find_ideal_model import train_and_eval_models_for_size, get_model_object_list
 
 import os,sys,inspect
 current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
@@ -12,10 +11,37 @@ parent_dir = os.path.dirname(current_dir)
 sys.path.insert(0, parent_dir) 
 
 from Dataset.load_h5 import h5_object
+from Models.create_model import store_model
 from global_paths import get_test_model_paths, get_paths, get_h5_test, get_h5_train
 from plot.write_csv_file import cvs_object, plot
 from general_image_func import auto_reshape_images, convert_numpy_image_to_image
 from Models.test_model import make_prediction
+
+def find_ideal_model(h5_obj:object, model_object_list, epochs=10, lazy_split=10)->None:
+    """finds the ideal model
+
+    Args:
+        h5_obj (object): h5 object
+    """
+
+    train_images = []
+    test_images = []
+
+    for j in range(lazy_split):
+        
+        # generate models
+        train_images, train_labels, test_images, test_labels = h5_obj.shuffle_and_lazyload(j, lazy_split)
+        
+        print(f"Images in train_set: {len(train_images)} ({len(train_images) == len(train_labels)}), Images in val_set: {len(test_images)} ({len(test_images) == len(test_labels)})")
+        print(f"This version will split the dataset in {lazy_split} sizes.")
+
+        # train models
+        for i in range(len(model_object_list)):
+            print(f"Training model {i + 1} / {len(model_object_list) } for epoch {j + 1} / {lazy_split}")
+            train_and_eval_models_for_size(model_object_list[i].img_shape, model_object_list[i].model, i, train_images, train_labels, test_images, test_labels, epochs)
+    
+    for models in model_object_list:
+        store_model(models.model, models.path)
 
 def do_experiment_epochs(lazy_split, get_model_objects, train_h5_path, test_h5_path, epochs=(3,4), dataset_split=0.7):
     label_dict = {}
@@ -25,7 +51,11 @@ def do_experiment_epochs(lazy_split, get_model_objects, train_h5_path, test_h5_p
     h5_train = h5_object(train_h5_path, training_split=dataset_split)
     h5_test = h5_object(test_h5_path, training_split=1)
 
-    model_object_list = get_model_objects()
+    if h5_train.class_in_h5 != h5_test.class_in_h5:
+        print(f"The input train and test set does not have matching classes {h5_train.class_in_h5} - {h5_test.class_in_h5}")
+        sys.exit()
+
+    model_object_list = get_model_objects(h5_train.class_in_h5)
 
     image_dataset, lable_dataset, _, _ = h5_test.shuffle_and_lazyload(0, 1)
     
@@ -58,13 +88,13 @@ def iterate_trough_models(model_object_list,lable_dataset,label_dict,e,image_dat
 
         image_dataset = auto_reshape_images(model_object_list[i].img_shape, image_dataset)
 
-        right, wrong = iterate_trough_imgs(model_object_list[i].model, image_dataset, lable_dataset,label_dict)
+        right, wrong = iterate_trough_imgs(model_object_list[i], image_dataset, lable_dataset,label_dict)
 
         percent = (right / (wrong + right)) * 100
 
         print(f"Right: {right}, wrong: {wrong}, percent correct: {percent}")
 
-        returnlist.extend(get_model_results(label_dict,(e, model_object_list[i].get_shape()), True))
+        returnlist.extend(get_model_results(label_dict,(e, model_object_list[i].get_size()), True))
     return returnlist
 
 def iterate_trough_imgs(model_object_list,image_dataset,lable_dataset, label_dict): #image[i]
@@ -118,6 +148,6 @@ def quick():
     test_path = get_h5_test()
     train_path = get_h5_train()
 
-    do_experiment_epochs(lazy_split, get_models, train_path, test_path)
+    do_experiment_epochs(lazy_split, get_model_object_list, train_path, test_path, epochs=(1,2))
 
 quick()

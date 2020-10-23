@@ -1,4 +1,4 @@
-from find_ideal_model import get_processed_models, train_and_eval_models_for_size, get_belgium_model
+from find_ideal_model import train_and_eval_models_for_size, get_belgium_model
 import numpy as np
 from PIL import Image
 import tensorflow as tf
@@ -6,8 +6,6 @@ from tqdm import tqdm
 from tqdm import trange
 import os
 import sys,inspect
-
-
 
 current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parent_dir = os.path.dirname(current_dir)
@@ -35,30 +33,31 @@ def acc_dist_for_images(h5_obj:object, models:list, sizes:list, lazy_split)->Non
     for i in range(len(models)):
         print_accumilate_distribution(accArr[i], size=sizes[i])
 
-def find_ideal_model(h5_obj:object, model_object_list, epochs=10, lazy_split=10)->None:
-    """finds the ideal model
+# def find_ideal_model(h5_obj:object, model_object_list, epochs=10, lazy_split=10)->None:
+#     """finds the ideal model
 
-    Args:
-        h5_obj (object): h5 object
-    """
+#     Args:
+#         h5_obj (object): h5 object
+#     """
 
-    train_images = []
-    test_images = []
-    for j in range(lazy_split):
+#     train_images = []
+#     test_images = []
+
+#     for j in range(lazy_split):
         
-        # generate models
-        train_images, train_labels, test_images, test_labels = h5_obj.shuffle_and_lazyload(j, lazy_split)
+#         # generate models
+#         train_images, train_labels, test_images, test_labels = h5_obj.shuffle_and_lazyload(j, lazy_split)
         
-        print(f"Images in train_set: {len(train_images)} ({len(train_images) == len(train_labels)}), Images in val_set: {len(test_images)} ({len(test_images) == len(test_labels)})")
-        print(f"This version will split the dataset in {lazy_split} sizes.")
+#         print(f"Images in train_set: {len(train_images)} ({len(train_images) == len(train_labels)}), Images in val_set: {len(test_images)} ({len(test_images) == len(test_labels)})")
+#         print(f"This version will split the dataset in {lazy_split} sizes.")
 
-        # train models
-        for i in range(len(model_object_list)):
-            print(f"Training model {i + 1} / {len(model_object_list) } for epoch {j + 1} / {lazy_split}")
-            train_and_eval_models_for_size(model_object_list[i].model, model_object_list[i].size, i, train_images, train_labels, test_images, test_labels, epochs)
+#         # train models
+#         for i in range(len(model_object_list)):
+#             print(f"Training model {i + 1} / {len(model_object_list) } for epoch {j + 1} / {lazy_split}")
+#             train_and_eval_models_for_size(model_object_list[i].img_shape, model_object_list[i].model, i, train_images, train_labels, test_images, test_labels, epochs)
     
-    for models in model_object_list:
-        store_model(models.model, models.path)
+#     for models in model_object_list:
+#         store_model(models.model, models.path)
 
 
     # large_model_path, medium_model_path, small_model_path, belgium_model_path = get_test_model_paths()
@@ -108,9 +107,9 @@ if __name__ == "__main__":
 
     # models = [get_processed_models()[2]] # SHOULD NOT BE A LIST
 
-    models = [get_belgium_model(input_layer_size=h5_train.class_in_h5)]
+    # models = [get_belgium_model(input_layer_size=h5_train.class_in_h5)]
 
-    image_dataset, lable_dataset, _, _ = h5_test.shuffle_and_lazyload(0, 1)
+    # image_dataset, lable_dataset, _, _ = h5_test.shuffle_and_lazyload(0, 1)
 
     
 
