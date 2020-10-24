@@ -97,7 +97,18 @@ def normal_distribution(lst:list):
         if 0 <= index < len(lst):
             return lst[index]
 
-def apply_multiple_filters(Imgs:list,mode = 'rand',KeepOriginal:bool=True,filters:dict=None,**kwargs):
+def apply_multiple_filters(Imgs:list,mode = 'rand', KeepOriginal:bool=True, filters:dict=None, **kwargs)->list:
+    """
+    A function that takes a input of pictures and applys 
+    Args:
+        Imgs (list): A list of PIL images tupled with thier class
+        mode (str, optional): the distribution mode, how should the diffrent noises be distributed. Defaults to 'rand'.
+        KeepOriginal (bool, optional): Should the original image be keeped, in the returned list. Defaults to True.
+        filters (dict, optional): dictionary of filter objectedf tupled with the name of the filter. Defaults to None.
+
+    Returns:
+        list: [description]
+    """
     result = []    
     if filters is None:
         filters = {}
@@ -105,17 +116,18 @@ def apply_multiple_filters(Imgs:list,mode = 'rand',KeepOriginal:bool=True,filter
             filters[key] = value
 
     fil = list(filters.items())
-    for img in Imgs:
-        result.append((img,'Original'))
+    for img,_class in Imgs:
+        if KeepOriginal:
+            result.append((img,'Original'))
         if mode == 'rand':
             tuple = random.choice(fil)
             result.append((tuple[1]+img,tuple[0]))
         
         if mode == 'normal':
             filter_and_lable = normal_distribution(fil)
-            result.append((filter_and_lable[1]+img,filter_and_lable[0]))
+            result.append((filter_and_lable[1]+img,filter_and_lable[0],_class))
 
-    return result
+    return result #TODO associate the results with the used filters and the original class
 
         
 def loadImags(folder):
@@ -131,6 +143,7 @@ def load_X_images(path):
     newImgs = []
     for folder in subfolders:
         imgs = loadImags(folder)
+        imgs = [(img,os.path.basename(os.path.normpath(folder))) for img in imgs]
         newImgs.extend(imgs)
     return newImgs
 
@@ -163,7 +176,7 @@ def QuickDebugL():
     D = premade_single_filter('day')
     N = premade_single_filter('night')
     dict = {'fog':F,'rain':R,'snow':S,'day':D,'night':N}
-    res = apply_multiple_filters(imgs,filters=dict, mode='normal')
+    res = apply_multiple_filters(imgs,filters=dict, mode='normal', KeepOriginal=False)
     for i in range(len(res)):
         res[i][0].save(f'C:/Users/jeppe/Desktop/imagesFolder/{i}.png')
         
