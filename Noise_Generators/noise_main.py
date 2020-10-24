@@ -99,7 +99,8 @@ def normal_distribution(lst:list):
 
 def apply_multiple_filters(Imgs:list,mode = 'rand', KeepOriginal:bool=True, filters:dict=None, **kwargs)->list:
     """
-    A function that takes a input of pictures and applys 
+    A function that takes a input of pictures and applys them to eahc picture based on the selected mode. 
+    The result will contain the edited picture with the name of the filter useed and the class of the orignal picture. 
     Args:
         Imgs (list): A list of PIL images tupled with thier class
         mode (str, optional): the distribution mode, how should the diffrent noises be distributed. Defaults to 'rand'.
@@ -107,7 +108,7 @@ def apply_multiple_filters(Imgs:list,mode = 'rand', KeepOriginal:bool=True, filt
         filters (dict, optional): dictionary of filter objectedf tupled with the name of the filter. Defaults to None.
 
     Returns:
-        list: [description]
+        list: A list containing the image, tupled with the filter and its original class
     """
     result = []    
     if filters is None:
@@ -127,7 +128,7 @@ def apply_multiple_filters(Imgs:list,mode = 'rand', KeepOriginal:bool=True, filt
             filter_and_lable = normal_distribution(fil)
             result.append((filter_and_lable[1]+img,filter_and_lable[0],_class))
 
-    return result #TODO associate the results with the used filters and the original class
+    return result 
 
         
 def loadImags(folder):
