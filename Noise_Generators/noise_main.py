@@ -1,16 +1,14 @@
 from weather import weather
-from Perlin_noise import perlin
+from perlin_noise import perlin
 from brightness import brightness
 from PIL import Image
 import random
-
 import os,sys,inspect
 current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parent_dir = os.path.dirname(current_dir)
-sys.path.insert(0, parent_dir) 
-
-from general_image_func import convertToPILImg
-from Dataset.load_h5 import h5_object
+sys.path.insert(0, parent_dir)
+import global_paths
+from general_image_func import changeImageSize
 
 class Filter:
     """The filter class is a combination the three noises fog, 
@@ -49,6 +47,8 @@ class Filter:
         Returns:
             Image.Image: Image with filters on it
         """
+        old_size = img.size
+        img = changeImageSize(200,200,img)
         if(self.wh_set != None):
             wn =  weather(self.wh_set)
             img = wn.add_rain(img)
@@ -60,7 +60,7 @@ class Filter:
         if(self.day_set != None):
             bn = brightness(self.day_set)
             img = bn.DayAdjustment(img)
-        
+        img = changeImageSize(old_size[0],old_size[1],img)
         return img
 
     def __add__(self,img:Image.Image)->Image.Image:
@@ -97,7 +97,19 @@ def normal_distribution(lst:list):
         if 0 <= index < len(lst):
             return lst[index]
 
-def apply_multiple_filters(Imgs:list,mode = 'rand',KeepOriginal:bool=True,filters:dict=None,**kwargs):
+def apply_multiple_filters(Imgs:list,mode = 'rand', KeepOriginal:bool=True, filters:dict=None, **kwargs)->list:
+    """
+    A function that takes a input of pictures and applys them to eahc picture based on the selected mode. 
+    The result will contain the edited picture with the name of the filter useed and the class of the orignal picture. 
+    Args:
+        Imgs (list): A list of PIL images tupled with thier class
+        mode (str, optional): the distribution mode, how should the diffrent noises be distributed. Defaults to 'rand'.
+        KeepOriginal (bool, optional): Should the original image be keeped, in the returned list. Defaults to True.
+        filters (dict, optional): dictionary of filter objectedf tupled with the name of the filter. Defaults to None.
+
+    Returns:
+        list: A list containing the image, tupled with the filter and its original class
+    """
     result = []    
     if filters is None:
         filters = {}
@@ -105,17 +117,37 @@ def apply_multiple_filters(Imgs:list,mode = 'rand',KeepOriginal:bool=True,filter
             filters[key] = value
 
     fil = list(filters.items())
-    for img in Imgs:
-        result.append((img,'Original'))
+    for img,_class in Imgs:
+        if KeepOriginal:
+            result.append((img,'Original'))
         if mode == 'rand':
             tuple = random.choice(fil)
             result.append((tuple[1]+img,tuple[0]))
         
         if mode == 'normal':
             filter_and_lable = normal_distribution(fil)
-            result.append((filter_and_lable[1]+img,filter_and_lable[0]))
+            result.append((filter_and_lable[1]+img,filter_and_lable[0],_class))
 
-    return result
+    return result 
+
+        
+def loadImags(folder):
+    loaded_img = []
+    with os.scandir(folder) as imgs:
+        for ppm_path in imgs:
+            if ppm_path.name.endswith(".ppm"):
+                loaded_img.append(Image.open(ppm_path.path))
+    return loaded_img  
+
+def load_X_images(path):
+    subfolders = [ f.path for f in os.scandir(path) if f.is_dir() ]
+    newImgs = []
+    for folder in subfolders:
+        imgs = loadImags(folder)
+        imgs = [(img,os.path.basename(os.path.normpath(folder))) for img in imgs]
+        newImgs.extend(imgs)
+    return newImgs
+
 
 def premade_single_filter(str:str)->Filter:
     config = {}
@@ -137,25 +169,18 @@ def premade_single_filter(str:str)->Filter:
     return result
 
 def QuickDebugL():
-    h5_obj = h5_object(30, training_split=0.7)
-    train_images, _, _, _ = h5_obj.shuffle_and_lazyload(1, 100)
-
-    for img in range(len(train_images)):
-        train_images[img] = convertToPILImg(train_images[img], normilized=False)
-
     #imgs = Image.open("C:\\Users\\jeppe\\Desktop\\GTSRB_Final_Training_Images\\GTSRB\\Final_Training\\Images\\00000\\00002_00029.ppm")
-    imgs = train_images
+    imgs = load_X_images('C:/Users/jeppe/Desktop/FullIJCNN2013')
     F = premade_single_filter('fog')
     R = premade_single_filter('rain')
     S = premade_single_filter('snow')
     D = premade_single_filter('day')
     N = premade_single_filter('night')
     dict = {'fog':F,'rain':R,'snow':S,'day':D,'night':N}
-    res = apply_multiple_filters(imgs,filters=dict, mode='normal')
+    res = apply_multiple_filters(imgs,filters=dict, mode='normal', KeepOriginal=False)
     for i in range(len(res)):
-        res[i][0].show()
-        res[i][0].save(f'/home/biks/Desktop/YEET/{i}.png')
-        break
+        res[i][0].save(f'C:/Users/jeppe/Desktop/imagesFolder/{i}.png')
+        
 
 def QuickDebug():
     """Small debug function
