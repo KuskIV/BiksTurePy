@@ -126,9 +126,9 @@ def apply_multiple_filters(Imgs:list,mode = 'rand', KeepOriginal:bool=True, filt
         
         if mode == 'normal':
             filter_and_lable = normal_distribution(fil)
-            result.append((filter_and_lable[1]+img,filter_and_lable[0],_class))
+            result.append((filter_and_lable[1]+img,_class,filter_and_lable[0]))
 
-    return result 
+    return result #(image,class,filter)
 
         
 def loadImags(folder):
