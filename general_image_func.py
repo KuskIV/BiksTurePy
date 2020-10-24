@@ -57,7 +57,7 @@ def load_images_from_folders(path):
         lable_names.extend(returned_lables)
     return newImgs, lable_names
 
-def EnsureUniformImageShape(img1: Image.Image,img2: Image.Image, shape=None)->tuple:
+def EnsureUniformImageShape(img1: Image.Image,img2: Image.Image, shape=None)->tuple:#TODO single instance of this method failing to ensure uniformity, have not been able to re-create error
     """This method ensure two imagse are uniform, and returns them
 
     Args:
