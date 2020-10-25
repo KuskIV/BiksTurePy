@@ -201,4 +201,4 @@ def quick():
 
     run_experiment_one(lazy_split, train_path, test_path, epochs=(1,4))
 
-quick()
+# quick()

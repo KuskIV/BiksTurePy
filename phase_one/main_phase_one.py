@@ -6,6 +6,7 @@ from tqdm import tqdm
 from tqdm import trange
 import os
 import sys,inspect
+from experiment_one import run_experiment_one
 
 current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parent_dir = os.path.dirname(current_dir)
@@ -35,8 +36,13 @@ def acc_dist_for_images(h5_obj:object, models:list, sizes:list, lazy_split)->Non
 
 if __name__ == "__main__":
     lazy_split = 1
-    dataset_split = 0.8
 
+    test_path = get_h5_test()
+    train_path = get_h5_train()
+
+    run_experiment_one(lazy_split, train_path, test_path, epochs=(1,4))
+
+    
     # path = "/home/biks/Desktop"
     # test_path = "/imagesForMads"
 
