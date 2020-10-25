@@ -123,7 +123,7 @@ def convertToPILImg(img1: np.array, normilized = True)-> Image.Image:
     im = Image.fromarray(numpy_image_rescaled_uint8)
     return im
 
-def get_class_names()->list:
+def get_class_names()->list:#TODO den her skal nok være et andet sted?
     """Gets classification name for each label from the labels.txt, which is assumed to be in root.
     
     Returns:
