@@ -30,7 +30,7 @@ class cvs_object():
         self.label = label
         self.set_x_y_lables = set_x_y_lables
 
-    def write(self, data:list, path="", overwrite_path=False):
+    def write(self, data:list, path="", overwrite_path=False, return_object=False):
         
         path = self.path if path == "" else path
 
@@ -73,7 +73,7 @@ def plot(cvs_list:object, title="_", lable="_")->None:
                 y.append(float(cvs.get_y_row(row)))
 
         plt.plot(x, y, label=f"Resolution: {cvs.label}")
-    plt.ylim(80, 90)
+    # plt.ylim(80, 90) #TODO Calculate this dynamicly
     plt.xlabel(x_label)
     plt.ylabel(y_label)
     plt.title(title)
