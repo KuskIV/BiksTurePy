@@ -1,4 +1,4 @@
-from write_csv_file import cvs_object, plot
+# from write_csv_file import cvs_object, plot
 import os.path
 from os import path
 import sys, os
@@ -63,11 +63,11 @@ def sum_csv(csv_obj):
             new_cvs_file.append([current_epoc, class_accuracy, current_resolution])
     return new_cvs_file
 
-obj = cvs_object(f"{get_paths('phase_one_csv')}/big_boi.csv")
-data = sum_csv(obj)
-obj.write(data, path=f"{get_paths('phase_one_csv')}/big_boi_to_small_boi.csv")
-obj.path = f"{get_paths('phase_one_csv')}/big_boi_to_small_boi.csv"
-plot([obj], lable="32")
+# obj = cvs_object(f"{get_paths('phase_one_csv')}/big_boi.csv")
+# data = sum_csv(obj)
+# obj.write(data, path=f"{get_paths('phase_one_csv')}/big_boi_to_small_boi.csv")
+# obj.path = f"{get_paths('phase_one_csv')}/big_boi_to_small_boi.csv"
+# plot([obj], lable="32")
 
 
                 

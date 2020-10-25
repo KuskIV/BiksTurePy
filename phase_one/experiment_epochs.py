@@ -2,6 +2,10 @@ import tensorflow as tf
 import numpy as np
 from tqdm import tqdm
 from tqdm import trange
+import sys, os
+import csv
+import os.path
+from os import path
 
 from find_ideal_model import train_and_eval_models_for_size, get_model_object_list
 
@@ -16,6 +20,7 @@ from global_paths import get_test_model_paths, get_paths, get_h5_test, get_h5_tr
 from plot.write_csv_file import cvs_object, plot
 from general_image_func import auto_reshape_images, convert_numpy_image_to_image
 from Models.test_model import make_prediction
+from plot.sum_csv import sum_csv
 
 def find_ideal_model(h5_obj:object, model_object_list, epochs=10, lazy_split=10)->None:
     """finds the ideal model
@@ -43,10 +48,8 @@ def find_ideal_model(h5_obj:object, model_object_list, epochs=10, lazy_split=10)
     for models in model_object_list:
         store_model(models.model, models.path)
 
-def do_experiment_epochs(lazy_split, get_model_objects, train_h5_path, test_h5_path, epochs=(3,4), dataset_split=0.7):
+def run_experiment_one(lazy_split, train_h5_path, test_h5_path, epochs=(3,4), dataset_split=0.7):
     label_dict = {}
-
-    big_boi_list = [['Epochs', 'Resolution', 'Class', 'Class_Acuracy', 'Total_in_Class']]
 
     h5_train = h5_object(train_h5_path, training_split=dataset_split)
     h5_test = h5_object(test_h5_path, training_split=1)
@@ -55,24 +58,77 @@ def do_experiment_epochs(lazy_split, get_model_objects, train_h5_path, test_h5_p
         print(f"The input train and test set does not have matching classes {h5_train.class_in_h5} - {h5_test.class_in_h5}")
         sys.exit()
 
-    model_object_list = get_model_objects(h5_train.class_in_h5)
+    model_object_list = get_model_object_list(h5_train.class_in_h5)
 
     image_dataset, lable_dataset, _, _ = h5_test.shuffle_and_lazyload(0, 1)
     
     for e in range(epochs[0], epochs[1]):
-        print(f"\n----------------\nRun {e} / {15}\n----------------\n")
+        print(f"\n----------------\nRun {e} / {epochs[1]}\n----------------\n")
         
         find_ideal_model(h5_train, model_object_list, lazy_split=lazy_split, epochs=e)
         
         print(f"\n------------------------\nTraining done. Now evaluation will be made, using {e} epochs.\n\n")
 
-        big_boi_list.extend(iterate_trough_models(model_object_list, lable_dataset, label_dict, e, image_dataset))
-        save_plot(big_boi_list)
+        iterate_trough_models(model_object_list, lable_dataset, label_dict, e, image_dataset)
 
-def save_plot(big_boi_list):
-    cvs_obj = cvs_object(f"{get_paths('phase_one_csv')}/big_boi.csv")
-    cvs_obj.write(big_boi_list)
-    plot([cvs_obj])
+    save_plot(model_object_list)
+    sum_plot(model_object_list)
+    sum_class_accuracy(model_object_list)
+
+def sum_class_accuracy(model_object_list):
+    model_class_accuracy = {}
+
+    for model_object in model_object_list:
+        model_class_accuracy[model_object.get_csv_name()] = {}
+
+        with open(model_object.get_csv_path(), 'r') as csvfile:
+                if not path.exists(model_object.get_csv_path()):
+                    print(f"\nThe following path does not exist: {model_object.get_csv_path()}\nCode: plot.write_csv_file.py")
+                    sys.exit()
+                
+                plots = csv.reader(csvfile, delimiter=',')
+
+                next(plots)
+                for row in plots:
+                    if not row[0] in model_class_accuracy[model_object.get_csv_name()]: 
+                        model_class_accuracy[model_object.get_csv_name()][row[0]] = {}
+                    model_class_accuracy[model_object.get_csv_name()][row[0]][row[2]] = row[3]
+    
+    data_list = convert_dict_to_list(model_class_accuracy)
+    save_data_obj = cvs_object(f"{get_paths('phase_one_csv')}/class_accuracy.csv")
+    save_data_obj.write(data_list)
+
+    return model_class_accuracy
+
+def convert_dict_to_list(model_class_accuracy):
+    data_list = [['Class']]
+
+    for key, value in model_class_accuracy.items():
+        for key2, value2 in model_class_accuracy[key].items():
+            data_list[0].append(f"{key}_{key2}")
+            
+            i = 0
+            while str(i) in value2:
+                if len(data_list) == i + 1:
+                    data_list.append([i])
+                data_list[i + 1].append(model_class_accuracy[key][key2][str(i)])
+                i += 1
+
+    return data_list  
+
+def sum_plot(model_object_list):
+    csv_object_list =  []
+    for model_object in model_object_list:
+        obj = cvs_object(model_object.get_csv_path(), label=model_object.get_size())
+        data = sum_csv(obj)
+        obj.write(data, model_object.get_summed_csv_path(), overwrite_path=True)
+        csv_object_list.append(obj)
+    plot(csv_object_list)
+
+def save_plot(model_object_list):
+    for model_object in model_object_list:
+        cvs_obj = cvs_object(model_object.get_csv_path())
+        cvs_obj.write(model_object.csv_data)
 
 def iniitalize_dict(lable_dataset):
     label_dict = {}
@@ -82,7 +138,6 @@ def iniitalize_dict(lable_dataset):
 
 
 def iterate_trough_models(model_object_list,lable_dataset,label_dict,e,image_dataset):
-    returnlist = []
     for i in range(len(model_object_list)):
         label_dict = iniitalize_dict(lable_dataset)
 
@@ -94,8 +149,7 @@ def iterate_trough_models(model_object_list,lable_dataset,label_dict,e,image_dat
 
         print(f"Right: {right}, wrong: {wrong}, percent correct: {percent}")
 
-        returnlist.extend(get_model_results(label_dict,(e, model_object_list[i].get_size()), True))
-    return returnlist
+        get_model_results(label_dict, model_object_list[i], (e, True))
 
 def iterate_trough_imgs(model_object_list,image_dataset,lable_dataset, label_dict): #image[i]
     right = 0
@@ -123,24 +177,21 @@ def iterate_trough_imgs(model_object_list,image_dataset,lable_dataset, label_dic
 
 
 def update_values(key, label_dict, prt):
-    class_name = str(key).zfill(2)
+    class_name = str(key)
     right_name = str(label_dict[key][1]).rjust(4, ' ')
     wrong_name = str(label_dict[key][0]).rjust(4, ' ')
     class_size = label_dict[key][0]+label_dict[key][1]
     class_percent = (label_dict[key][1]/class_size)*100
     
     if prt:
-        print(f"class: {class_name} | right: {right_name} | wrong: {wrong_name} | procent: {round(class_percent, 2)}")
+        print(f"class: {class_name.zfill(2)} | right: {right_name} | wrong: {wrong_name} | procent: {round(class_percent, 2)}")
     
     return class_name, class_percent, class_size
 
-def get_model_results(lable_dict,settings,should_print=True):
-    result_list =[]
+def get_model_results(lable_dict, model_object ,settings,should_print=True):
     for key in lable_dict.keys():
         class_name, class_percent, class_size = update_values(key, lable_dict,should_print)
-    
-        result_list.append([settings[0], settings[1], class_name, class_percent, class_size])
-    return result_list
+        model_object.csv_data.append([settings[0], model_object.get_size(), class_name, class_percent, class_size])
 
 def quick():
     lazy_split = 1
@@ -148,6 +199,6 @@ def quick():
     test_path = get_h5_test()
     train_path = get_h5_train()
 
-    do_experiment_epochs(lazy_split, get_model_object_list, train_path, test_path, epochs=(1,2))
+    run_experiment_one(lazy_split, train_path, test_path, epochs=(1,4))
 
 quick()

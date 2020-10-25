@@ -15,7 +15,7 @@ sys.path.insert(0, parent_dir)
 
 from general_image_func import get_class_names, display_numpy_image                        # Not an error
 from Models.create_model import flatten_and_dense          # Not an error
-from global_paths import get_small_model_path, get_medium_model_path, get_large_model_path, get_belgium_model_path
+from global_paths import get_small_model_path, get_medium_model_path, get_large_model_path, get_belgium_model_path, get_paths
 
 
 class return_model(object):
@@ -26,12 +26,23 @@ class return_model(object):
         self.model, self.img_shape = get_model()
         self.model = flatten_and_dense(self.model, output_layer_size=out_layer_size)
         self.path = path
+        self.csv_data = [['Epochs', 'Resolution', 'Class', 'Class_Acuracy', 'Total_in_Class']]
 
     def get_size_tuple(self, last_size:int):
         return (self.img_shape[0], self.img_shape[1], last_size)
 
     def get_size(self):
         return self.img_shape[0]
+
+    def get_csv_name(self):
+        return f"model{return_model.get_size(self)}"
+
+    def get_csv_path(self):
+        return f"{get_paths('phase_one_csv')}/{return_model.get_csv_name(self)}.csv"
+
+    def get_summed_csv_path(self):
+        return f"{get_paths('phase_one_csv')}/model{return_model.get_size(self)}_summed.csv"
+
 
 
 
