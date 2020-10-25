@@ -30,10 +30,12 @@ class cvs_object():
         self.label = label
         self.set_x_y_lables = set_x_y_lables
 
-    def write(self, data:list, path=""):
-        return_object = False if path == "" else True
-
+    def write(self, data:list, path="", overwrite_path=False):
+        
         path = self.path if path == "" else path
+
+        if overwrite_path:
+            self.path = path
 
         with open(path, 'w', newline="") as csvfile:
             filewriter = csv.writer(csvfile, delimiter=',',
