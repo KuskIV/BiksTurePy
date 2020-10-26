@@ -2,6 +2,7 @@ import csv
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
+from PIL import Image
 
 import os,sys,inspect
 current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
@@ -21,13 +22,27 @@ def phase_2_1(model, h5path, lazy_split, image_size, dataset_split=1):
     values = [("image","class","filter","predicted_class")]
     for j in range(lazy_split):
         original_images, original_labels, _, _ = h5_obj.shuffle_and_lazyload(j, lazy_split) #TODO need variant of this that does not generate test set or shuffle
-        image_tuples = add_noise((original_images,original_labels)) #tuple(image,class,filter)
+        image_tuples = add_noise((convert_between_pill_numpy(original_images,mode='numpy->pil'),original_labels)) #tuple(image,class,filter)
+        numpy_imgs = convert_between_pill_numpy(image_tuples[0],mode='pil->numpy')
+        for i in range(len(numpy_imgs)):
+            image_tuples[i] = list(image_tuples[i])
+            image_tuples[i][0] = numpy_imgs[i]
+            image_tuples[i] = tuple(image_tuples[i])
+
         for i in range(len(image_tuples)):
             prediction = make_prediction(model, image_tuples[i][0], (image_size[0], image_size[1], 3))
             predicted_label = np.argmax(prediction) #Get the class with highest liklyhood of the predictions
             image_tuples[i] = image_tuples[i]+(predicted_label) #concatanate two tuples to create new tuple , which replacess the old one
         values.extend(image_tuples)
     convert_to_csv('phase_two/phase2_results.csv',values) #tuple(image,class,filter,predicted_class)
+
+def convert_between_pill_numpy(imgs,mode):
+    lst = []
+    if mode == 'pil->numpy':
+        return [np.array(im) for im in imgs]
+    if mode == 'numpy->pil':
+        return [Image.fromarray(im) for im in imgs]
+
 
 def load_filters():
     F = premade_single_filter('fog')
