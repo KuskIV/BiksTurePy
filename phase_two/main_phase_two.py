@@ -1,16 +1,23 @@
-import Noise_Generators.noise_main as noise
-from Noise.generators.noise_main import Filter,premade_single_filter,apply_multiple_filters
-from Dataset.load_h5 import h5_object
-from global_paths import get_test_model_paths, get_paths, get_h5_test, get_h5_train
-from Models.test_model import partial_accumilate_distribution, print_accumilate_distribution, make_prediction
 import csv
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 
+import os,sys,inspect
+current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+parent_dir = os.path.dirname(current_dir)
+sys.path.insert(0, parent_dir) 
 
-def phase_2_1(model, h5path, lazysplit, image_size):
-    h5 = h5_object(h5path, training_split=dataset_split)
+from Noise_Generators.noise_main import Filter,premade_single_filter,apply_multiple_filters
+from Dataset.load_h5 import h5_object
+from global_paths import get_test_model_paths, get_paths, get_h5_test, get_h5_train
+from Models.test_model import partial_accumilate_distribution, print_accumilate_distribution, make_prediction
+from phase_one.find_ideal_model import get_model_object_list
+from global_paths import  get_h5_test
+
+
+def phase_2_1(model, h5path, lazy_split, image_size, dataset_split=1):
+    h5_obj = h5_object(h5path, training_split=dataset_split)
     values = [("image","class","filter","predicted_class")]
     for j in range(lazy_split):
         original_images, original_labels, _, _ = h5_obj.shuffle_and_lazyload(j, lazy_split) #TODO need variant of this that does not generate test set or shuffle
@@ -122,6 +129,10 @@ def plot_phase2_results():
     #matplotlib bar(), https://matplotlib.org/gallery/lines_bars_and_markers/barchart.html#sphx-glr-gallery-lines-bars-and-markers-barchart-py
     
 def QuickDebug():
+    models = get_model_object_list(63)
+    test_path = get_h5_test()
 
-    # phase_2_1(belgium_model,,10,(32,32))
+    phase_2_1(models[2], test_path,1,models[2].img_shape)
+
+QuickDebug()
 

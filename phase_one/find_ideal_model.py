@@ -305,7 +305,7 @@ def get_model_object_list(shape:int):
     small_model = return_model(get_default_model, get_small_model_path(), shape)
     belgium_model = return_model(get_belgium_model, get_belgium_model_path(), shape)
 
-    return [belgium_model, small_model]
+    return [large_model, medium_model, belgium_model, small_model]
 
 # def get_processed_models(input_layer_size=62):
 #     large_model, large_size, large_path = get_large_model()

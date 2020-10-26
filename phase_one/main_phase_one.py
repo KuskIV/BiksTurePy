@@ -36,7 +36,7 @@ if __name__ == "__main__":
     test_path = get_h5_test()
     train_path = get_h5_train()
 
-    run_experiment_one(lazy_split, train_path, test_path, epochs=(1,4))
+    run_experiment_one(lazy_split, train_path, test_path, epochs=(5,31))
 
 
     # path = "/home/biks/Desktop"

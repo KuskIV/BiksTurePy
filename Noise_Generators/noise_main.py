@@ -1,6 +1,5 @@
-from weather_gen import weather
-from perlin_noise import perlin
-from brightness import brightness
+
+
 from PIL import Image
 import random
 import os,sys,inspect
@@ -9,6 +8,9 @@ parent_dir = os.path.dirname(current_dir)
 sys.path.insert(0, parent_dir)
 import global_paths
 from general_image_func import changeImageSize
+from Noise_Generators.weather_gen import weather
+from Noise_Generators.Perlin_noise import perlin
+from Noise_Generators.brightness import brightness
 
 class Filter:
     """The filter class is a combination the three noises fog, 
@@ -117,16 +119,16 @@ def apply_multiple_filters(Imgs:list,mode = 'rand', KeepOriginal:bool=True, filt
             filters[key] = value
 
     fil = list(filters.items())
-    for img,_class in Imgs:
+    for i in range(len(Imgs)):
         if KeepOriginal:
-            result.append((img,'Original'))
+            result.append((Imgs[0][i],'Original'))
         if mode == 'rand':
             tuple = random.choice(fil)
-            result.append((tuple[1]+img,tuple[0]))
+            result.append((tuple[1]+Imgs[0][i],tuple[0]))
         
         if mode == 'normal':
             filter_and_lable = normal_distribution(fil)
-            result.append((filter_and_lable[1]+img,_class,filter_and_lable[0]))
+            result.append((filter_and_lable[1]+Imgs[0][i],Imgs[1][i],filter_and_lable[0]))
 
     return result #(image,class,filter)
 
@@ -201,7 +203,7 @@ def QuickDebug():
     #newImage[0].show()
     #newImage[1].show()
 
-QuickDebugL()
+# QuickDebugL()
 #fog_set=(1)
 #day_set=(0.5)
 #wh_set = (70,7,2,(2,2),(130,130,130))
