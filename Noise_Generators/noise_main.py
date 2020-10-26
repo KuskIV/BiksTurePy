@@ -1,4 +1,4 @@
-from weather import weather
+from weather_gen import weather
 from perlin_noise import perlin
 from brightness import brightness
 from PIL import Image
@@ -51,7 +51,7 @@ class Filter:
         img = changeImageSize(200,200,img)
         if(self.wh_set != None):
             wn =  weather(self.wh_set)
-            img = wn.add_rain(img)
+            img = wn.add_weather(img)
         
         if(self.fog_set != None):
             pn = perlin(self.fog_set)
@@ -126,9 +126,9 @@ def apply_multiple_filters(Imgs:list,mode = 'rand', KeepOriginal:bool=True, filt
         
         if mode == 'normal':
             filter_and_lable = normal_distribution(fil)
-            result.append((filter_and_lable[1]+img,filter_and_lable[0],_class))
+            result.append((filter_and_lable[1]+img,_class,filter_and_lable[0]))
 
-    return result 
+    return result #(image,class,filter)
 
         
 def loadImags(folder):
@@ -155,10 +155,10 @@ def premade_single_filter(str:str)->Filter:
         config = {'octaves':8, 'persistence':0.3, 'lacunarity': 5, 'alpha': 0.4}
         result = Filter({'fog_set':config})
     if str == 'rain':
-        config = {'rain_drops':500, 'drop_length':2,'drop_width':1,'blurr':(2,2),'color':(200,200,255)}
+        config =     config = {'density':(0.03,0.14),'density_uniformity':(0.8,1.0),'drop_size':(0.3,0.4),'drop_size_uniformity':(0.1,0.5),'angle':(-15,15),'speed':(0.1,0.2),'blur':(0.001,0.001)}
         result = Filter({'wh_set':config})
     if str == 'snow':
-        config = {'rain_drops':700, 'drop_length':2,'drop_width':2,'blurr':(2,2),'color':(255,255,255)}
+        config =     config = {'density':(0.03,0.14),'density_uniformity':(0.8,1.0),'drop_size':(0.3,0.4),'drop_size_uniformity':(0.1,0.5),'angle':(-15,15),'speed':(0.1,0.2),'blur':(0.001,0.001),'mode':'snow'}
         result = Filter({'wh_set':config})
     if str == 'day':
         config = {'factor':1.0}
