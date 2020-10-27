@@ -17,7 +17,7 @@ sys.path.insert(0, parent_dir)
 
 from general_image_func import get_class_names, display_numpy_image                        # Not an error
 from Models.create_model import flatten_and_dense          # Not an error
-from global_paths import get_small_model_path, get_medium_model_path, get_large_model_path, get_belgium_model_path, get_paths
+from global_paths import get_small_model_path, get_medium_model_path, get_large_model_path, get_belgium_model_path, get_paths, get_belgium_model_avg_path, get_belgium_model_median_path
 
 
 class return_model(object):
@@ -360,6 +360,16 @@ def get_model_object_list(shape:int, load_trained_models=False):
     belgium_model = return_model(get_belgium_model, get_belgium_model_path(), shape, load_trained_models)
 
     return [large_model, medium_model, belgium_model, small_model]
+
+def get_belgian_model_object_list(shape:int, load_trained_models=False):
+    belgium_model_avg = return_model(get_belgium_model_avg, get_belgium_model_avg_path(), shape, load_trained_models)
+    belgium_model_median = return_model(get_belgium_model_median, get_belgium_model_median_path(), shape, load_trained_models)
+    belgium_model = return_model(get_belgium_model, get_belgium_model_path(), shape, load_trained_models)
+
+    return [belgium_model_avg, belgium_model_median, belgium_model]
+
+
+
 
 # def get_processed_models(input_layer_size=62):
 #     large_model, large_size, large_path = get_large_model()

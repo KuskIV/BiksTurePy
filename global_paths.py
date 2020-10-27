@@ -12,6 +12,8 @@ paths = {
             'medium':'Models/saved_models/medium128.h5',
             'small':'Models/saved_models/small32.h5',
             'belgium':'Models/saved_models/belgium.h5',
+            'belgium_avg':'Models/saved_models/belgium_avg.h5',
+            'belgium_median':'Models/saved_models/belgium_median.h5',
             'phase_one_csv':'phase_one/csv_data',
             'txt_file':'labels.txt'
         }
@@ -95,6 +97,12 @@ def get_small_model_path()->str:
 
 def get_belgium_model_path()->str:
     return paths.get('belgium')
+
+def get_belgium_model_avg_path()->str:
+    return paths.get('belgium_avg')
+
+def get_belgium_model_median_path()->str:
+    return paths.get('belgium_median')
 
 def get_test_model_paths()->tuple:
     return get_large_model_path(), get_medium_model_path(), get_small_model_path(), get_belgium_model_path()

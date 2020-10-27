@@ -7,7 +7,7 @@ import csv
 import os.path
 from os import path
 
-from find_ideal_model import train_and_eval_models_for_size, get_model_object_list
+from find_ideal_model import train_and_eval_models_for_size, get_model_object_list, get_belgian_model_object_list
 
 import os,sys,inspect
 current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
@@ -59,7 +59,7 @@ def run_experiment_one(lazy_split, train_h5_path, test_h5_path, epochs_end=10, d
         print(f"The input train and test set does not have matching classes {h5_train.class_in_h5} - {h5_test.class_in_h5}")
         sys.exit()
 
-    model_object_list = get_model_object_list(h5_train.class_in_h5)
+    model_object_list = get_belgian_model_object_list(h5_train.class_in_h5)
 
     # image_dataset, lable_dataset, _, _ = h5_test.shuffle_and_lazyload(0, 1) # TODO: This might cause a "run out of memory" error.
     
@@ -104,17 +104,16 @@ def sum_class_accuracy(model_object_list):
 
 def convert_dict_to_list(model_class_accuracy):
     data_list = [['Class']]
-
     for key, value in model_class_accuracy.items():
         for key2, value2 in model_class_accuracy[key].items():
             data_list[0].append(f"{key}_{key2}")
-            
-            i = 0
-            while str(i) in value2:
+            keys = list(value2.keys())
+            keys.sort(key=int)
+
+            for i in range(len(keys)):
                 if len(data_list) == i + 1:
-                    data_list.append([i])
-                data_list[i + 1].append(model_class_accuracy[key][key2][str(i)])
-                i += 1
+                    data_list.append([keys[i]])
+                data_list[int(i) + 1].append(model_class_accuracy[key][key2][str(keys[i])])
 
     return data_list  
 
@@ -205,4 +204,4 @@ def quick():
 
     run_experiment_one(lazy_split, train_path, test_path, epochs_end=4)
 
-quick()
+# quick()
