@@ -66,7 +66,7 @@ def run_experiment_one(lazy_split, train_h5_path, test_h5_path, epochs_end=10, d
     for e in range(1, epochs_end):
         print(f"\n----------------\nRun {e} / {epochs_end}\n----------------\n")
         
-        find_ideal_model(h5_train, model_object_list, lazy_split=lazy_split, epochs=1)
+        find_ideal_model(h5_train, model_object_list, lazy_split=lazy_split, epochs=1, save_models=True)
         
         print(f"\n------------------------\nTraining done. Now evaluation will be made, using {e} epochs.\n\n")
 

@@ -290,6 +290,9 @@ def train_and_eval_models_for_size(#TODO pls help
     # train model
     print("image size")
     print(size)
+
+    print(size, "", reshaped_test_images[0].size)
+
     train_model(model, reshaped_train_images, train_labels, reshaped_test_images, test_labels, epochs)
 
     # evaluate each model
