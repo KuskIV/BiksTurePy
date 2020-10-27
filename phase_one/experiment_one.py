@@ -22,7 +22,7 @@ from general_image_func import auto_reshape_images, convert_numpy_image_to_image
 from Models.test_model import make_prediction
 from plot.sum_csv import sum_csv
 
-def find_ideal_model(h5_obj:object, model_object_list, epochs=10, lazy_split=10)->None:
+def find_ideal_model(h5_obj:object, model_object_list, epochs=10, lazy_split=10, save_models=False)->None:
     """finds the ideal model
 
     Args:
@@ -45,10 +45,11 @@ def find_ideal_model(h5_obj:object, model_object_list, epochs=10, lazy_split=10)
             print(f"Training model {i + 1} / {len(model_object_list) } for epoch {j + 1} / {lazy_split}")
             train_and_eval_models_for_size(model_object_list[i].img_shape, model_object_list[i].model, i, train_images, train_labels, test_images, test_labels, epochs)
     
-    for models in model_object_list:
-        store_model(models.model, models.path)
+    if save_models:
+        for models in model_object_list:
+            store_model(models.model, models.path)
 
-def run_experiment_one(lazy_split, train_h5_path, test_h5_path, epochs=(3,4), dataset_split=0.7):
+def run_experiment_one(lazy_split, train_h5_path, test_h5_path, epochs_end=10, dataset_split=0.7):
     label_dict = {}
 
     h5_train = h5_object(train_h5_path, training_split=dataset_split)
@@ -60,16 +61,17 @@ def run_experiment_one(lazy_split, train_h5_path, test_h5_path, epochs=(3,4), da
 
     model_object_list = get_model_object_list(h5_train.class_in_h5)
 
-    image_dataset, lable_dataset, _, _ = h5_test.shuffle_and_lazyload(0, 1)
+    # image_dataset, lable_dataset, _, _ = h5_test.shuffle_and_lazyload(0, 1) # TODO: This might cause a "run out of memory" error.
     
-    for e in range(epochs[0], epochs[1]):
-        print(f"\n----------------\nRun {e} / {epochs[1]}\n----------------\n")
+    for e in range(1, epochs_end):
+        print(f"\n----------------\nRun {e} / {epochs_end}\n----------------\n")
         
-        find_ideal_model(h5_train, model_object_list, lazy_split=lazy_split, epochs=e)
+        find_ideal_model(h5_train, model_object_list, lazy_split=lazy_split, epochs=1, save_models=True)
         
         print(f"\n------------------------\nTraining done. Now evaluation will be made, using {e} epochs.\n\n")
 
-        iterate_trough_models(model_object_list, lable_dataset, label_dict, e, image_dataset)
+        iterate_trough_models(model_object_list, label_dict, e, h5_test)
+        # iterate_trough_models(model_object_list, lable_dataset, label_dict, e, image_dataset)
 
     save_plot(model_object_list)
     sum_plot(model_object_list)
@@ -137,7 +139,9 @@ def iniitalize_dict(lable_dataset):
     return label_dict
 
 
-def iterate_trough_models(model_object_list,lable_dataset,label_dict,e,image_dataset):
+def iterate_trough_models(model_object_list, label_dict, e, h5_test):
+    image_dataset, lable_dataset, _, _ = h5_test.shuffle_and_lazyload(0, 1) # TODO: This might cause a "run out of memory" error. Implement as loop.
+    
     for i in range(len(model_object_list)):
         label_dict = iniitalize_dict(lable_dataset)
 
@@ -151,7 +155,7 @@ def iterate_trough_models(model_object_list,lable_dataset,label_dict,e,image_dat
 
         get_model_results(label_dict, model_object_list[i], (e, True))
 
-def iterate_trough_imgs(model_object_list,image_dataset,lable_dataset, label_dict): #image[i]
+def iterate_trough_imgs(model_object_list,image_dataset,lable_dataset, label_dict):
     right = 0
     wrong = 0
     
@@ -199,6 +203,6 @@ def quick():
     test_path = get_h5_test()
     train_path = get_h5_train()
 
-    run_experiment_one(lazy_split, train_path, test_path, epochs=(1,4))
+    run_experiment_one(lazy_split, train_path, test_path, epochs_end=4)
 
 # quick()
