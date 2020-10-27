@@ -1,15 +1,16 @@
-from weather_gen import weather
-from perlin_noise import perlin
-from brightness import brightness
+
 from PIL import Image
 import random
+import numpy as np
 import os,sys,inspect
 current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parent_dir = os.path.dirname(current_dir)
 sys.path.insert(0, parent_dir)
 import global_paths
 from general_image_func import changeImageSize
-
+from Noise_Generators.weather_gen import weather
+from Noise_Generators.Perlin_noise import perlin
+from Noise_Generators.brightness import brightness
 
 class Filter:
     """The filter class is a combination the three noises fog, 
@@ -117,18 +118,25 @@ def apply_multiple_filters(Imgs:list,mode = 'rand', KeepOriginal:bool=True, filt
         for key, value in kwargs.items():
             filters[key] = value
 
+    lables = Imgs[1]
+    images = Imgs[0]
+
     fil = list(filters.items())
-    for img,_class in Imgs:
+    for i in range(len(lables)):
         if KeepOriginal:
-            result.append((img,'Original'))
+            result.append((images[i],'Original',lables[i]))
         if mode == 'rand':
             _tuple = random.choice(fil)
-            result.append((_tuple[1]+img,_tuple[0]))
+            result.append((_tuple[1]+images[i],_tuple[0],lables[i]))
         
         if mode == 'normal':
             filter_and_lable = normal_distribution(fil)
-            result.append((filter_and_lable[1]+img,_class,filter_and_lable[0]))
-
+            result.append((filter_and_lable[1]+images[i],lables[i],filter_and_lable[0]))
+        # if i <= 2:
+        #     print(f'{lables[i]} this is the lable')
+        #     img_as_arr = np.array(images[i])*255.0
+        #     img = Image.fromarray(img_as_arr.astype('uint8'), 'RGB')
+        #     img.show()
     return result #(image,class,filter)
 
         
@@ -171,7 +179,7 @@ def premade_single_filter(str:str)->Filter:
 
 def QuickDebugL():
     #imgs = Image.open("C:\\Users\\jeppe\\Desktop\\GTSRB_Final_Training_Images\\GTSRB\\Final_Training\\Images\\00000\\00002_00029.ppm")
-    imgs = load_X_images('C:/Users/jeppe/Desktop/FullIJCNN2013')
+    imgs = load_X_images('/home/biks/Desktop/BiksBois/BiksTurePy/Dataset/belgian_images/testing/')
     F = premade_single_filter('fog')
     R = premade_single_filter('rain')
     S = premade_single_filter('snow')
@@ -180,7 +188,7 @@ def QuickDebugL():
     dict = {'fog':F,'rain':R,'snow':S,'day':D,'night':N}
     res = apply_multiple_filters(imgs,filters=dict, mode='rand', KeepOriginal=False)
     for i in range(len(res)):
-        res[i][0].save(f'C:/Users/jeppe/Desktop/imagesFolder/{i}.png')
+        res[i][0].save(f'/home/biks/Desktop/jeppeisdumb/{i}.png')
         
 
 def QuickDebug():
@@ -202,7 +210,7 @@ def QuickDebug():
     #newImage[0].show()
     #newImage[1].show()
 
-QuickDebugL()
+# QuickDebugL()
 #fog_set=(1)
 #day_set=(0.5)
 #wh_set = (70,7,2,(2,2),(130,130,130))

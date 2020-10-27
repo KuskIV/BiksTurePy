@@ -61,6 +61,8 @@ def run_experiment_one(lazy_split, train_h5_path, test_h5_path, epochs=(3,4), da
     model_object_list = get_model_object_list(h5_train.class_in_h5)
 
     image_dataset, lable_dataset, _, _ = h5_test.shuffle_and_lazyload(0, 1)
+
+    
     
     for e in range(epochs[0], epochs[1]):
         print(f"\n----------------\nRun {e} / {epochs[1]}\n----------------\n")
@@ -201,4 +203,4 @@ def quick():
 
     run_experiment_one(lazy_split, train_path, test_path, epochs=(1,4))
 
-# quick()
+quick()

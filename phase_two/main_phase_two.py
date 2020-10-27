@@ -14,34 +14,47 @@ from Dataset.load_h5 import h5_object
 from global_paths import get_test_model_paths, get_paths, get_h5_test, get_h5_train
 from Models.test_model import partial_accumilate_distribution, print_accumilate_distribution, make_prediction
 from phase_one.find_ideal_model import get_model_object_list
-from global_paths import  get_h5_test
+from global_paths import  get_h5_test, get_h5_train
+from general_image_func import auto_reshape_images,changeImageSize,rgba_to_rgb
 
 
 def phase_2_1(model, h5path, lazy_split, image_size, dataset_split=1):
     h5_obj = h5_object(h5path, training_split=dataset_split)
-    values = [("image","class","filter","predicted_class")]
-    for j in range(lazy_split):
+    values = [("image","filter","class","predicted_class")]
+    for j in range(2):
         original_images, original_labels, _, _ = h5_obj.shuffle_and_lazyload(j, lazy_split) #TODO need variant of this that does not generate test set or shuffle
-        image_tuples = add_noise((convert_between_pill_numpy(original_images,mode='numpy->pil'),original_labels)) #tuple(image,class,filter)
-        numpy_imgs = convert_between_pill_numpy(image_tuples[0],mode='pil->numpy')
+
+        image_tuples = add_noise((convert_between_pill_numpy(original_images * 255.0,mode='numpy->pil'),original_labels)) #tuple(image,class,filter)
+        numpy_imgs = convert_between_pill_numpy([changeImageSize(image_size[0],image_size[1],im[0].convert('RGB')) for im in image_tuples],mode='pil->numpy')
+        
+        print(len(numpy_imgs))
         for i in range(len(numpy_imgs)):
             image_tuples[i] = list(image_tuples[i])
             image_tuples[i][0] = numpy_imgs[i]
             image_tuples[i] = tuple(image_tuples[i])
 
         for i in range(len(image_tuples)):
-            prediction = make_prediction(model, image_tuples[i][0], (image_size[0], image_size[1], 3))
+            prediction = make_prediction(model.model, image_tuples[i][0], (image_size[0], image_size[1], 3))
+            print("This is the lable: ", image_tuples[i][2])
+            plt.imshow(image_tuples[i][0], interpolation="nearest")
+            plt.show()
             predicted_label = np.argmax(prediction) #Get the class with highest liklyhood of the predictions
-            image_tuples[i] = image_tuples[i]+(predicted_label) #concatanate two tuples to create new tuple , which replacess the old one
+            image_tuples[i] = (image_tuples[i]+tuple([predicted_label,'yeet'])) #concatanate two tuples to create new tuple , which replacess the old one
         values.extend(image_tuples)
-    convert_to_csv('phase_two/phase2_results.csv',values) #tuple(image,class,filter,predicted_class)
+    convert_to_csv('phase_two/phase2_results.csv',[val[1:4] for val in values]) #tuple(image,class,filter,predicted_class)
+
+def normalize_and_convert(img:np.array):
+    img = img # * 255.0
+    img = img.astype(np.uint8)
+    return Image.fromarray(img)
 
 def convert_between_pill_numpy(imgs,mode):
     lst = []
+    print(type(imgs[1]))
     if mode == 'pil->numpy':
-        return [np.array(im) for im in imgs]
+        return [np.asarray(im) for im in imgs]
     if mode == 'numpy->pil':
-        return [Image.fromarray(im) for im in imgs]
+        return [normalize_and_convert(im) for im in imgs]
 
 
 def load_filters():
@@ -147,7 +160,7 @@ def QuickDebug():
     models = get_model_object_list(63)
     test_path = get_h5_test()
 
-    phase_2_1(models[2], test_path,1,models[2].img_shape)
+    phase_2_1(models[2], test_path,10,models[2].img_shape)
 
 QuickDebug()
 
