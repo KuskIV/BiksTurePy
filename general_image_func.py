@@ -20,13 +20,13 @@ def changeImageSize(maxWidth: int,
         Image.Image: The resized image
     """
     
-    widthRatio  = maxWidth/image.size[0]
-    heightRatio = maxHeight/image.size[1]
+    # widthRatio  = maxWidth/image.size[0]
+    # heightRatio = maxHeight/image.size[1]
 
-    newWidth    = int(widthRatio*image.size[0])
-    newHeight   = int(heightRatio*image.size[1])
+    # newWidth    = int(widthRatio*image.size[0])
+    # newHeight   = int(heightRatio*image.size[1])
 
-    return image.resize((newWidth, newHeight))
+    return image.resize((maxHeight, maxWidth))
 
 def rgba_to_rgb(arr:np.array):
     w, h = arr.size
@@ -57,7 +57,7 @@ def load_images_from_folders(path):
         lable_names.extend(returned_lables)
     return newImgs, lable_names
 
-def EnsureUniformImageShape(img1: Image.Image,img2: Image.Image, shape=None)->tuple:
+def EnsureUniformImageShape(img1: Image.Image,img2: Image.Image, shape=None)->tuple:#TODO single instance of this method failing to ensure uniformity, have not been able to re-create error
     """This method ensure two imagse are uniform, and returns them
 
     Args:
@@ -123,7 +123,7 @@ def convertToPILImg(img1: np.array, normilized = True)-> Image.Image:
     im = Image.fromarray(numpy_image_rescaled_uint8)
     return im
 
-def get_class_names()->list:
+def get_class_names()->list:#TODO den her skal nok være et andet sted?
     """Gets classification name for each label from the labels.txt, which is assumed to be in root.
     
     Returns:

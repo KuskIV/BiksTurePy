@@ -205,4 +205,4 @@ def quick():
 
     run_experiment_one(lazy_split, train_path, test_path, epochs_end=4)
 
-# quick()
+quick()
