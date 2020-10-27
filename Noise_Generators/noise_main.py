@@ -166,8 +166,26 @@ def premade_single_filter(str:str)->Filter:
     if str == 'rain':
         config =     config = {'density':(0.03,0.14),'density_uniformity':(0.8,1.0),'drop_size':(0.3,0.4),'drop_size_uniformity':(0.1,0.5),'angle':(-15,15),'speed':(0.1,0.2),'blur':(0.001,0.001)}
         result = Filter({'wh_set':config})
+    if str == 'rain_mild':
+        config =     config = {'density':(0.01,0.02),'density_uniformity':(0.7,1.0),'drop_size':(0.25,0.3),'drop_size_uniformity':(0.1,0.5),'angle':(-20,20),'speed':(0.1,0.15),'blur':(0.004,0.01)}
+        result = Filter({'wh_set':config})
+    if str == 'rain_medium':
+        config =     config = {'density':(0.06,0.08),'density_uniformity':(0.7,1.0),'drop_size':(0.3,0.4),'drop_size_uniformity':(0.1,0.5),'angle':(-20,20),'speed':(0.1,0.15),'blur':(0.001,0.001)}
+        result = Filter({'wh_set':config})
+    if str == 'rain_heavy':
+        config =     config = {'density':(0.1,0.15),'density_uniformity':(0.9,1.0),'drop_size':(0.5,0.65),'drop_size_uniformity':(0.1,0.5),'angle':(-20,20),'speed':(0.1,0.2),'blur':(0.001,0.001)}
+        result = Filter({'wh_set':config})
     if str == 'snow':
         config =     config = {'density':(0.03,0.14),'density_uniformity':(0.8,1.0),'drop_size':(0.3,0.4),'drop_size_uniformity':(0.1,0.5),'angle':(-15,15),'speed':(0.1,0.2),'blur':(0.001,0.001),'mode':'snow'}
+        result = Filter({'wh_set':config})
+    if str == 'snow_mild':
+        config =     config = {'density':(0.04,0.045),'density_uniformity':(0.95,1.0),'drop_size':(0.2,0.5),'drop_size_uniformity':(0.2,0.7),'angle':(-30,30),'speed':(0.04,0.1),'blur':(0.004,0.01),'mode':'snow'}
+        result = Filter({'wh_set':config})
+    if str == 'snow_medium':
+        config =     config = {'density':(0.08,0.1),'density_uniformity':(0.95,1.0),'drop_size':(0.2,0.5),'drop_size_uniformity':(0.2,0.6),'angle':(-30,30),'speed':(0.04,0.1),'blur':(0.004,0.01),'mode':'snow'}
+        result = Filter({'wh_set':config})
+    if str == 'snow_heavy':
+        config =     config = {'density':(0.11,0.16),'density_uniformity':(0.95,1.0),'drop_size':(0.4,0.6),'drop_size_uniformity':(0.2,0.5),'angle':(-30,30),'speed':(0.04,0.1),'blur':(0.004,0.01),'mode':'snow'}
         result = Filter({'wh_set':config})
     if str == 'day':
         config = {'factor':1.0}
