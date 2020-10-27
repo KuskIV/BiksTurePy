@@ -20,13 +20,13 @@ def changeImageSize(maxWidth: int,
         Image.Image: The resized image
     """
     
-    widthRatio  = maxWidth/image.size[0]
-    heightRatio = maxHeight/image.size[1]
+    # widthRatio  = maxWidth/image.size[0]
+    # heightRatio = maxHeight/image.size[1]
 
-    newWidth    = int(widthRatio*image.size[0])
-    newHeight   = int(heightRatio*image.size[1])
+    # newWidth    = int(widthRatio*image.size[0])
+    # newHeight   = int(heightRatio*image.size[1])
 
-    return image.resize((newWidth, newHeight))
+    return image.resize((maxHeight, maxWidth))
 
 def rgba_to_rgb(arr:np.array):
     w, h = arr.size

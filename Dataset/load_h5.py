@@ -10,6 +10,7 @@ import sys
 import re
 from PIL import Image
 import random
+from matplotlib import pyplot as plt
 
 import os,sys,inspect
 current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
@@ -270,6 +271,8 @@ class h5_object():
                 train_set, train_label = Shuffle(train_set, train_label)
             if len(val_set) > 0:
                 val_set, val_label = Shuffle(val_set, val_label)
+
+        
 
         return train_set, train_label, val_set, val_label
 
