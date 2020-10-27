@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 import os,sys,inspect
 current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parent_dir = os.path.dirname(current_dir)
-sys.path.insert(0, parent_dir) 
+sys.path.insert(0, parent_dir)
 
 from general_image_func import get_class_names, display_numpy_image                        # Not an error
 from Models.create_model import flatten_and_dense          # Not an error
@@ -114,8 +114,49 @@ def get_belgium_model():
     den_danske_model.add(layers.Conv2D(32, (4, 4), activation='relu', padding='valid'))
     den_danske_model.add(layers.MaxPool2D((2,2)))
     den_danske_model.add(layers.Conv2D(64, (4, 4), activation='relu'))
-    return den_danske_model, (get_2d_image_shape(img_shape))
+    return den_danske_model, img_shape[:2]
 
+def get_belgium_model_avg():
+    img_shape = (131, 131, 3)
+    model = models.Sequential()
+
+    model.add(layers.Conv2D(32, (3,3), activation='relu', padding='same', input_shape=img_shape))
+    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+    model.add(layers.Conv2D(32, (3, 3), padding='valid', activation='relu'))
+    model.add(layers.MaxPooling2D((2, 2)))
+    model.add(layers.Conv2D(64, (3, 3), padding='same', activation='relu'))
+    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+    model.add(layers.Conv2D(32, (3, 3), padding='valid', activation='relu'))
+    model.add(layers.MaxPooling2D(2, 2))
+    model.add(layers.Conv2D(64, (3, 3), activation='relu'))
+    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+    model.add(layers.Conv2D(32, (3, 3), padding='valid', activation='relu'))
+    model.add(layers.MaxPooling2D(2, 2))
+    model.add(layers.Conv2D(64, (3, 3), activation='relu'))
+
+    return model, img_shape[:2]
+
+def get_belgium_model_median():
+    img_shape = (101, 101, 3)
+    model = models.Sequential()
+
+    model.add(layers.Conv2D(32, (3,3), activation='relu', padding='same', input_shape=img_shape))
+    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+    model.add(layers.Conv2D(32, (3, 3), padding='valid', activation='relu'))
+    model.add(layers.MaxPooling2D((2, 2)))
+    model.add(layers.Conv2D(64, (3, 3), padding='same', activation='relu'))
+    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+    model.add(layers.Conv2D(32, (3, 3), padding='valid', activation='relu'))
+    model.add(layers.MaxPooling2D(2, 2))
+    model.add(layers.Conv2D(64, (3, 3), activation='relu'))
+    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
+    model.add(layers.Conv2D(32, (3, 3), padding='valid', activation='relu'))
+    model.add(layers.MaxPooling2D(2, 2))
+    model.add(layers.Conv2D(64, (3, 3), activation='relu'))
+    return model, img_shape[:2]
 
 def get_default_model():
     img_shape=(32, 32, 3)
@@ -173,7 +214,7 @@ def get_large_model():
     model.add(layers.MaxPooling2D(2, 2))
     model.add(layers.Conv2D(64, (3, 3), activation='relu'))
     return model, (get_2d_image_shape(img_shape))
-    
+
 
 
 
@@ -226,13 +267,13 @@ def reshape_numpy_array_of_images(images:np.array, size:tuple)->np.array:
 
     for image in images:
         reshaped_images.append(tf.keras.preprocessing.image.smart_resize(image, size))
-    
+
     return np.array(reshaped_images)
 
-def train_model(model:tf.python.keras.engine.sequential.Sequential, 
+def train_model(model:tf.python.keras.engine.sequential.Sequential,
                 train_images:np.array,
-                train_labels:np.array, 
-                test_images:np.array, 
+                train_labels:np.array,
+                test_images:np.array,
                 test_labels:np.array,
                 epochs:int)->None:
     """Method for using the data set on some input model
@@ -249,10 +290,10 @@ def train_model(model:tf.python.keras.engine.sequential.Sequential,
     model.compile(optimizer='adam',
                 loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
                 metrics=['sparse_categorical_accuracy'])
-    
+
     test_images = test_images
     train_images = train_images #TODO ask toi about this
-    
+
     history = model.fit(train_images, train_labels, epochs=epochs,
             validation_data=(test_images, test_labels))
 
@@ -286,7 +327,7 @@ def train_and_eval_models_for_size(#TODO pls help
 
 
     #print(type(train_labels), " ", type(train_labels[0]), " ", type(test_labels), " ", type(test_labels[0]))
-    
+
     # train model
     print("image size")
     print(size)
@@ -313,7 +354,7 @@ def get_model_object_list(shape:int):
 #     default_model, default_size, default_path = get_default_model()
 #     belgium_model, belgium_size, belgium_path = get_belgium_model()
 
-#     return [(flatten_and_dense(large_model, input_layer_size=input_layer_size), large_size), 
-#             (flatten_and_dense(medium_model, input_layer_size=input_layer_size), medium_size), 
+#     return [(flatten_and_dense(large_model, input_layer_size=input_layer_size), large_size),
+#             (flatten_and_dense(medium_model, input_layer_size=input_layer_size), medium_size),
 #             (flatten_and_dense(default_model, input_layer_size=input_layer_size), default_size),
 #             (flatten_and_dense(belgium_model, input_layer_size=input_layer_size), belgium_size)]
