@@ -7,6 +7,8 @@ from matplotlib import pyplot as plt
 
 from tensorflow.keras import datasets, layers, models
 import matplotlib.pyplot as plt
+import os.path
+from os import path
 
 import os,sys,inspect
 current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
@@ -22,10 +24,18 @@ class return_model(object):
     """
     docstring
     """
-    def __init__(self, get_model, path, out_layer_size):
+    def __init__(self, get_model, model_path, out_layer_size, load_trained_models):
         self.model, self.img_shape = get_model()
         self.model = flatten_and_dense(self.model, output_layer_size=out_layer_size)
-        self.path = path
+        self.path = model_path
+
+        if load_trained_models:
+            if path.exists(self.path):
+                self.model = tf.keras.models.load_model(self.path)
+            else:
+                print(f"The path for the model does not exists ({self.path}, and the program will now exit.)")
+                sys.exit()
+
         self.csv_data = [['Epochs', 'Resolution', 'Class', 'Class_Acuracy', 'Total_in_Class']]
 
     def get_size_tuple(self, last_size:int):
@@ -299,11 +309,11 @@ def train_and_eval_models_for_size(#TODO pls help
     #print(model.evaluate(reshaped_test_images, test_labels))
 
 
-def get_model_object_list(shape:int):
-    large_model = return_model(get_large_model, get_large_model_path(), shape)
-    medium_model = return_model(get_medium_model, get_medium_model_path(), shape)
-    small_model = return_model(get_default_model, get_small_model_path(), shape)
-    belgium_model = return_model(get_belgium_model, get_belgium_model_path(), shape)
+def get_model_object_list(shape:int, load_trained_models=False):
+    large_model = return_model(get_large_model, get_large_model_path(), shape, load_trained_models)
+    medium_model = return_model(get_medium_model, get_medium_model_path(), shape, load_trained_models)
+    small_model = return_model(get_default_model, get_small_model_path(), shape, load_trained_models)
+    belgium_model = return_model(get_belgium_model, get_belgium_model_path(), shape, load_trained_models)
 
     return [large_model, medium_model, belgium_model, small_model]
 

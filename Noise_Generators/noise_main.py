@@ -122,7 +122,7 @@ def apply_multiple_filters(Imgs:list,mode = 'rand', KeepOriginal:bool=True, filt
     images = Imgs[0]
 
     fil = list(filters.items())
-    for i in range(len(lables)):
+    for i in range(len(lables)): #TODO: add progress bar
         if KeepOriginal:
             result.append((images[i],'Original',lables[i]))
         if mode == 'rand':
