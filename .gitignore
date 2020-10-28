@@ -16,7 +16,7 @@ Dataset/images_old/
 Dataset/h5Dataset/
 Models/saved_models
 Dataset/belgian_images/
-# phase_one/csv_data/
+phase_one/csv_data/
 phase_two/csv_output/
 # Distribution / packaging
 .Python

@@ -43,7 +43,7 @@ def phase_2_1(model, h5path, lazy_split, image_size,noise_filter, dataset_split=
             predicted_label = np.argmax(prediction) #Get the class with highest liklyhood of the predictions
             image_tuples[i] = (image_tuples[i]+tuple([predicted_label,'yeet'])) #concatanate two tuples to create new tuple , which replacess the old one
         values.extend(image_tuples)
-    convert_to_csv('phase_two/phase2_results.csv',[val[1:4] for val in values]) #tuple(image,class,filter,predicted_class)
+    convert_to_csv('phase_two/csv_output/phase2_results.csv',[val[1:4] for val in values]) #tuple(image,class,filter,predicted_class) #TODO @Jeppe, fix, dont hardcode this path
 
 def normalize_and_convert(img:np.array):
     img = img # * 255.0
@@ -85,7 +85,7 @@ def calculate_error(_class):#TODO simnple calculation finding the succes.
             rigth += 1
         else:
             wrong += 1
-    return wrong + rigth, (rigth / (wrong + rigth)) * 100
+    return wrong + rigth, round((rigth / (wrong + rigth)) * 100, 2)
 
 def find_feature_colume(headers:list,feature_lable:str)->int:
     for i in range(len(headers)):
@@ -104,14 +104,6 @@ def group_by_feature(header,csv_reader,feature_lable:str):
 
 def generate_csv_name(filter_name):
     return f'phase_two/csv_output/phase2_{filter_name}.csv'
-
-def cmp(a, b):
-    return (a > b) - (a < b)
-
-def compare_field(field):
-    def c(l1, l2):
-        return cmp(l1[0], l2[0])
-    return c
 
 def merge_csv(filter_names, saved_path):
     class_dict = {}
@@ -134,19 +126,13 @@ def merge_csv(filter_names, saved_path):
     list_data.extend(sort_list)
     csv_obj = cvs_object(saved_path)
     csv_obj.write(list_data)
-    print("")
-
 
     # with open(saved_path, 'w') as write_obj:
-            
-
-
-
 
 def create_csv_to_plot():
     newdatapoint = [('class','filters','error')]
     filter_names = []
-    with open('phase_two/phase2_results.csv', 'r') as read_obj:
+    with open('phase_two/csv_output/phase2_results.csv', 'r') as read_obj:#TODO @Jeppe, fix, dont hardcode this path
         csv_reader = csv.reader(read_obj)
         header = next(csv_reader)
         groups = group_by_feature(header,csv_reader,'filter')
