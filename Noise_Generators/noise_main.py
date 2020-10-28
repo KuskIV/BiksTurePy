@@ -2,6 +2,8 @@
 from PIL import Image
 import random
 import numpy as np
+from tqdm import tqdm
+from tqdm import trange
 import os,sys,inspect
 current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parent_dir = os.path.dirname(current_dir)
@@ -143,7 +145,14 @@ def apply_multiple_filters(Imgs:list,mode = 'rand', KeepOriginal:bool=True, filt
                 lst = [(entry,fil[j][0],lables[0]) for entry in temp_list]
                 result.extend(lst)
 
-    for i in range(len(lables)):
+    for i in range(len(lables)):    
+    done = len(lables)
+    progress = trange(done, desc="Lable stuff", leave=True)
+    
+    for i in progress:
+        progress.set_description(f"Image {i+1} / {done} has been processed")
+        progress.refresh()
+
         if KeepOriginal:
             result.append((images[i],'Original',lables[i]))
         if mode == 'rand':

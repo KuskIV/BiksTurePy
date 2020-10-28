@@ -53,61 +53,6 @@ class return_model(object):
     def get_summed_csv_path(self):
         return f"{get_paths('phase_one_csv')}/model{return_model.get_size(self)}_summed.csv"
 
-
-
-
-
-# def default_model()->tf.python.keras.engine.sequential.Sequential:
-#     """default model also known as small model since it uses image of the size 32x32.
-
-#     Returns:
-#         tf.python.keras.engine.sequential.Sequential: A cnn trained on 32x32 images
-#     """
-#     img_shape=(32, 32, 3)
-#     model = models.Sequential()
-#     model.add(layers.Conv2D(32, (3, 3), activation='relu', input_shape=img_shape))
-#     model.add(layers.MaxPooling2D((2, 2)))
-#     model.add(layers.Conv2D(64, (3, 3), activation='relu'))
-#     model.add(layers.MaxPooling2D(2, 2))
-#     model.add(layers.Conv2D(64, (3, 3), activation='relu'))
-#     return model
-
-# def medium_model()->tf.python.keras.engine.sequential.Sequential:
-#     """medium model since it uses image of the size 128x128.
-
-#     Returns:
-#         tf.python.keras.engine.sequential.Sequential: A cnn trained on 128x128 images
-#     """
-#     img_shape=(128, 128, 3)
-#     model = models.Sequential()
-#     model.add(layers.Conv2D(32, (15, 15), activation='relu', input_shape=img_shape))
-#     model.add(layers.MaxPooling2D((2, 2)))
-#     model.add(layers.Conv2D(64, (3, 3), activation='relu'))
-#     model.add(layers.MaxPooling2D(2, 2))
-#     model.add(layers.Conv2D(64, (3, 3), activation='relu'))
-#     model.add(layers.MaxPooling2D(2, 2))
-#     model.add(layers.Conv2D(64, (3, 3), activation='relu'))
-#     return model
-
-# def large_model()->tf.python.keras.engine.sequential.Sequential:
-#     """large model since it uses image of the size 200x200.
-
-#     Returns:
-#         tf.python.keras.engine.sequential.Sequential: A cnn trained on 200x200 images
-#     """
-#     img_shape=(200, 200, 3)
-#     model = models.Sequential()
-#     model.add(layers.Conv2D(32, (21, 21), activation='relu', input_shape=img_shape))
-#     model.add(layers.MaxPooling2D((2, 2)))
-#     model.add(layers.Conv2D(64, (3, 3), activation='relu'))
-#     model.add(layers.MaxPooling2D(2, 2))
-#     model.add(layers.Conv2D(64, (3, 3), activation='relu'))
-#     model.add(layers.MaxPooling2D(2, 2))
-#     model.add(layers.Conv2D(64, (3, 3), activation='relu'))
-#     model.add(layers.MaxPooling2D(2, 2))
-#     model.add(layers.Conv2D(64, (3, 3), activation='relu'))
-#     return model
-
 def get_2d_image_shape(shape:tuple)->tuple:
     return shape[0], shape[1]
 
@@ -167,101 +112,6 @@ def get_belgium_model_median():
     model.add(layers.MaxPooling2D(2, 2))
     model.add(layers.Conv2D(64, (3, 3), activation='relu'))
     return model, img_shape[:2]
-
-def get_default_model():
-    img_shape=(32, 32, 3)
-    model = models.Sequential()
-    model.add(layers.Conv2D(32, (3, 3), activation='relu', input_shape=img_shape))
-    model.add(layers.MaxPooling2D((2, 2)))
-    model.add(layers.Conv2D(64, (3, 3), activation='relu'))
-    model.add(layers.MaxPooling2D(2, 2))
-    model.add(layers.Conv2D(64, (3, 3), activation='relu'))
-    return model, (get_2d_image_shape(img_shape))
-
-def get_medium_model():
-    img_shape=(128, 128, 3)
-    model = models.Sequential()
-    model.add(layers.Conv2D(32, (3,3), activation='relu', padding='same', input_shape=img_shape))
-    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
-    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
-    model.add(layers.Conv2D(32, (3, 3), padding='valid', activation='relu'))
-    model.add(layers.MaxPooling2D((2, 2)))
-    model.add(layers.Conv2D(64, (3, 3), padding='same', activation='relu'))
-    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
-    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
-    model.add(layers.Conv2D(32, (3, 3), padding='valid', activation='relu'))
-    model.add(layers.MaxPooling2D(2, 2))
-    model.add(layers.Conv2D(64, (3, 3), activation='relu'))
-    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
-    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
-    model.add(layers.Conv2D(32, (3, 3), padding='valid', activation='relu'))
-    model.add(layers.MaxPooling2D(2, 2))
-    model.add(layers.Conv2D(64, (3, 3), activation='relu'))
-    return model, (get_2d_image_shape(img_shape))
-
-def get_large_model():
-    img_shape=(200, 200, 3)
-    model = models.Sequential()
-    model.add(layers.Conv2D(32, (5, 5), activation='relu', padding='same', input_shape=img_shape))
-    model.add(layers.Conv2D(32, (5, 5), padding='same', activation='relu'))
-    model.add(layers.Conv2D(32, (5, 5), padding='same', activation='relu'))
-    model.add(layers.Conv2D(32, (5, 5), padding='valid', activation='relu'))
-    model.add(layers.MaxPooling2D((2, 2)))
-    model.add(layers.Conv2D(32, (5, 5), padding='same', activation='relu'))
-    model.add(layers.Conv2D(32, (5, 5), padding='same', activation='relu'))
-    model.add(layers.Conv2D(32, (5, 5), padding='same', activation='relu'))
-    model.add(layers.Conv2D(32, (5, 5), padding='valid', activation='relu'))
-    model.add(layers.MaxPooling2D(2, 2))
-    model.add(layers.Conv2D(32, (5, 5), padding='same', activation='relu'))
-    model.add(layers.Conv2D(32, (5, 5), padding='same', activation='relu'))
-    model.add(layers.Conv2D(32, (5, 5), padding='same', activation='relu'))
-    model.add(layers.Conv2D(32, (5, 5), padding='valid', activation='relu'))
-    model.add(layers.MaxPooling2D(2, 2))
-    model.add(layers.Conv2D(32, (5, 5), padding='same', activation='relu'))
-    model.add(layers.Conv2D(32, (5, 5), padding='same', activation='relu'))
-    model.add(layers.Conv2D(32, (5, 5), padding='same', activation='relu'))
-    model.add(layers.Conv2D(32, (5, 5), padding='valid', activation='relu'))
-    model.add(layers.MaxPooling2D(2, 2))
-    model.add(layers.Conv2D(64, (3, 3), activation='relu'))
-    return model, (get_2d_image_shape(img_shape))
-
-
-
-
-# def large_model():
-#     img_shape=(200, 200, 3)
-#     model = models.Sequential()
-#     model.add(layers.Conv2D(32, (3, 3), activation='relu', padding='same', input_shape=img_shape))
-#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
-#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
-#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
-#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
-#     model.add(layers.Conv2D(32, (3, 3), padding='valid', activation='relu'))
-#     model.add(layers.MaxPooling2D((2, 2)))
-#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
-#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
-#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
-#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
-#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
-#     model.add(layers.Conv2D(32, (3, 3), padding='valid', activation='relu'))
-#     model.add(layers.MaxPooling2D(2, 2))
-#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
-#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
-#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
-#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
-#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
-#     model.add(layers.Conv2D(32, (3, 3), padding='valid', activation='relu'))
-#     model.add(layers.MaxPooling2D(2, 2))
-#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
-#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
-#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
-#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
-#     model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
-#     model.add(layers.Conv2D(32, (3, 3), padding='valid', activation='relu'))
-#     model.add(layers.MaxPooling2D(2, 2))
-#     model.add(layers.Conv2D(64, (3, 3), activation='relu'))
-#     return model
-
 
 def reshape_numpy_array_of_images(images:np.array, size:tuple)->np.array:
     """Reshapes all images contained in a numpy array, to some specefied size
@@ -339,27 +189,17 @@ def train_and_eval_models_for_size(#TODO pls help
     #print(type(train_labels), " ", type(train_labels[0]), " ", type(test_labels), " ", type(test_labels[0]))
 
     # train model
-    print("image size")
+    print("\n---------------------")
+    print("The model will now train with the following image size:")
     print(size)
-
-    print(size, "", reshaped_test_images[0].size)
+    print("---------------------\n")
 
     train_model(model, reshaped_train_images, train_labels, reshaped_test_images, test_labels, epochs)
 
     # evaluate each model
-    print("Evaluation for model")
+    # print("Evaluation for model")
 
-    print(reshaped_test_images.shape, "  ", reshaped_train_images[0].shape)
-    #print(model.evaluate(reshaped_test_images, test_labels))
-
-
-def get_model_object_list(shape:int, load_trained_models=False):
-    large_model = return_model(get_large_model, get_large_model_path(), shape, load_trained_models)
-    medium_model = return_model(get_medium_model, get_medium_model_path(), shape, load_trained_models)
-    small_model = return_model(get_default_model, get_small_model_path(), shape, load_trained_models)
-    belgium_model = return_model(get_belgium_model, get_belgium_model_path(), shape, load_trained_models)
-
-    return [large_model, medium_model, belgium_model, small_model]
+    # print(model.evaluate(reshaped_test_images, test_labels))
 
 def get_belgian_model_object_list(shape:int, load_trained_models=False):
     belgium_model_avg = return_model(get_belgium_model_avg, get_belgium_model_avg_path(), shape, load_trained_models)
@@ -367,17 +207,3 @@ def get_belgian_model_object_list(shape:int, load_trained_models=False):
     belgium_model = return_model(get_belgium_model, get_belgium_model_path(), shape, load_trained_models)
 
     return [belgium_model_avg, belgium_model_median, belgium_model]
-
-
-
-
-# def get_processed_models(input_layer_size=62):
-#     large_model, large_size, large_path = get_large_model()
-#     medium_model, medium_size, medium_path = get_medium_model()
-#     default_model, default_size, default_path = get_default_model()
-#     belgium_model, belgium_size, belgium_path = get_belgium_model()
-
-#     return [(flatten_and_dense(large_model, input_layer_size=input_layer_size), large_size),
-#             (flatten_and_dense(medium_model, input_layer_size=input_layer_size), medium_size),
-#             (flatten_and_dense(default_model, input_layer_size=input_layer_size), default_size),
-#             (flatten_and_dense(belgium_model, input_layer_size=input_layer_size), belgium_size)]
