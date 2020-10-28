@@ -53,7 +53,6 @@ def get_best_models(model_object_list):
     best_models = []
 
     for model_object in model_object_list:
-        
         if not path.exists(model_object.get_summed_csv_path()):
             print(f"\nThe following path does not exist: {model_object.get_summed_csv_path()}\nCode: plot.write_csv_file.py")
             sys.exit()
@@ -74,10 +73,51 @@ def get_best_models(model_object_list):
                     resolution = row[2]
         
         best_models.append((highest_accuracy, best_epoch, resolution))
-
     
+    print("\nThe best epoch for each model is as follows:")
+    for bm in best_models:
+        print(f"    - model{bm[2]}_{bm[1]}, accuracy: {round(bm[0], 2)}")
+    print("\n")
+
     return best_models
 
+def generate_csv_for_best_model(best_model_names):
+
+    model_names = [f"model{x[2]}_{x[1]}" for x in best_model_names]
+    model_indexes = [0]
+    data = [['class']]
+    data[0].extend(model_names)
+
+    csv_path = f"{get_paths('phase_one_csv')}/class_accuracy.csv"
+    save_path = f"{get_paths('phase_one_csv')}/class_accuracy_minimized.csv"
+
+    if not path.exists(csv_path):
+        print(f"\nThe following path does not exist: {csv_path}\nCode: plot.write_csv_file.py")
+        sys.exit()
+
+    with open(csv_path, 'r') as csv_obj:
+        rows = csv.reader(csv_obj, delimiter=',')
+        rows = list(rows)
+
+        model_indexes.extend([rows[0].index(x) for x in model_names if x in rows[0]])
+
+        for i in range(1, len(rows)):
+            data.append([rows[i][x] for x in model_indexes])
+    
+    csv_obj = cvs_object(save_path)
+    csv_obj.write(data)
+ 
+def get_largest_index(best_model_names):
+    best_acc = 0
+    best_index = 0
+
+    for i in range(len(best_model_names)):
+        if best_model_names[i][0] > best_acc:
+            best_acc = best_model_names[i][0]
+            best_index = i
+
+    return best_index
+ 
 def run_experiment_one(lazy_split, train_h5_path, test_h5_path, epochs_end=10, dataset_split=0.7):
     label_dict = {}
 
@@ -88,8 +128,7 @@ def run_experiment_one(lazy_split, train_h5_path, test_h5_path, epochs_end=10, d
         print(f"The input train and test set does not have matching classes {h5_train.class_in_h5} - {h5_test.class_in_h5}")
         sys.exit()
 
-    model_object_list = get_belgian_model_object_list(h5_train.class_in_h5)
-
+    model_object_list = get_belgian_model_object_list(h5_train.class_in_h5) 
     # image_dataset, lable_dataset, _, _ = h5_test.shuffle_and_lazyload(0, 1) # TODO: This might cause a "run out of memory" error.
     
     epochs_end += 1
@@ -107,9 +146,11 @@ def run_experiment_one(lazy_split, train_h5_path, test_h5_path, epochs_end=10, d
     sum_plot(model_object_list)
     sum_class_accuracy(model_object_list)
     best_model_names = get_best_models(model_object_list)
-    print(best_model_names)#TODO: Find at what epoch each model has highest accuracy
-    #TODO: Rewrite class_accuracy into only the best models and epochs
-    #TODO: Train the best models with the best epocs
+    generate_csv_for_best_model(best_model_names)
+    best_index = get_largest_index(best_model_names)
+    best_model = get_belgian_model_object_list(h5_train.class_in_h5)[best_index] 
+    best_model.path = get_paths('phase_one_model')
+    find_ideal_model(h5_train, [best_model], lazy_split=lazy_split, epochs=best_model_names[best_index][1], save_models=True)
 
 def sum_class_accuracy(model_object_list):
     model_class_accuracy = {}
@@ -184,7 +225,6 @@ def iterate_trough_models(model_object_list, label_dict, e, h5_test):
 
         percent = (right / (wrong + right)) * 100
         print(f"\nModel: \"{model_object_list[i].path.split('/')[-1].split('.')[0]}\"\nEpocs: {e} \nResult: \n    Right: {right}\n    wrong: {wrong}\n    percent correct: {percent}\n\n")
-        # print(f"Model: {model_object_list[i].path.split('/')[-1].split('.')[0]}, Epoc: {e}, Right: {right}, wrong: {wrong}, percent correct: {percent}")
 
         get_model_results(label_dict, model_object_list[i], (e, True))
 

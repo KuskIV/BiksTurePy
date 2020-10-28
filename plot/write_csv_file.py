@@ -73,32 +73,8 @@ def plot(cvs_list:object, title="_", lable="_")->None:
                 y.append(float(cvs.get_y_row(row)))
 
         plt.plot(x, y, label=f"Resolution: {cvs.label}")
-    # plt.ylim(80, 90) #TODO Calculate this dynamicly
     plt.xlabel(x_label)
     plt.ylabel(y_label)
     plt.title(title)
     plt.legend()
     plt.show()
-
-
-# csv_obj01 = cvs_object(get_paths('phase_one_csv') + "/" + 'test01.cvs', label="200")
-# csv_obj02 = cvs_object(get_paths('phase_one_csv') + "/" + 'test02.cvs')
-
-# data01 = [['epochs', 'class', 'accury', 'resolution'], ['1', '1', '40', '32'], ['2', '3', '50', '32'], ['4', '5', '100', '200'], ['5', '7', '40', '32'], ['5', '7', '40', '32']]
-# data02 = [['epochs', 'class', 'accury', 'resolution'], ['1', '2', '40', '32'], ['2', '4', '50', '32'], ['4', '6', '100', '200'], ['5', '8', '40', '32'], ['5', '9', '40', '32']]
-
-# csv_obj01.write(data01)
-# csv_obj02.write(data02)
-
-# plot([csv_obj01, csv_obj02], title="This is the title", lable="This is the lable")
-
-# def get_y_colum(row):
-#     #total_in_class = row[4]
-#     #class_accuicy
-#     return row[1]
-
-# def set_x_y_lables_2(headers):
-#     return headers[0], headers[1]
-
-# obj = cvs_object(f"{get_paths('phase_one_csv')}/big_boi.csv", get_y_row=get_y_colum, set_x_y_lables=set_x_y_lables_2)
-# plot([obj], title="This is a big table")

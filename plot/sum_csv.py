@@ -59,4 +59,5 @@ def sum_csv(csv_obj):
                     current_total_in_class.append(row[4])
             class_accuracy = get_class_accuracy(current_class_accuracy, current_total_in_class)
             new_cvs_file.append([current_epoc, class_accuracy, current_resolution])
+    
     return new_cvs_file
