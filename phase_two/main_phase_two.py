@@ -37,9 +37,6 @@ def phase_2_1(model, h5path, lazy_split, image_size,noise_filter, dataset_split=
 
         for i in range(len(image_tuples)):
             prediction = make_prediction(model.model, image_tuples[i][0], (image_size[0], image_size[1], 3))
-            # print("This is the lable: ", image_tuples[i][2])
-            # plt.imshow(image_tuples[i][0], interpolation="nearest")
-            # plt.show()
             predicted_label = np.argmax(prediction) #Get the class with highest liklyhood of the predictions
             image_tuples[i] = (image_tuples[i]+tuple([predicted_label,'yeet'])) #concatanate two tuples to create new tuple , which replacess the old one
         values.extend(image_tuples)

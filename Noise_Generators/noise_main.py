@@ -11,7 +11,7 @@ sys.path.insert(0, parent_dir)
 import global_paths
 from general_image_func import changeImageSize
 from Noise_Generators.weather_gen import weather
-from Noise_Generators.Perlin_noise import perlin
+from Noise_Generators.perlin_noise import perlin
 from Noise_Generators.brightness import brightness
 
 class Filter:
@@ -101,6 +101,17 @@ def normal_distribution(lst:list):
         if 0 <= index < len(lst):
             return lst[index]
 
+def chunk_it(seq, num):
+    avg = len(seq) / float(num)
+    out = []
+    last = 0.0
+
+    while last < len(seq):
+        out.append(seq[int(last):int(last + avg)])
+        last += avg
+
+    return out
+
 def apply_multiple_filters(Imgs:list,mode = 'rand', KeepOriginal:bool=True, filters:dict=None, **kwargs)->list:
     """
     A function that takes a input of pictures and applys them to eahc picture based on the selected mode. 
@@ -124,7 +135,17 @@ def apply_multiple_filters(Imgs:list,mode = 'rand', KeepOriginal:bool=True, filt
     images = Imgs[0]
 
     fil = list(filters.items())
-    
+    if mode == 'linear':
+        imlist = []
+        indexes=chunk_it(range(len(images)),len(fil))
+        for i in range(len(indexes)):
+            for j in range(len(fil)):
+
+                temp_list = fil[j][1]*images[indexes[i].start:indexes[i].stop]
+                lst = [(entry,fil[j][0],lables[0]) for entry in temp_list]
+                result.extend(lst)
+
+    for i in range(len(lables)):    
     done = len(lables)
     progress = trange(done, desc="Lable stuff", leave=True)
     
@@ -141,11 +162,7 @@ def apply_multiple_filters(Imgs:list,mode = 'rand', KeepOriginal:bool=True, filt
         if mode == 'normal':
             filter_and_lable = normal_distribution(fil)
             result.append((filter_and_lable[1]+images[i],lables[i],filter_and_lable[0]))
-        # if i <= 2:
-        #     print(f'{lables[i]} this is the lable')
-        #     img_as_arr = np.array(images[i])*255.0
-        #     img = Image.fromarray(img_as_arr.astype('uint8'), 'RGB')
-        #     img.show()
+
     return result #(image,class,filter)
 
         
@@ -160,11 +177,14 @@ def loadImags(folder):
 def load_X_images(path):
     subfolders = [ f.path for f in os.scandir(path) if f.is_dir() ]
     newImgs = []
+    newLables = []
     for folder in subfolders:
         imgs = loadImags(folder)
-        imgs = [(img,os.path.basename(os.path.normpath(folder))) for img in imgs]
+        imgs = [img for img in imgs]
+        lables = [os.path.basename(os.path.normpath(folder)) for img in imgs]
         newImgs.extend(imgs)
-    return newImgs
+        newLables.extend(lables)
+    return (newImgs,newLables)
 
 
 def premade_single_filter(str:str)->Filter:
@@ -206,14 +226,14 @@ def premade_single_filter(str:str)->Filter:
 
 def QuickDebugL():
     #imgs = Image.open("C:\\Users\\jeppe\\Desktop\\GTSRB_Final_Training_Images\\GTSRB\\Final_Training\\Images\\00000\\00002_00029.ppm")
-    imgs = load_X_images('/home/biks/Desktop/BiksBois/BiksTurePy/Dataset/belgian_images/testing/')
+    imgs = load_X_images('C:/Users/jeppe/Desktop/FullIJCNN2013')
     F = premade_single_filter('fog')
     R = premade_single_filter('rain')
     S = premade_single_filter('snow')
     D = premade_single_filter('day')
     N = premade_single_filter('night')
     dict = {'fog':F,'rain':R,'snow':S,'day':D,'night':N}
-    res = apply_multiple_filters(imgs,filters=dict, mode='rand', KeepOriginal=False)
+    res = apply_multiple_filters(imgs,filters=dict, mode='linear', KeepOriginal=False)
     for i in range(len(res)):
         res[i][0].save(f'/home/biks/Desktop/jeppeisdumb/{i}.png')
         
@@ -237,7 +257,7 @@ def QuickDebug():
     #newImage[0].show()
     #newImage[1].show()
 
-# QuickDebugL()
+QuickDebugL()
 #fog_set=(1)
 #day_set=(0.5)
 #wh_set = (70,7,2,(2,2),(130,130,130))
