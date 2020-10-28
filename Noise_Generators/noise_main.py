@@ -11,7 +11,7 @@ sys.path.insert(0, parent_dir)
 import global_paths
 from general_image_func import changeImageSize
 from Noise_Generators.weather_gen import weather
-from Noise_Generators.perlin_noise import perlin
+from Noise_Generators.Perlin_noise import perlin
 from Noise_Generators.brightness import brightness
 
 class Filter:
@@ -145,7 +145,6 @@ def apply_multiple_filters(Imgs:list,mode = 'rand', KeepOriginal:bool=True, filt
                 lst = [(entry,fil[j][0],lables[0]) for entry in temp_list]
                 result.extend(lst)
 
-    for i in range(len(lables)):    
     done = len(lables)
     progress = trange(done, desc="Lable stuff", leave=True)
     
@@ -257,7 +256,7 @@ def QuickDebug():
     #newImage[0].show()
     #newImage[1].show()
 
-QuickDebugL()
+# QuickDebugL()
 #fog_set=(1)
 #day_set=(0.5)
 #wh_set = (70,7,2,(2,2),(130,130,130))

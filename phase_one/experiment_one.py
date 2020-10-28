@@ -49,6 +49,35 @@ def find_ideal_model(h5_obj:object, model_object_list, epochs=10, lazy_split=10,
         for models in model_object_list:
             store_model(models.model, models.path)
 
+def get_best_models(model_object_list):
+    best_models = []
+
+    for model_object in model_object_list:
+        
+        if not path.exists(model_object.get_summed_csv_path()):
+            print(f"\nThe following path does not exist: {model_object.get_summed_csv_path()}\nCode: plot.write_csv_file.py")
+            sys.exit()
+        
+        with open(model_object.get_summed_csv_path(), 'r') as csvfile:
+            plots = csv.reader(csvfile, delimiter=',')
+
+            next(plots)
+
+            highest_accuracy = 0
+            best_epoch = 0
+            resolution = 0
+
+            for row in plots:
+                if float(row[1]) > highest_accuracy:
+                    highest_accuracy = float(row[1])
+                    best_epoch = row[0]
+                    resolution = row[2]
+        
+        best_models.append((highest_accuracy, best_epoch, resolution))
+
+    
+    return best_models
+
 def run_experiment_one(lazy_split, train_h5_path, test_h5_path, epochs_end=10, dataset_split=0.7):
     label_dict = {}
 
@@ -73,12 +102,12 @@ def run_experiment_one(lazy_split, train_h5_path, test_h5_path, epochs_end=10, d
         print(f"\n------------------------\nTraining done. Now evaluation will be made, using {e} epochs.\n\n")
 
         iterate_trough_models(model_object_list, label_dict, e, h5_test)
-        # iterate_trough_models(model_object_list, lable_dataset, label_dict, e, image_dataset)
 
     save_plot(model_object_list)
     sum_plot(model_object_list)
     sum_class_accuracy(model_object_list)
-    #TODO: Find at what epoch each model has highest accuracy
+    best_model_names = get_best_models(model_object_list)
+    print(best_model_names)#TODO: Find at what epoch each model has highest accuracy
     #TODO: Rewrite class_accuracy into only the best models and epochs
     #TODO: Train the best models with the best epocs
 
@@ -87,12 +116,12 @@ def sum_class_accuracy(model_object_list):
 
     for model_object in model_object_list:
         model_class_accuracy[model_object.get_csv_name()] = {}
-
+        
+        if not path.exists(model_object.get_csv_path()):
+                print(f"\nThe following path does not exist: {model_object.get_csv_path()}\nCode: plot.write_csv_file.py")
+                sys.exit()
+        
         with open(model_object.get_csv_path(), 'r') as csvfile:
-                if not path.exists(model_object.get_csv_path()):
-                    print(f"\nThe following path does not exist: {model_object.get_csv_path()}\nCode: plot.write_csv_file.py")
-                    sys.exit()
-                
                 plots = csv.reader(csvfile, delimiter=',')
 
                 next(plots)
@@ -215,5 +244,3 @@ def quick():
     train_path = get_h5_train()
 
     run_experiment_one(lazy_split, train_path, test_path, epochs_end=4)
-
-# quick()
