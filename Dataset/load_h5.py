@@ -152,8 +152,8 @@ class h5_object():
         self.get_key = os_tuple[3]
         self.get_keys = os_tuple[4]
 
-        self.error_index = 2 if self.os == 'windows' else 3 #FIX, NOT HARDCODE
-        self.nested_level = len(re.split('/', get_h5_path())) - (1 if self.os == 'windows' else 0) # FIX FOR WINDOWS
+        self.error_index = 2 if self.os == 'windows' else 3 #TODO: FIX, NOT HARDCODE
+        self.nested_level = len(re.split('/', get_h5_path())) - (1 if self.os == 'windows' else 0) #TODO: FIX NOT HARDCODE, BASE ON PATH
 
         self.ppm_names = []
         self.img_in_h5 = 0
@@ -234,7 +234,7 @@ class h5_object():
         val_start = train_end
         val_end = val_start + val_size if not is_last else len(self.ppm_names[class_index])
 
-        print(f"{str(class_index).zfill(2)} - train: {str(train_end - train_start).rjust(5, ' ')} | {str(train_start).rjust(6, ' ')} - {str(train_end).ljust(6, ' ')} - val: {str(val_end - val_start).rjust(5, ' ')} | {str(val_start).rjust(6, ' ')} - {str(val_end).ljust(6, ' ')}")
+        # print(f"{str(class_index).zfill(2)} - train: {str(train_end - train_start).rjust(5, ' ')} | {str(train_start).rjust(6, ' ')} - {str(train_end).ljust(6, ' ')} - val: {str(val_end - val_start).rjust(5, ' ')} | {str(val_start).rjust(6, ' ')} - {str(val_end).ljust(6, ' ')}")
         
         self.append_to_list(self.ppm_names[class_index][train_start:train_end], keys, train_set, train_label)
         self.append_to_list(self.ppm_names[class_index][val_start:val_end], keys, val_set, val_label)

@@ -16,8 +16,8 @@ def get_class_accuracy(current_class_accuracy, current_total_in_class):
     right = 0
 
     for i in range(len(current_class_accuracy)):
-        total += float(current_total_in_class[i])
-        right += float(current_total_in_class[i]) * (float(current_class_accuracy[i]) / 100)
+        total += int(current_total_in_class[i])
+        right += int(current_total_in_class[i]) * (float(current_class_accuracy[i]) / 100)
 
     return (right / total) * 100
 
@@ -51,8 +51,8 @@ def sum_csv(csv_obj):
                     new_cvs_file.append([current_epoc, class_accuracy, current_resolution])
 
                     current_epoc = row[0]
-                    current_class_accuracy.append(row[3])
-                    current_total_in_class.append(row[4])
+                    current_class_accuracy = [row[3]]
+                    current_total_in_class = [row[4]]
                     current_resolution = row[1]
                 else:
                     current_class_accuracy.append(row[3])
@@ -60,12 +60,3 @@ def sum_csv(csv_obj):
             class_accuracy = get_class_accuracy(current_class_accuracy, current_total_in_class)
             new_cvs_file.append([current_epoc, class_accuracy, current_resolution])
     return new_cvs_file
-
-# obj = cvs_object(f"{get_paths('phase_one_csv')}/big_boi.csv")
-# data = sum_csv(obj)
-# obj.write(data, path=f"{get_paths('phase_one_csv')}/big_boi_to_small_boi.csv")
-# obj.path = f"{get_paths('phase_one_csv')}/big_boi_to_small_boi.csv"
-# plot([obj], lable="32")
-
-
-                

@@ -208,12 +208,14 @@ def auto_reshape_images(fixed_size: tuple, numpy_images: list, smart_resize:bool
             max_height = len(image[0])
 
     reshape_size = (max_width, max_height)
-    print("reshape size")
-    print(reshape_size)
+
 
 
     if sum(fixed_size): # check if fixed size option
         reshape_size = fixed_size
+
+    print("reshape size")
+    print(reshape_size)
 
     for image in numpy_images:
         if smart_resize:

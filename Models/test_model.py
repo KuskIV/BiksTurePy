@@ -22,9 +22,6 @@ def make_prediction(model:tf.python.keras.engine.sequential.Sequential, image:np
     """
 
     shape = (1, shape[0], shape[1], shape[2])
-    #img_reshaped = tf.reshape(image, (1, 32, 32, 3))
-    
-
 
     img_reshaped = tf.reshape(image, shape)
     return model.predict_step(img_reshaped)

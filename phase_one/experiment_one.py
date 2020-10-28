@@ -7,7 +7,7 @@ import csv
 import os.path
 from os import path
 
-from find_ideal_model import train_and_eval_models_for_size, get_model_object_list, get_belgian_model_object_list
+from find_ideal_model import train_and_eval_models_for_size, get_belgian_model_object_list
 
 import os,sys,inspect
 current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
@@ -42,7 +42,7 @@ def find_ideal_model(h5_obj:object, model_object_list, epochs=10, lazy_split=10,
 
         # train models
         for i in range(len(model_object_list)):
-            print(f"Training model {i + 1} / {len(model_object_list) } for epoch {j + 1} / {lazy_split}")
+            print(f"\n\nTraining model {i + 1} / {len(model_object_list) } for epoch {j + 1} / {lazy_split}")
             train_and_eval_models_for_size(model_object_list[i].img_shape, model_object_list[i].model, i, train_images, train_labels, test_images, test_labels, epochs)
     
     if save_models:
@@ -63,8 +63,10 @@ def run_experiment_one(lazy_split, train_h5_path, test_h5_path, epochs_end=10, d
 
     # image_dataset, lable_dataset, _, _ = h5_test.shuffle_and_lazyload(0, 1) # TODO: This might cause a "run out of memory" error.
     
+    epochs_end += 1
+
     for e in range(1, epochs_end):
-        print(f"\n----------------\nRun {e} / {epochs_end}\n----------------\n")
+        print(f"\n----------------\nRun {e} / {epochs_end - 1}\n----------------\n")
         
         find_ideal_model(h5_train, model_object_list, lazy_split=lazy_split, epochs=1, save_models=True)
         
@@ -76,6 +78,9 @@ def run_experiment_one(lazy_split, train_h5_path, test_h5_path, epochs_end=10, d
     save_plot(model_object_list)
     sum_plot(model_object_list)
     sum_class_accuracy(model_object_list)
+    #TODO: Find at what epoch each model has highest accuracy
+    #TODO: Rewrite class_accuracy into only the best models and epochs
+    #TODO: Train the best models with the best epocs
 
 def sum_class_accuracy(model_object_list):
     model_class_accuracy = {}
@@ -149,8 +154,8 @@ def iterate_trough_models(model_object_list, label_dict, e, h5_test):
         right, wrong = iterate_trough_imgs(model_object_list[i], image_dataset, lable_dataset,label_dict)
 
         percent = (right / (wrong + right)) * 100
-
-        print(f"Right: {right}, wrong: {wrong}, percent correct: {percent}")
+        print(f"\nModel: \"{model_object_list[i].path.split('/')[-1].split('.')[0]}\"\nEpocs: {e} \nResult: \n    Right: {right}\n    wrong: {wrong}\n    percent correct: {percent}\n\n")
+        # print(f"Model: {model_object_list[i].path.split('/')[-1].split('.')[0]}, Epoc: {e}, Right: {right}, wrong: {wrong}, percent correct: {percent}")
 
         get_model_results(label_dict, model_object_list[i], (e, True))
 
@@ -162,7 +167,7 @@ def iterate_trough_imgs(model_object_list,image_dataset,lable_dataset, label_dic
     progress = trange(data_len, desc='Image stuff', leave=True)
     
     for j in progress:
-        progress.set_description(f"Image {j + 1} / {data_len}")
+        progress.set_description(f"Image {j + 1} / {data_len} has been predicted")
         progress.refresh()
 
         prediction = make_prediction(model_object_list.model, image_dataset[j].copy(),  model_object_list.get_size_tuple(3))
@@ -184,7 +189,7 @@ def update_values(key, label_dict, prt):
     right_name = str(label_dict[key][1]).rjust(4, ' ')
     wrong_name = str(label_dict[key][0]).rjust(4, ' ')
     class_size = label_dict[key][0]+label_dict[key][1]
-    class_percent = (label_dict[key][1]/class_size)*100
+    class_percent = round((label_dict[key][1]/class_size)*100, 2)
     
     if prt:
         print(f"class: {class_name.zfill(2)} | right: {right_name} | wrong: {wrong_name} | procent: {round(class_percent, 2)}")
@@ -192,9 +197,16 @@ def update_values(key, label_dict, prt):
     return class_name, class_percent, class_size
 
 def get_model_results(lable_dict, model_object ,settings,should_print=True):
+    
+    if should_print:
+        print(f"----------------\n\nDetails regarding each class accuracy is as follows:\n")
+
     for key in lable_dict.keys():
         class_name, class_percent, class_size = update_values(key, lable_dict,should_print)
         model_object.csv_data.append([settings[0], model_object.get_size(), class_name, class_percent, class_size])
+
+    if should_print:
+        print("----------------")
 
 def quick():
     lazy_split = 1

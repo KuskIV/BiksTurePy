@@ -14,7 +14,7 @@ from Noise_Generators.noise_main import Filter,premade_single_filter,apply_multi
 from Dataset.load_h5 import h5_object
 from global_paths import get_test_model_paths, get_paths, get_h5_test, get_h5_train
 from Models.test_model import partial_accumilate_distribution, print_accumilate_distribution, make_prediction
-from phase_one.find_ideal_model import get_model_object_list
+from phase_one.find_ideal_model import get_belgian_model_object_list
 from global_paths import  get_h5_test, get_h5_train
 from general_image_func import auto_reshape_images,changeImageSize,rgba_to_rgb
 from plot.write_csv_file import cvs_object
@@ -161,7 +161,7 @@ def create_csv_to_plot():
     return filter_names
 
 def QuickDebug():
-    models = get_model_object_list(63, load_trained_models=True) # TODO: fix, dont hardcode class count
+    models = get_belgian_model_object_list(63, load_trained_models=True) # TODO: fix, dont hardcode class count
     test_path = get_h5_test()
     filters = load_filters()
     filter_names = []
