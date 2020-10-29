@@ -16,7 +16,7 @@ from global_paths import get_test_model_paths, get_paths, get_h5_test, get_h5_tr
 from Models.test_model import partial_accumilate_distribution, print_accumilate_distribution, make_prediction
 from phase_one.find_ideal_model import get_belgian_model_object_list
 from global_paths import  get_h5_test, get_h5_train
-from general_image_func import auto_reshape_images,changeImageSize,rgba_to_rgb
+from general_image_func import auto_reshape_images,changeImageSize,rgba_to_rgb,convert_between_pill_numpy
 from plot.write_csv_file import cvs_object
 
 
@@ -41,18 +41,6 @@ def phase_2_1(model, h5path, lazy_split, image_size,noise_filter, dataset_split=
             image_tuples[i] = (image_tuples[i]+tuple([predicted_label,'yeet'])) #concatanate two tuples to create new tuple , which replacess the old one
         values.extend(image_tuples)
     convert_to_csv('phase_two/csv_output/phase2_results.csv',[val[1:4] for val in values]) #tuple(image,class,filter,predicted_class) #TODO @Jeppe, fix, dont hardcode this path
-
-def normalize_and_convert(img:np.array):
-    img = img # * 255.0
-    img = img.astype(np.uint8)
-    return Image.fromarray(img)
-
-def convert_between_pill_numpy(imgs,mode):
-    if mode == 'pil->numpy':
-        return [np.asarray(im) for im in imgs]
-    if mode == 'numpy->pil':
-        return [normalize_and_convert(im) for im in imgs]
-
 
 def load_filters():
     F = premade_single_filter('fog')

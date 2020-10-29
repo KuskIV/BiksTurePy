@@ -224,3 +224,14 @@ def auto_reshape_images(fixed_size: tuple, numpy_images: list, smart_resize:bool
             reshaped_images.append(tf.image.resize(image, reshape_size))
 
     return np.array(reshaped_images)
+
+def normalize_and_convert(img:np.array):
+    img = img # * 255.0
+    img = img.astype(np.uint8)
+    return Image.fromarray(img)
+
+def convert_between_pill_numpy(imgs,mode):
+    if mode == 'pil->numpy':
+        return [np.asarray(im) for im in imgs]
+    if mode == 'numpy->pil':
+        return [normalize_and_convert(im) for im in imgs]

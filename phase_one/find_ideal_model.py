@@ -159,20 +159,21 @@ def train_model(model:tf.python.keras.engine.sequential.Sequential,
 
 
 def train_and_eval_models_for_size(#TODO pls help
-        size:int,
+        size:tuple,
         model:tf.python.keras.engine.sequential.Sequential,
-        model_id:int,
+        model_id:int,#!deprecated pls remove
         train_images:np.array,
         train_labels:np.array,
         test_images:np.array,
         test_labels:np.array,
         epochs=10,
-        save_model=True)->None:
+        save_model=True#!pls remove
+        )->None:
     """Trains and evaluates models based on the size of images used
 
     Args:
         models (list): list of models
-        size (list): size of the models
+        size (tuple): size of the models
         model (tf.python.keras.engine.sequential.Sequential): input model
         model_id (int): index
         train_images (numpy.array): training images
