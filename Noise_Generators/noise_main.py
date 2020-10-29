@@ -138,7 +138,14 @@ def apply_multiple_filters(Imgs:list,mode = 'rand', KeepOriginal:bool=True, filt
     if mode == 'linear':
         imlist = []
         indexes=chunk_it(range(len(images)),len(fil))
-        for i in range(len(indexes)):
+
+        done = len(indexes)
+        progress = trange(done, desc='index stuff', leave=True)        
+
+        for i in progress:
+            progress.set_description(f"{i+1} / {done} images has been processed")
+            progress.refresh()
+
             for j in range(len(fil)):
 
                 temp_list = fil[j][1]*images[indexes[i].start:indexes[i].stop]

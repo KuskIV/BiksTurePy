@@ -5,6 +5,8 @@ paths = {
             'h5_test':'Dataset/h5Dataset/h5_test.h5py',
             'train_set':'Dataset/belgian_images/training',
             'test_set':'Dataset/belgian_images/testing',
+            'train_set_noise':'Dataset/belgian_images/training_noise',
+            'test_set_noise':'Dataset/belgian_images/testing_noise',
             'model':'Models/saved_models',
             'ex_one_ideal':'Models/saved_models/ex_one_ideal.h5',
             'large': 'Models/saved_models/large200.h5',
@@ -50,6 +52,9 @@ def get_h5_test()->str:
 def get_training_set_path()->str:
     return paths.get('train_set')
 
+def get_training_set_noise_path()->str:
+    return paths.get('train_set_noise')
+
 def get_data_set_path()->str:
     """Returns the path to the dataset
 
@@ -60,6 +65,9 @@ def get_data_set_path()->str:
 
 def get_test_set_path()->str:
     return paths.get('test_set')
+
+def get_test_set_noise_path()->str:
+    return paths.get('test_set_noise')
 
 def get_current_model_path()->str:
     """Returns the path to the current model
