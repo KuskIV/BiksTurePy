@@ -23,7 +23,8 @@ from plot.write_csv_file import cvs_object
 def phase_2_1(model, h5path, lazy_split, image_size,noise_filter, dataset_split=1):
     h5_obj = h5_object(h5path, training_split=dataset_split)
     values = [("image","filter","class","predicted_class")]
-    for j in range(2):
+    lazy_load = 2
+    for j in range(lazy_load):
         original_images, original_labels, _, _ = h5_obj.shuffle_and_lazyload(j, lazy_split) #TODO need variant of this that does not generate test set or shuffle
 
         image_tuples = add_noise((convert_between_pill_numpy(original_images * 255,mode='numpy->pil'),original_labels),noise_filter) #tuple(image,class,filter)
@@ -115,8 +116,8 @@ def merge_csv(filter_names, saved_path):
                 if not row[0] in class_dict:
                     class_dict[row[0]] = [row[0]]
                 class_dict[row[0]].append(row[2])
-                if len(class_dict(row[0]))> 2 :
-                    class_dict[row[0]][-1] -= class_dict[row[0]][1]
+                if len(class_dict[row[0]]) > 2 and row[0] != 'class':
+                    class_dict[row[0]][-1] = round(float(class_dict[row[0]][-1]) - float(class_dict[row[0]][1]), 2)
 
     list_data = [class_dict[key] for key in class_dict.keys()]
     sort_list = list_data[1:]

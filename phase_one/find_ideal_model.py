@@ -210,9 +210,9 @@ def get_belgian_model_object_list(shape:int, load_trained_models=False):
 
 def load_best_model_and_image_size(model_path):
     model = tf.keras.models.load_model(model_path)
-    return model, model.img_size
+    return model, model.input_shape[1:3]
 
 
 def get_best_phase_one_model(shape:int):
-    model_path = get_paths('phase_one_model')
+    model_path = get_paths('ex_one_ideal')
     return return_model(load_best_model_and_image_size(model_path), model_path, shape, True)

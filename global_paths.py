@@ -6,7 +6,7 @@ paths = {
             'train_set':'Dataset/belgian_images/training',
             'test_set':'Dataset/belgian_images/testing',
             'model':'Models/saved_models',
-            'phase_one_model':'Models/saved_models/phase_one_model.h5',
+            'ex_one_ideal':'Models/saved_models/ex_one_ideal.h5',
             'large': 'Models/saved_models/large200.h5',
             'medium':'Models/saved_models/medium128.h5',
             'small':'Models/saved_models/small32.h5',

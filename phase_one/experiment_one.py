@@ -149,8 +149,8 @@ def run_experiment_one(lazy_split, train_h5_path, test_h5_path, epochs_end=10, d
     generate_csv_for_best_model(best_model_names)
     best_index = get_largest_index(best_model_names)
     best_model = get_belgian_model_object_list(h5_train.class_in_h5)[best_index] 
-    best_model.path = get_paths('phase_one_model')
-    find_ideal_model(h5_train, [best_model], lazy_split=lazy_split, epochs=best_model_names[best_index][1], save_models=True)
+    best_model.path = get_paths('ex_one_ideal')
+    find_ideal_model(h5_train, [best_model], lazy_split=lazy_split, epochs=int(best_model_names[best_index][1]), save_models=True)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
 
 def sum_class_accuracy(model_object_list):
     model_class_accuracy = {}

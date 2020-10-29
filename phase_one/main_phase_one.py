@@ -6,6 +6,7 @@ from tqdm import trange
 import os
 import sys,inspect
 from experiment_one import run_experiment_one
+from find_ideal_model import get_best_phase_one_model
 
 current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parent_dir = os.path.dirname(current_dir)
@@ -14,6 +15,7 @@ sys.path.insert(0, parent_dir)
 from Models.test_model import partial_accumilate_distribution, print_accumilate_distribution
 from global_paths import get_paths, get_h5_test, get_h5_train
 from general_image_func import auto_reshape_images
+
 
 def acc_dist_for_images(h5_obj:object, models:list, sizes:list, lazy_split)->None:
     accArr = np.zeros((3, 43, 2))
@@ -36,8 +38,7 @@ if __name__ == "__main__":
     test_path = get_h5_test()
     train_path = get_h5_train()
 
-    run_experiment_one(lazy_split, train_path, test_path, epochs_end=50)
-
+    run_experiment_one(lazy_split, train_path, test_path, epochs_end=4)
 
     # path = "/home/biks/Desktop"
     # test_path = "/imagesForMads"
