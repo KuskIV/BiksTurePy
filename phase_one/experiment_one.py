@@ -94,6 +94,7 @@ def get_best_models(model_object_list:list)->list:
 
     return best_models
 
+
 def generate_csv_for_best_model(best_model_names:list)->None:
     """Will based on the model object list produce a csv illustrating the accuracy for each epoch. 
     This data is saved on the object when they are training
