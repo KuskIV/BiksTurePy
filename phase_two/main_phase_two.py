@@ -115,6 +115,8 @@ def merge_csv(filter_names, saved_path):
                 if not row[0] in class_dict:
                     class_dict[row[0]] = [row[0]]
                 class_dict[row[0]].append(row[2])
+                if len(class_dict(row[0]))> 2 :
+                    class_dict[row[0]][-1] -= class_dict[row[0]][1]
 
     list_data = [class_dict[key] for key in class_dict.keys()]
     sort_list = list_data[1:]
