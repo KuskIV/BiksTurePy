@@ -127,7 +127,6 @@ def generate_csv_for_best_model(best_model_names:list)->None:
     csv_obj = cvs_object(save_path)
     csv_obj.write(data)
 
-
 def get_largest_index(best_model_names:list)->int:
     best_acc = 0
     best_index = 0
