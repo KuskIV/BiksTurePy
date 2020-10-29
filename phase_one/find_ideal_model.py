@@ -17,15 +17,15 @@ sys.path.insert(0, parent_dir)
 
 from general_image_func import get_class_names, display_numpy_image                        # Not an error
 from Models.create_model import flatten_and_dense          # Not an error
-from global_paths import get_small_model_path, get_medium_model_path, get_large_model_path, get_belgium_model_path, get_paths, get_belgium_model_avg_path, get_belgium_model_median_path
+from global_paths import get_belgium_model_path, get_paths, get_belgium_model_avg_path, get_belgium_model_median_path
 
 
 class return_model(object):
     """
     docstring
     """
-    def __init__(self, get_model, model_path, out_layer_size, load_trained_models):
-        self.model, self.img_shape = get_model()
+    def __init__(self, model_and_resolution, model_path, out_layer_size, load_trained_models):
+        self.model, self.img_shape = model_and_resolution
         self.model = flatten_and_dense(self.model, output_layer_size=out_layer_size)
         self.path = model_path
 
@@ -203,8 +203,17 @@ def train_and_eval_models_for_size(#TODO pls help
     # print(model.evaluate(reshaped_test_images, test_labels))
 
 def get_belgian_model_object_list(shape:int, load_trained_models=False):
-    belgium_model_avg = return_model(get_belgium_model_avg, get_belgium_model_avg_path(), shape, load_trained_models)
-    belgium_model_median = return_model(get_belgium_model_median, get_belgium_model_median_path(), shape, load_trained_models)
-    belgium_model = return_model(get_belgium_model, get_belgium_model_path(), shape, load_trained_models)
+    belgium_model_avg = return_model(get_belgium_model_avg(), get_belgium_model_avg_path(), shape, load_trained_models)
+    belgium_model_median = return_model(get_belgium_model_median(), get_belgium_model_median_path(), shape, load_trained_models)
+    belgium_model = return_model(get_belgium_model(), get_belgium_model_path(), shape, load_trained_models)
 
     return [belgium_model_avg, belgium_model_median, belgium_model]
+
+def load_best_model_and_image_size(model_path):
+    model = tf.keras.models.load_model(model_path)
+    return model, model.input_shape[1:3]
+
+
+def get_best_phase_one_model(shape:int):
+    model_path = get_paths('ex_one_ideal')
+    return return_model(load_best_model_and_image_size(model_path), model_path, shape, True)
