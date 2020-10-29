@@ -12,13 +12,13 @@ sys.path.insert(0, parent_dir)
 
 from global_paths import get_paths
 
-def get_x_row(row):
+def get_x_row(row:list)->str:
     return row[0]
 
-def get_y_row(row):
+def get_y_row(row:list)->str:
     return row[1]
 
-def set_x_y_lables(headers):
+def set_x_y_lables(headers:list)->tuple:
     return headers[0], headers[1]
 
 
@@ -30,7 +30,7 @@ class cvs_object():
         self.label = label
         self.set_x_y_lables = set_x_y_lables
 
-    def write(self, data:list, path="", overwrite_path=False, return_object=False):
+    def write(self, data:list, path:str="", overwrite_path:bool=False, return_object:bool=False)->None:
         
         path = self.path if path == "" else path
 
@@ -48,7 +48,7 @@ class cvs_object():
         
 
     
-def plot(cvs_list:object, title="_", lable="_")->None:
+def plot(cvs_list:object, title:str="look at this graph", lable:str="_")->None:
     
     f = open(cvs_list[0].path, 'r')
     reader = csv.reader(f)

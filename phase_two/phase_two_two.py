@@ -26,14 +26,13 @@ def create_dir(path):
     if not os.path.exists(path):
         os.mkdir(path)
 
-def train_noise_model(h5_path,model_object,data_split,filters):
-    dataset = generate_noise_dataset(h5_path,data_split,filters,model_object.img_shape)
+def train_noise_model(h5_obj,model_object,data_split,filters):
+    dataset = generate_noise_dataset(h5_obj,data_split,filters,model_object.img_shape)
     save_dataset(dataset[0], get_training_set_noise_path())
     save_dataset(dataset[1], get_test_set_noise_path())
     train_model(dataset,model_object) #trains model on new dataset
 
-def generate_noise_dataset(h5_path, dataset_split, filters,image_size, lazy_split=10, lazy_start=0):
-    h5_obj = h5_object(h5_path, training_split=dataset_split)#instantiat h5 object images
+def generate_noise_dataset(h5_obj, dataset_split, filters,image_size, lazy_split=10, lazy_start=0):
     original_images, original_labels, test_images, test_labels = h5_obj.shuffle_and_lazyload(lazy_start, lazy_split)#fetch and shuffle the data
     training_set = add_noise((original_images,original_labels), filters, image_size)#adds the noise to the images in linear
     test_set = add_noise((test_images,test_labels), filters, image_size)#adds the noise to the images in linear
@@ -68,7 +67,7 @@ def train_model(data_set, model_object, epochs = 10, save_model = True):
     test_imgs = [tuplen[0] for tuplen in test_set]
     test_lables = [tuplen[1] for tuplen in test_set]
 
-    train_and_eval_models_for_size(model_object.img_shape ,model_object.model, 'yeet',train_imgs,train_lables,test_imgs,test_lables,epochs=epochs)#TODO remove yeet when changes to function is done
+    train_and_eval_models_for_size(model_object.img_shape ,model_object.model,train_imgs,train_lables,test_imgs,test_lables,epochs=epochs)
 
 def test_model(model,test_path):
     pass
@@ -76,6 +75,9 @@ def create_csv():
     pass
 
 def qucik_debug():#TODO insert params
-    ideal_model = get_best_phase_one_model(63) #TODO pls dont hardcode mads im sad now </3.
-    train_noise_model(get_h5_train(), ideal_model,0.6,load_filters())
+    h5_path = get_h5_train()
+    training_split = 1
+    h5_obj = h5_object(h5_path, training_split=training_split)
+    ideal_model = get_best_phase_one_model(h5_obj.class_in_h5)
+    train_noise_model(h5_obj, ideal_model,0.6,load_filters())
 qucik_debug()

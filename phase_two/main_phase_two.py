@@ -15,13 +15,12 @@ from Dataset.load_h5 import h5_object
 from global_paths import get_test_model_paths, get_paths, get_h5_test, get_h5_train
 from Models.test_model import partial_accumilate_distribution, print_accumilate_distribution, make_prediction
 from phase_one.find_ideal_model import get_belgian_model_object_list
-from global_paths import  get_h5_test, get_h5_train
+from global_paths import  get_h5_test, get_h5_train, get_phase_two_csv
 from general_image_func import auto_reshape_images,changeImageSize,rgba_to_rgb,convert_between_pill_numpy
 from plot.write_csv_file import cvs_object
 
 
-def phase_2_1(model, h5path, lazy_split, image_size,noise_filter, dataset_split=1):
-    h5_obj = h5_object(h5path, training_split=dataset_split)
+def phase_2_1(model, h5_obj, lazy_split, image_size,noise_filter):
     values = [("image","filter","class","predicted_class")]
     lazy_load = 2
     for j in range(lazy_load):
@@ -41,7 +40,7 @@ def phase_2_1(model, h5path, lazy_split, image_size,noise_filter, dataset_split=
             predicted_label = np.argmax(prediction) #Get the class with highest liklyhood of the predictions
             image_tuples[i] = (image_tuples[i]+tuple([predicted_label,'yeet'])) #concatanate two tuples to create new tuple , which replacess the old one
         values.extend(image_tuples)
-    convert_to_csv('phase_two/csv_output/phase2_results.csv',[val[1:4] for val in values]) #tuple(image,class,filter,predicted_class) #TODO @Jeppe, fix, dont hardcode this path
+    convert_to_csv(get_phase_two_csv('results'),[val[1:4] for val in values]) #tuple(image,class,filter,predicted_class)
 
 def load_filters():
     F = premade_single_filter('fog')
@@ -63,7 +62,7 @@ def convert_to_csv(path,values):
         for value in values:
             phase2_writer.writerow(list(value))
 
-def calculate_error(_class):#TODO simnple calculation finding the succes.
+def calculate_error(_class):
     wrong = 0
     rigth = 0
     for c in _class:
@@ -88,14 +87,11 @@ def group_by_feature(header,csv_reader,feature_lable:str):
             groups[row[colum_num]] = [row]
     return groups
 
-def generate_csv_name(filter_name):
-    return f'phase_two/csv_output/phase2_{filter_name}.csv'
-
 def merge_csv(filter_names, saved_path):
     class_dict = {}
 
     for name in filter_names:
-        with open(generate_csv_name(name), 'r') as read_obj:
+        with open(get_phase_two_csv(name), 'r') as read_obj:
             reader = csv.reader(read_obj)
             data = list(reader)
             data[0][2] = name
@@ -120,7 +116,7 @@ def merge_csv(filter_names, saved_path):
 def create_csv_to_plot():
     newdatapoint = [('class','filters','error')]
     filter_names = []
-    with open('phase_two/csv_output/phase2_results.csv', 'r') as read_obj:#TODO @Jeppe, fix, dont hardcode this path
+    with open(get_phase_two_csv('results'), 'r') as read_obj:#TODO @Jeppe, fix, dont hardcode this path
         csv_reader = csv.reader(read_obj)
         header = next(csv_reader)
         groups = group_by_feature(header,csv_reader,'filter')
@@ -129,20 +125,25 @@ def create_csv_to_plot():
             for _class in classes:
                 size, error = calculate_error(classes[_class])
                 newdatapoint.append((_class, group, error)) #(class,filter,error)
-            convert_to_csv(generate_csv_name(group), newdatapoint)
+            convert_to_csv(get_phase_two_csv(group), newdatapoint)
             filter_names.append(group)
             newdatapoint = [('class','filters','error')]
     return filter_names
 
-def QuickDebug():
-    models = get_belgian_model_object_list(63, load_trained_models=True) # TODO: fix, dont hardcode class count
+def quick_debug():
     test_path = get_h5_test()
     filters = load_filters()
     filter_names = []
+    trainin_split = 1
+    
+    h5_obj = h5_object(test_path, training_split=trainin_split)
+    models = get_belgian_model_object_list(h5_obj.class_in_h5, load_trained_models=True)
+    
     for n_filter in filters:
-        phase_2_1(models[2], test_path,1,models[2].img_shape, n_filter)
+        phase_2_1(models[2],h5_obj,1,models[2].img_shape, n_filter)
         filter_names.extend(create_csv_to_plot())
-    merge_csv(list(dict.fromkeys(filter_names)), generate_csv_name('merged_file'))
+    
+    merge_csv(list(dict.fromkeys(filter_names)), get_phase_two_csv('merged_file'))
 
-QuickDebug()
+quick_debug()
 

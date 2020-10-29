@@ -19,12 +19,11 @@ from general_image_func import get_class_names, display_numpy_image             
 from Models.create_model import flatten_and_dense          # Not an error
 from global_paths import get_belgium_model_path, get_paths, get_belgium_model_avg_path, get_belgium_model_median_path
 
-
 class return_model(object):
     """
     docstring
     """
-    def __init__(self, model_and_resolution, model_path, out_layer_size, load_trained_models):
+    def __init__(self, model_and_resolution:tuple, model_path:str, out_layer_size:int, load_trained_models:bool)->object:
         self.model, self.img_shape = model_and_resolution
         self.model = flatten_and_dense(self.model, output_layer_size=out_layer_size)
         self.path = model_path
@@ -38,25 +37,25 @@ class return_model(object):
 
         self.csv_data = [['Epochs', 'Resolution', 'Class', 'Class_Acuracy', 'Total_in_Class']]
 
-    def get_size_tuple(self, last_size:int):
+    def get_size_tuple(self, last_size:int)->tuple:
         return (self.img_shape[0], self.img_shape[1], last_size)
 
-    def get_size(self):
+    def get_size(self)->int:
         return self.img_shape[0]
 
-    def get_csv_name(self):
+    def get_csv_name(self)->str:
         return f"model{return_model.get_size(self)}"
 
-    def get_csv_path(self):
+    def get_csv_path(self)->str:
         return f"{get_paths('phase_one_csv')}/{return_model.get_csv_name(self)}.csv"
 
-    def get_summed_csv_path(self):
+    def get_summed_csv_path(self)->str:
         return f"{get_paths('phase_one_csv')}/model{return_model.get_size(self)}_summed.csv"
 
 def get_2d_image_shape(shape:tuple)->tuple:
     return shape[0], shape[1]
 
-def get_belgium_model():
+def get_belgium_model()->object:
     img_shape = (82,82,3)
     den_danske_model = models.Sequential()
     den_danske_model.add(layers.Conv2D(32, (4, 4), activation='relu', padding='same', input_shape=img_shape))
@@ -71,7 +70,7 @@ def get_belgium_model():
     den_danske_model.add(layers.Conv2D(64, (4, 4), activation='relu'))
     return den_danske_model, img_shape[:2]
 
-def get_belgium_model_avg():
+def get_belgium_model_avg()->object:
     img_shape = (131, 131, 3)
     model = models.Sequential()
 
@@ -94,7 +93,7 @@ def get_belgium_model_avg():
 
     return model, img_shape[:2]
 
-def get_belgium_model_median():
+def get_belgium_model_median()->object:
     img_shape = (101, 101, 3)
     model = models.Sequential()
 
@@ -161,13 +160,11 @@ def train_model(model:tf.python.keras.engine.sequential.Sequential,
 def train_and_eval_models_for_size(#TODO pls help
         size:tuple,
         model:tf.python.keras.engine.sequential.Sequential,
-        model_id:int,#!deprecated pls remove
         train_images:np.array,
         train_labels:np.array,
         test_images:np.array,
         test_labels:np.array,
         epochs=10,
-        save_model=True#!pls remove
         )->None:
     """Trains and evaluates models based on the size of images used
 
@@ -202,18 +199,18 @@ def train_and_eval_models_for_size(#TODO pls help
 
     # print(model.evaluate(reshaped_test_images, test_labels))
 
-def get_belgian_model_object_list(shape:int, load_trained_models=False):
+def get_belgian_model_object_list(shape:int, load_trained_models=False)->list:
     belgium_model_avg = return_model(get_belgium_model_avg(), get_belgium_model_avg_path(), shape, load_trained_models)
     belgium_model_median = return_model(get_belgium_model_median(), get_belgium_model_median_path(), shape, load_trained_models)
     belgium_model = return_model(get_belgium_model(), get_belgium_model_path(), shape, load_trained_models)
 
     return [belgium_model_avg, belgium_model_median, belgium_model]
 
-def load_best_model_and_image_size(model_path):
+def load_best_model_and_image_size(model_path:str)->tuple:
     model = tf.keras.models.load_model(model_path)
     return model, model.input_shape[1:3]
 
 
-def get_best_phase_one_model(shape:int):
+def get_best_phase_one_model(shape:int)->object:
     model_path = get_paths('ex_one_ideal')
     return return_model(load_best_model_and_image_size(model_path), model_path, shape, True)
