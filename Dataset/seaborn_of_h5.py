@@ -2,6 +2,8 @@ import numpy as np
 import seaborn as sbs
 from load_h5 import h5_object
 import matplotlib.pyplot as plt
+from tqdm import tqdm
+from tqdm import trange
 
 import os,sys,inspect
 current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
@@ -12,12 +14,20 @@ from global_paths import get_h5_train
 
 def get_all_resolutions(h5_obj):
     resolutions = []
-    for i in range(len(h5_obj.group)):
-            keys = h5_obj.get_keys(h5_obj.group[i])
-            if len(keys) > h5_obj.nested_level:
-                for j in h5_obj.get_key(h5_obj.h5, keys):
-                    arr = np.array(h5_obj.get_ppm_arr(h5_obj.h5, keys, j))
-                    resolutions.append((arr.shape[0], arr.shape[1]))
+    
+    done_len = len(h5_obj.group)
+    progress = trange(done_len, desc='Sea stuff', leave=True)
+    
+    for i in progress:
+        progress.set_description(f"Group {i+1} / {done_len} has been added")
+        progress.refresh()
+        
+        keys = h5_obj.get_keys(h5_obj.group[i])
+        if len(keys) > h5_obj.nested_level:
+            for j in h5_obj.get_key(h5_obj.h5, keys):
+                arr = np.array(h5_obj.get_ppm_arr(h5_obj.h5, keys, j))
+                resolutions.append((arr.shape[0], arr.shape[1]))
+    
     return resolutions
 
 def average_ratio():
@@ -39,8 +49,8 @@ def average_resolution(h5_obj):
     plt.show()
 
 
-# train_path = get_h5_train()
-# h5_train = h5_object(train_path, training_split=1)
-# average_resolution(h5_train)
+train_path = get_h5_train()
+h5_train = h5_object(train_path, training_split=1)
+average_resolution(h5_train)
 
 # Average resolution is 82

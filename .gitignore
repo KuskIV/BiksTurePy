@@ -13,6 +13,7 @@ h5Dataset/
 Dataset/FULLIJCNN2013/
 Dataset/images/
 Dataset/images_old/
+Dataset/satina_gains_images/
 Dataset/h5Dataset/
 Models/saved_models
 Dataset/belgian_images/

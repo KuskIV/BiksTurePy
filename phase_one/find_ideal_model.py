@@ -204,7 +204,8 @@ def get_belgian_model_object_list(shape:int, load_trained_models=False)->list:
     belgium_model_median = return_model(get_belgium_model_median(), get_belgium_model_median_path(), shape, load_trained_models)
     belgium_model = return_model(get_belgium_model(), get_belgium_model_path(), shape, load_trained_models)
 
-    return [belgium_model_avg, belgium_model_median, belgium_model]
+    return [belgium_model]
+    # return [belgium_model_avg, belgium_model_median, belgium_model]
 
 def load_best_model_and_image_size(model_path:str)->tuple:
     model = tf.keras.models.load_model(model_path)

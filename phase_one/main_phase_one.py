@@ -17,7 +17,7 @@ from global_paths import get_paths, get_h5_test, get_h5_train
 from general_image_func import auto_reshape_images
 
 
-def acc_dist_for_images(h5_obj:object, models:list, sizes:list, lazy_split)->None:
+def acc_dist_for_images(h5_obj:object, models:list, sizes:list, lazy_split)->None: #! NOT UPDATED TO NEW DATASET
     accArr = np.zeros((3, 43, 2))
 
     for k in range(lazy_split):
@@ -33,12 +33,12 @@ def acc_dist_for_images(h5_obj:object, models:list, sizes:list, lazy_split)->Non
         print_accumilate_distribution(accArr[i], size=sizes[i])
 
 if __name__ == "__main__":
-    lazy_split = 3
+    lazy_split = 5
 
     test_path = get_h5_test()
     train_path = get_h5_train()
 
-    run_experiment_one(lazy_split, train_path, test_path, epochs_end=4)
+    run_experiment_one(lazy_split, train_path, test_path, epochs_end=3)
 
     # path = "/home/biks/Desktop"
     # test_path = "/imagesForMads"

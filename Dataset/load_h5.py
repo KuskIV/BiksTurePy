@@ -207,7 +207,7 @@ class h5_object():
             img_in_class = len(self.get_key(self.h5, keys))
             print(f"{i-2} & {img_in_class} & {math.floor(img_in_class * self.training_split)} & {math.ceil(img_in_class * h5_object.get_val_size(self))} /")
 
-    def get_part_of_array(self, current_slize:int, max_slice:int, split:float, class_index:int, train_set:list, train_label:list, val_set:list, val_label:list, keys:list)->tuple:
+    def get_part_of_array(self, current_slize:int, max_slice:int, split:float, class_index:int, train_set:list, train_label:list, val_set:list, val_label:list, keys:list, i)->tuple:
         """Returns a part of the train_set, train_lable, val_set and val_label lists, based on how many slices the lists are split into and what slize we are currently on
 
         Args:
@@ -234,7 +234,7 @@ class h5_object():
         val_start = train_end
         val_end = val_start + val_size if not is_last else len(self.ppm_names[class_index])
 
-        # print(f"{str(class_index).zfill(2)} - train: {str(train_end - train_start).rjust(5, ' ')} | {str(train_start).rjust(6, ' ')} - {str(train_end).ljust(6, ' ')} - val: {str(val_end - val_start).rjust(5, ' ')} | {str(val_start).rjust(6, ' ')} - {str(val_end).ljust(6, ' ')}")
+        # print(f"{str(self.group[i]).zfill(2)} - train: {str(train_end - train_start).rjust(5, ' ')} | {str(train_start).rjust(6, ' ')} - {str(train_end).ljust(6, ' ')} - val: {str(val_end - val_start).rjust(5, ' ')} | {str(val_start).rjust(6, ' ')} - {str(val_end).ljust(6, ' ')}")
         
         self.append_to_list(self.ppm_names[class_index][train_start:train_end], keys, train_set, train_label)
         self.append_to_list(self.ppm_names[class_index][val_start:val_end], keys, val_set, val_label)
@@ -262,7 +262,7 @@ class h5_object():
             keys = self.get_keys(self.group[i])
 
             if len(keys) > self.nested_level:
-                h5_object.get_part_of_array(self, current_iteration, max_iteration, self.training_split, self.get_ppm_img_index(i), train_set, train_label, val_set, val_label, keys) 
+                h5_object.get_part_of_array(self, current_iteration, max_iteration, self.training_split, self.get_ppm_img_index(i), train_set, train_label, val_set, val_label, keys, i) 
 
         print(f"{current_iteration}: train set: {len(train_set)}, train lables: {len(train_label)}, val set: {len(val_set)}, val labels: {len(val_label)}") 
 
