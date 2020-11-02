@@ -26,6 +26,7 @@ class Filter: #TODO create homophobic filter
     fog_set = None
     day_set = None
     wh_set = None
+    configuration = None
     def __init__(self,config:dict):
         """The to configure the default variables in perlin noise.
 
@@ -34,6 +35,7 @@ class Filter: #TODO create homophobic filter
             The value would then be the value refresen by the keyword.
             Keys = ['fog_set','day_set','wh_set']
         """
+        self.configuration = config
         Keys = ['fog_set','day_set','wh_set']
         if Keys[0] in config:
             self.fog_set = config.get(Keys[0])
@@ -92,6 +94,9 @@ class Filter: #TODO create homophobic filter
         for img in imgs:
             returnList.append(self + img)
         return returnList
+        
+    def get_config(self):
+        return self.configuration
 
 def normal_distribution(lst:list):
     mean = (len(lst) - 1) / 2
