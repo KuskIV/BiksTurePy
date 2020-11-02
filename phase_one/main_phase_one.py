@@ -7,6 +7,8 @@ import os
 import sys,inspect
 from experiment_one import run_experiment_one
 from find_ideal_model import get_best_phase_one_model
+from numba import cuda
+
 
 current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parent_dir = os.path.dirname(current_dir)
@@ -32,17 +34,27 @@ def acc_dist_for_images(h5_obj:object, models:list, sizes:list, lazy_split)->Non
     for i in range(len(models)):
         print_accumilate_distribution(accArr[i], size=sizes[i])
 
+def reset_nvidia_memory():
+    device = cuda.get_current_device()
+    device.reset()
+
 if __name__ == "__main__":
     lazy_split = 5
 
     test_path = get_h5_test()
     train_path = get_h5_train()
 
-    run_experiment_one(lazy_split, train_path, test_path, epochs_end=3)
+    # reset_nvidia_memory()
+
+    # run_experiment_one(lazy_split, train_path, test_path, epochs_end=2)
+    run_experiment_one(lazy_split, train_path, test_path, epochs_end=1)
 
     # path = "/home/biks/Desktop"
     # test_path = "/imagesForMads"
 
     # class_names = open(get_paths("txt_file"), 'r').readlines()
 
+    #LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc.so.4 python phase_one/main_phase_one.py
+    
+    # LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc.so.4 HEAPPROFILE=/tmp/profile python phase_one/main_phase_one.py
     

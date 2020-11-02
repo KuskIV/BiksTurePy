@@ -156,7 +156,6 @@ def train_model(model:tf.python.keras.engine.sequential.Sequential,
     history = model.fit(train_images, train_labels, epochs=epochs,
             validation_data=(test_images, test_labels))
 
-
 def train_and_eval_models_for_size(#TODO pls help
         size:tuple,
         model:tf.python.keras.engine.sequential.Sequential,

@@ -178,25 +178,28 @@ def run_experiment_one(lazy_split:int, train_h5_path:str, test_h5_path:str, epoc
         
         print(f"\n------------------------\nTraining done. Now evaluation will be made, using {e} epochs.\n\n")
 
-        _, _, image_dataset, lable_dataset = h5_train.shuffle_and_lazyload(0, 1)
+        # _, _, image_dataset, lable_dataset = h5_train.shuffle_and_lazyload(0, 1)
         
-        iterate_trough_models(model_object_list, label_dict, e, image_dataset, lable_dataset) #TODO This should not use h5_test, rather the h5_trainig and evaluation set.
+        # iterate_trough_models(model_object_list, label_dict, e, image_dataset, lable_dataset) #TODO This should not use h5_test, rather the h5_trainig and evaluation set.
 
-        save_plot(model_object_list)
-        sum_plot(model_object_list)
-        sum_class_accuracy(model_object_list)
+        # del image_dataset #TODO this might be better
+        # del lable_dataset
+        
+        # save_plot(model_object_list)
+        # sum_plot(model_object_list)
+        # sum_class_accuracy(model_object_list)
     
-    best_model_names = get_best_models(model_object_list)
-    generate_csv_for_best_model(best_model_names)
-    best_index = get_largest_index(best_model_names) #TODO These lines should generate a model for each model and epoch
-    best_model = get_belgian_model_object_list(h5_train.class_in_h5)[best_index] 
-    best_model.path = get_paths('ex_one_ideal')
-    find_ideal_model(h5_train, [best_model], lazy_split=lazy_split, epochs=int(best_model_names[best_index][1]), save_models=True)   
+    # best_model_names = get_best_models(model_object_list)
+    # generate_csv_for_best_model(best_model_names)
+    # best_index = get_largest_index(best_model_names) #TODO These lines should generate a model for each model and epoch
+    # best_model = get_belgian_model_object_list(h5_train.class_in_h5)[best_index] 
+    # best_model.path = get_paths('ex_one_ideal')
+    # find_ideal_model(h5_train, [best_model], lazy_split=lazy_split, epochs=int(best_model_names[best_index][1]), save_models=True)   
     
-    test_label_dict = {}
+    # test_label_dict = {}
     
-    image_dataset, lable_dataset, _, _ = h5_test.shuffle_and_lazyload(0, 1)
-    iterate_trough_models([best_model], test_label_dict, int(best_model_names[best_index][1]), image_dataset, lable_dataset)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
+    # image_dataset, lable_dataset, _, _ = h5_test.shuffle_and_lazyload(0, 1)
+    # iterate_trough_models([best_model], test_label_dict, int(best_model_names[best_index][1]), image_dataset, lable_dataset)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
 
 def sum_class_accuracy(model_object_list:list)->dict:
     """When training the accuracy for each class for each epoch is recorded. Here the sum of all accuracies for all classes for each epoch is summed together.
@@ -378,4 +381,4 @@ def quick()->None:
     test_path = get_h5_test()
     train_path = get_h5_train()
 
-    run_experiment_one(lazy_split, train_path, test_path, epochs_end=4)
+    run_experiment_one(lazy_split, train_path, test_path, epochs_end=1)
