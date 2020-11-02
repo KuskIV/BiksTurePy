@@ -6,6 +6,7 @@ import sys, os
 import csv
 import os.path
 from os import path
+from matplotlib import pyplot as plt
 
 from find_ideal_model import train_and_eval_models_for_size, get_belgian_model_object_list
 
@@ -22,13 +23,17 @@ from general_image_func import auto_reshape_images, convert_numpy_image_to_image
 from Models.test_model import make_prediction
 from plot.sum_csv import sum_csv
 
-def find_ideal_model(h5_obj:object, model_object_list, epochs=10, lazy_split=10, save_models=False)->None:
-    """finds the ideal model
+def find_ideal_model(h5_obj:object, model_object_list:list, epochs:int=10, lazy_split:int=10, save_models:bool=False)->None:
+    """Will based on a list of model objects, a h5py file an a max epochs amount, train the models and record the accracy in order to find the
+    best model
 
     Args:
-        h5_obj (object): h5 object
+        h5_obj (object): The training and validation set
+        model_object_list (list): The list of model objects to train
+        epochs (int, optional): The upper limit of how many epocs each model should trian for. Defaults to 10.
+        lazy_split (int, optional): How many splits the training should be split into. Defaults to 10.
+        save_models (bool, optional): A boolean value representing whether or not the models should be saved. Defaults to False.
     """
-
     train_images = []
     test_images = []
 
@@ -42,14 +47,23 @@ def find_ideal_model(h5_obj:object, model_object_list, epochs=10, lazy_split=10,
 
         # train models
         for i in range(len(model_object_list)):
-            print(f"\n\nTraining model {i + 1} / {len(model_object_list) } for epoch {j + 1} / {lazy_split}")
-            train_and_eval_models_for_size(model_object_list[i].img_shape, model_object_list[i].model, i, train_images, train_labels, test_images, test_labels, epochs)
+            print(f"\n\nTraining model {i + 1} / {len(model_object_list) } for part in dataset {j + 1} / {lazy_split}")
+            train_and_eval_models_for_size(model_object_list[i].img_shape, model_object_list[i].model, train_images, train_labels, test_images, test_labels, epochs)
     
     if save_models:
         for models in model_object_list:
             store_model(models.model, models.path)
 
-def get_best_models(model_object_list):
+def get_best_models(model_object_list:list)->list:
+    """Will iterate through the csv file produced, and find at what epoch each model had the higest accuracy.
+    The model name will be returned, in addition to the amount of epocs and the accuracy
+
+    Args:
+        model_object_list (list): The list of model objects 
+
+    Returns:
+        list: A list of tupes consisting of the accuracy, epoch and the resolution
+    """
     best_models = []
 
     for model_object in model_object_list:
@@ -81,15 +95,23 @@ def get_best_models(model_object_list):
 
     return best_models
 
-def generate_csv_for_best_model(best_model_names):
+
+def generate_csv_for_best_model(best_model_names:list)->None:
+    """Will based on the model object list produce a csv illustrating the accuracy for each epoch. 
+    This data is saved on the object when they are training
+
+    Args:
+        best_model_names (list): The input list of model objects
+    """
 
     model_names = [f"model{x[2]}_{x[1]}" for x in best_model_names]
     model_indexes = [0]
     data = [['class']]
     data[0].extend(model_names)
 
-    csv_path = f"{get_paths('phase_one_csv')}/class_accuracy.csv"
-    save_path = f"{get_paths('phase_one_csv')}/class_accuracy_minimized.csv"
+    csv_base_path = get_paths('phase_one_csv') 
+    csv_path = f"{csv_base_path}/class_accuracy.csv"
+    save_path = f"{csv_base_path}/class_accuracy_minimized.csv"
 
     if not path.exists(csv_path):
         print(f"\nThe following path does not exist: {csv_path}\nCode: plot.write_csv_file.py")
@@ -106,8 +128,8 @@ def generate_csv_for_best_model(best_model_names):
     
     csv_obj = cvs_object(save_path)
     csv_obj.write(data)
- 
-def get_largest_index(best_model_names):
+
+def get_largest_index(best_model_names:list)->int:
     best_acc = 0
     best_index = 0
 
@@ -118,7 +140,24 @@ def get_largest_index(best_model_names):
 
     return best_index
  
-def run_experiment_one(lazy_split, train_h5_path, test_h5_path, epochs_end=10, dataset_split=0.7):
+def run_experiment_one(lazy_split:int, train_h5_path:str, test_h5_path:str, epochs_end:int=10, dataset_split:int=0.7)->None:
+    """This method runs experiment one, and is done in several steps:
+            1. For each epoch to train for, the models are trained. After each epoch, the accuracy is saved on the object.
+            2. When the training is done, all the data is saved in csv files as (Epochs,Resolution,Class,Class_Acuracy,Total_in_Class)
+                Here the accuracy for all classes has its own row.
+            3. Once this is done, rather than representing all classes in each epoch in seperate row, this is combined with one row for 
+                each epoch (Epochs,Model_accuracy,Resolution).
+            4. All the summed files are now combined into one file, as (class, model[resolution 1]_[epoch 1], ... , model[resolution n]_[epoch n])
+            5. Now for each model, the maximal accuracy is found, and the given epoch is saved
+            6. Based on this information, three new models are made, with the idael epoch, representing the best possible models for this experiment.
+
+    Args:
+        lazy_split (int): How many pieces the dataset should be split into
+        train_h5_path (str): The path for the trainig h5py
+        test_h5_path (str): The path for the test h5py
+        epochs_end (int, optional): The upper limit for how many epochs to train the modesl for. Defaults to 10.
+        dataset_split (int, optional): The split between the training and validation set. Defaults to 0.7.
+    """
     label_dict = {}
 
     h5_train = h5_object(train_h5_path, training_split=dataset_split)
@@ -129,30 +168,45 @@ def run_experiment_one(lazy_split, train_h5_path, test_h5_path, epochs_end=10, d
         sys.exit()
 
     model_object_list = get_belgian_model_object_list(h5_train.class_in_h5) 
-    # image_dataset, lable_dataset, _, _ = h5_test.shuffle_and_lazyload(0, 1) # TODO: This might cause a "run out of memory" error.
     
     epochs_end += 1
 
-    for e in range(1, epochs_end):
+    for e in range(1, epochs_end): #TODO: This loop should be reworked to taking one model at a time.
         print(f"\n----------------\nRun {e} / {epochs_end - 1}\n----------------\n")
         
         find_ideal_model(h5_train, model_object_list, lazy_split=lazy_split, epochs=1, save_models=True)
         
         print(f"\n------------------------\nTraining done. Now evaluation will be made, using {e} epochs.\n\n")
 
-        iterate_trough_models(model_object_list, label_dict, e, h5_test)
+        _, _, image_dataset, lable_dataset = h5_train.shuffle_and_lazyload(0, 1)
+        
+        iterate_trough_models(model_object_list, label_dict, e, image_dataset, lable_dataset) #TODO This should not use h5_test, rather the h5_trainig and evaluation set.
 
-    save_plot(model_object_list)
-    sum_plot(model_object_list)
-    sum_class_accuracy(model_object_list)
+        save_plot(model_object_list)
+        sum_plot(model_object_list)
+        sum_class_accuracy(model_object_list)
+    
     best_model_names = get_best_models(model_object_list)
     generate_csv_for_best_model(best_model_names)
-    best_index = get_largest_index(best_model_names)
+    best_index = get_largest_index(best_model_names) #TODO These lines should generate a model for each model and epoch
     best_model = get_belgian_model_object_list(h5_train.class_in_h5)[best_index] 
     best_model.path = get_paths('ex_one_ideal')
-    find_ideal_model(h5_train, [best_model], lazy_split=lazy_split, epochs=int(best_model_names[best_index][1]), save_models=True)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
+    find_ideal_model(h5_train, [best_model], lazy_split=lazy_split, epochs=int(best_model_names[best_index][1]), save_models=True)   
+    
+    test_label_dict = {}
+    
+    image_dataset, lable_dataset, _, _ = h5_test.shuffle_and_lazyload(0, 1)
+    iterate_trough_models([best_model], test_label_dict, int(best_model_names[best_index][1]), image_dataset, lable_dataset)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
 
-def sum_class_accuracy(model_object_list):
+def sum_class_accuracy(model_object_list:list)->dict:
+    """When training the accuracy for each class for each epoch is recorded. Here the sum of all accuracies for all classes for each epoch is summed together.
+
+    Args:
+        model_object_list (list): The list of 
+
+    Returns:
+        dict: [description]
+    """
     model_class_accuracy = {}
 
     for model_object in model_object_list:
@@ -177,7 +231,7 @@ def sum_class_accuracy(model_object_list):
 
     return model_class_accuracy
 
-def convert_dict_to_list(model_class_accuracy):
+def convert_dict_to_list(model_class_accuracy:dict)->list:
     data_list = [['Class']]
     for key, value in model_class_accuracy.items():
         for key2, value2 in model_class_accuracy[key].items():
@@ -192,29 +246,39 @@ def convert_dict_to_list(model_class_accuracy):
 
     return data_list  
 
-def sum_plot(model_object_list):
+def sum_plot(model_object_list:list)->None:
     csv_object_list =  []
     for model_object in model_object_list:
         obj = cvs_object(model_object.get_csv_path(), label=model_object.get_size())
         data = sum_csv(obj)
         obj.write(data, model_object.get_summed_csv_path(), overwrite_path=True)
         csv_object_list.append(obj)
-    plot(csv_object_list)
+    # plot(csv_object_list)
 
-def save_plot(model_object_list):
+def save_plot(model_object_list:list)->None:
     for model_object in model_object_list:
         cvs_obj = cvs_object(model_object.get_csv_path())
         cvs_obj.write(model_object.csv_data)
 
-def iniitalize_dict(lable_dataset):
+def iniitalize_dict(lable_dataset:list)->dict:
     label_dict = {}
     for lable in lable_dataset:
             label_dict[lable] = [0,0]
     return label_dict
 
 
-def iterate_trough_models(model_object_list, label_dict, e, h5_test):
-    image_dataset, lable_dataset, _, _ = h5_test.shuffle_and_lazyload(0, 1) # TODO: This might cause a "run out of memory" error. Implement as loop.
+def iterate_trough_models(model_object_list:list, label_dict:dict, e:int, image_dataset, lable_dataset)->None:
+    """Iterates through the modesl to get the accuracy using the validation set. This information is saved on the object,
+    and later saved in a csv file
+
+    Args:
+        model_object_list (list): The list of model objects
+        label_dict (dict): A dictionary containing the data to plot in the csv file. One key per class
+        e (int): The current epoch
+        h5_test (object): The h5py object containg the images
+    """
+    # _, _, image_dataset, lable_dataset = h5_train.shuffle_and_lazyload(0, 1) #TODO: use train validation set, should look something like this
+    # image_dataset, lable_dataset, _, _ = h5_test.shuffle_and_lazyload(0, 1) # TODO: This might cause a "run out of memory" error. Implement as loop.
     
     for i in range(len(model_object_list)):
         label_dict = iniitalize_dict(lable_dataset)
@@ -228,7 +292,19 @@ def iterate_trough_models(model_object_list, label_dict, e, h5_test):
 
         get_model_results(label_dict, model_object_list[i], (e, True))
 
-def iterate_trough_imgs(model_object_list,image_dataset,lable_dataset, label_dict):
+def iterate_trough_imgs(model_object:object,image_dataset:list,lable_dataset:list,label_dict:dict)->tuple:
+    """For each image in the dataset, it is predicted using the input mode, and the result saved in the lable_dict
+
+    Args:
+        model_object (object): One model to use
+        image_dataset (list): The image dataset to predict on the
+        lable_dataset (list): The labes fitting the images
+        label_dict (dict): The dict to save the data on
+
+    Returns:
+        tuple: The amount of rith and wrong guesses
+    """
+
     right = 0
     wrong = 0
     
@@ -239,8 +315,9 @@ def iterate_trough_imgs(model_object_list,image_dataset,lable_dataset, label_dic
         progress.set_description(f"Image {j + 1} / {data_len} has been predicted")
         progress.refresh()
 
-        prediction = make_prediction(model_object_list.model, image_dataset[j].copy(),  model_object_list.get_size_tuple(3))
+        prediction = make_prediction(model_object.model, image_dataset[j].copy(),  model_object.get_size_tuple(3))
         predicted_label = np.argmax(prediction)
+
 
         if int(predicted_label) == int(lable_dataset[j]):
             right += 1
@@ -253,7 +330,17 @@ def iterate_trough_imgs(model_object_list,image_dataset,lable_dataset, label_dic
     return right,wrong
 
 
-def update_values(key, label_dict, prt):
+def update_values(key:int,label_dict:dict,prt:bool)->tuple:
+    """The accuracy and class size is calculated and returned as a tuple
+
+    Args:
+        key (int): The key for the current class in the dictionary
+        label_dict (dict): The lable dict to get data from
+        prt (bool): A boolean deciding whether or not to pring
+
+    Returns:
+        tuple: a typle containing the class name, accuracy and size, to be added to the class dict
+    """
     class_name = str(key)
     right_name = str(label_dict[key][1]).rjust(4, ' ')
     wrong_name = str(label_dict[key][0]).rjust(4, ' ')
@@ -265,7 +352,15 @@ def update_values(key, label_dict, prt):
     
     return class_name, class_percent, class_size
 
-def get_model_results(lable_dict, model_object ,settings,should_print=True):
+def get_model_results(lable_dict:dict, model_object:object ,settings:tuple,should_print:bool=True)->None:
+    """Appends data to the model object, later to be inputtet into the csv file. This includ things regarding how accurate the model is and so on
+
+    Args:
+        lable_dict (dict): A dictionary containg information regarding the classes
+        model_object (object): The current model to add informatino to
+        settings (tuple): Settings include the current epoch
+        should_print (bool, optional): A boolean representing wether or not to print. Defaults to True.
+    """
     
     if should_print:
         print(f"----------------\n\nDetails regarding each class accuracy is as follows:\n")
@@ -277,7 +372,7 @@ def get_model_results(lable_dict, model_object ,settings,should_print=True):
     if should_print:
         print("----------------")
 
-def quick():
+def quick()->None:
     lazy_split = 1
 
     test_path = get_h5_test()

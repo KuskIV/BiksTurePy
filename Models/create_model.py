@@ -70,6 +70,6 @@ def flatten_and_dense(model:tf.python.keras.engine.sequential.Sequential, output
     """Returns a model flattened and densed to 43 categories of prediction"""
     model.add(layers.Flatten())
     model.add(layers.Dense(64, activation='relu'))
-    model.add(layers.Dense(output_layer_size)) # TODO: IMPORTANT, should be input. Represents the amount of classes
+    model.add(layers.Dense(output_layer_size))
     return model
 
