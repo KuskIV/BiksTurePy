@@ -10,7 +10,7 @@ sys.path.insert(0, parent_dir)
 import global_paths
 from general_image_func import changeImageSize
 from Noise_Generators.weather_gen import weather
-from Noise_Generators.perlin_noise import perlin
+from Noise_Generators.Perlin_noise import perlin
 from Noise_Generators.brightness import brightness
 
 class Filter: #TODO create homophobic filter
@@ -203,13 +203,13 @@ def premade_single_filter(str:str)->Filter:
         config = {'octaves':8, 'persistence':0.3, 'lacunarity': 5, 'alpha': 0.4}
         result = Filter({'fog_set':config})
     if str == 'fog_mild':
-        config = {'octaves':4, 'persistence':0.1, 'lacunarity': 2, 'alpha': 0.4}
+        config = {'octaves':1, 'persistence':0.2, 'lacunarity': 3, 'alpha': 0.5, 'darkness':0.5}
         result = Filter({'fog_set':config})
     if str == 'fog_medium':
-        config = {'octaves':6, 'persistence':0.3, 'lacunarity': 2, 'alpha': 0.3}
+        config = {'octaves':4, 'persistence':0.2, 'lacunarity': 3, 'alpha': 0.4, 'darkness':0.5}
         result = Filter({'fog_set':config})
     if str == 'fog_heavy':
-        config = {'octaves':8, 'persistence':0.3, 'lacunarity': 5, 'alpha': 0.4}
+        config = {'octaves':4, 'persistence':0.2, 'lacunarity': 3, 'alpha': 0.1, 'darkness':0.5}
         result = Filter({'fog_set':config})
     if str == 'rain':
         config =     config = {'density':(0.03,0.14),'density_uniformity':(0.8,1.0),'drop_size':(0.3,0.4),'drop_size_uniformity':(0.1,0.5),'angle':(-15,15),'speed':(0.1,0.2),'blur':(0.001,0.001)}
@@ -271,7 +271,7 @@ def QuickDebug():
     """
     img = Image.open('D:/BiksTurePy/FullIJCNN2013/02/00024.ppm')
     imgs = [img,img]
-    fog = {'octaves':6, 'persistence':0.2, 'lacunarity': 2, 'alpha': 0.1}
+    fog = {'octaves':4, 'persistence':0.2, 'lacunarity': 3, 'alpha': 0.25, 'darkness':0.5}
     day = {'factor':1.0} 
     night = {'factor':0.3}
     #snow = {'density':(0.2,0.3),'density_uniformity':(0.95,1.0),'drop_size':(0.8,0.9), 'drop_size_uniformity':(0.2,0.6),'angle':(-30,30),'speed':(0.08,0.15),'blur':(0.004,0.01)}
@@ -279,12 +279,12 @@ def QuickDebug():
     # rain = {}
     #rain_mild["density"] = (0.5, 1)
 
-    Filter_Con = {'day_set':night}
+    Filter_Con = {'fog_set':fog}
     F = Filter(Filter_Con)
 
-    night = premade_single_filter('night')
+    fog = premade_single_filter('fog')
     #(F + img).show()
-    (F + img).save('C:/Users/Jamie/Desktop' + '/' + 'night.png')
+    (F + img).save('C:/Users/Jamie/Desktop' + '/' + 'fog.png')
     #newImage = F*imgs
     #newImage[0].show()
     #newImage[1].show()
