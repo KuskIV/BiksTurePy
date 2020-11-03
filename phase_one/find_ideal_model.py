@@ -40,7 +40,7 @@ class return_model(object):
 
     def set_epoch(self, epoch:int):
         self.epoch = epoch
-        
+
     def run_on_epoch(self, current_epoch:int)->bool:
         return True if int(self.epoch) >= int(current_epoch) or int(self.epoch) == -1 else False
 
@@ -65,7 +65,7 @@ def get_2d_image_shape(shape:tuple)->tuple:
 def satina_median()->object:
     img_shape = (35, 35, 3)
     model = models.Sequential()
-    model.add(layers.Conv2D(32, (3, 3), activation='relu', padding='same', input_shape=(32, 32, 3)))
+    model.add(layers.Conv2D(32, (3, 3), activation='relu', padding='same', input_shape=img_shape))
     model.add(layers.MaxPooling2D((2, 2)))
     model.add(layers.Conv2D(64, (3, 3), activation='relu', padding='same'))
     model.add(layers.MaxPooling2D((2, 2)))
@@ -73,10 +73,10 @@ def satina_median()->object:
     return model, img_shape[:2]
 
 def satina_gauss_mode()->object:
-    
+
     img_shape = (25, 25, 3)
     model = models.Sequential()
-    model.add(layers.Conv2D(32, (3, 3), activation='relu', padding='same', input_shape=(32, 32, 3)))
+    model.add(layers.Conv2D(32, (3, 3), activation='relu', padding='same', input_shape=img_shape))
     model.add(layers.MaxPooling2D((2, 2)))
     model.add(layers.Conv2D(64, (3, 3), activation='relu', padding='same'))
     model.add(layers.MaxPooling2D((2, 2)))
@@ -86,7 +86,7 @@ def satina_gauss_mode()->object:
 def satina_avg()->object:
     img_shape = (45, 45, 3)
     model = models.Sequential()
-    model.add(layers.Conv2D(32, (5, 5), activation='relu', padding='same', input_shape=(32, 32, 3)))
+    model.add(layers.Conv2D(32, (5, 5), activation='relu', padding='same', input_shape=img_shape))
     model.add(layers.MaxPooling2D((2, 2)))
     model.add(layers.Conv2D(64, (5, 5), activation='relu', padding='same'))
     model.add(layers.MaxPooling2D((2, 2)))
