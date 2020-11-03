@@ -2,8 +2,7 @@
 from PIL import Image
 import random
 import numpy as np
-from tqdm import tqdm
-from tqdm import trange
+from tqdm import tqdm, trange
 import os,sys,inspect
 current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parent_dir = os.path.dirname(current_dir)
@@ -198,6 +197,15 @@ def premade_single_filter(str:str)->Filter:
     if str == 'fog':
         config = {'octaves':8, 'persistence':0.3, 'lacunarity': 5, 'alpha': 0.4}
         result = Filter({'fog_set':config})
+    if str == 'fog_mild':
+        config = {'octaves':4, 'persistence':0.1, 'lacunarity': 2, 'alpha': 0.4}
+        result = Filter({'fog_set':config})
+    if str == 'fog_medium':
+        config = {'octaves':6, 'persistence':0.3, 'lacunarity': 2, 'alpha': 0.3}
+        result = Filter({'fog_set':config})
+    if str == 'fog_heavy':
+        config = {'octaves':8, 'persistence':0.3, 'lacunarity': 5, 'alpha': 0.4}
+        result = Filter({'fog_set':config})
     if str == 'rain':
         config =     config = {'density':(0.03,0.14),'density_uniformity':(0.8,1.0),'drop_size':(0.3,0.4),'drop_size_uniformity':(0.1,0.5),'angle':(-15,15),'speed':(0.1,0.2),'blur':(0.001,0.001)}
         result = Filter({'wh_set':config})
@@ -214,19 +222,28 @@ def premade_single_filter(str:str)->Filter:
         config =     config = {'density':(0.03,0.14),'density_uniformity':(0.8,1.0),'drop_size':(0.3,0.4),'drop_size_uniformity':(0.1,0.5),'angle':(-15,15),'speed':(0.1,0.2),'blur':(0.001,0.001),'mode':'snow'}
         result = Filter({'wh_set':config})
     if str == 'snow_mild':
-        config =     config = {'density':(0.04,0.045),'density_uniformity':(0.95,1.0),'drop_size':(0.2,0.5),'drop_size_uniformity':(0.2,0.7),'angle':(-30,30),'speed':(0.04,0.1),'blur':(0.004,0.01),'mode':'snow'}
+        config =     config = {'density':(0.1,0.15),'density_uniformity':(0.95,1.0),'drop_size':(0.8,0.9),'drop_size_uniformity':(0.2,0.6),'angle':(-30,30),'speed':(0.1,0.15),'blur':(0.004,0.01),'mode':'snow'}
         result = Filter({'wh_set':config})
     if str == 'snow_medium':
-        config =     config = {'density':(0.08,0.1),'density_uniformity':(0.95,1.0),'drop_size':(0.2,0.5),'drop_size_uniformity':(0.2,0.6),'angle':(-30,30),'speed':(0.04,0.1),'blur':(0.004,0.01),'mode':'snow'}
+        config =     config = {'density':(0.2,0.27),'density_uniformity':(0.95,1.0),'drop_size':(0.8,0.9),'drop_size_uniformity':(0.2,0.6),'angle':(-30,30),'speed':(0.1,0.15),'blur':(0.004,0.01),'mode':'snow'}
         result = Filter({'wh_set':config})
     if str == 'snow_heavy':
-        config =     config = {'density':(0.11,0.16),'density_uniformity':(0.95,1.0),'drop_size':(0.4,0.6),'drop_size_uniformity':(0.2,0.5),'angle':(-30,30),'speed':(0.04,0.1),'blur':(0.004,0.01),'mode':'snow'}
+        config =     config = {'density':(0.35,0.45),'density_uniformity':(0.95,1.0),'drop_size':(0.8,0.9),'drop_size_uniformity':(0.2,0.6),'angle':(-30,30),'speed':(0.1,0.15),'blur':(0.004,0.01),'mode':'snow'}
         result = Filter({'wh_set':config})
     if str == 'day':
         config = {'factor':1.0}
         result = Filter({'day_set':config})
     if str == 'night':
         config = {'factor':0.3}
+        result = Filter({'day_set':config})
+    if str == 'night_mild':
+        config = {'factor':0.5}
+        result = Filter({'day_set':config})
+    if str == 'night_medium':
+        config = {'factor':0.3}
+        result = Filter({'day_set':config})
+    if str == 'night_heavy':
+        config = {'factor':0.15}
         result = Filter({'day_set':config})
     return result
 
@@ -247,23 +264,27 @@ def QuickDebugL():
 def QuickDebug():
     """Small debug function
     """
-    img = Image.open('Dataset/images/00000/00000_00000.ppm')
+    img = Image.open('D:/BiksTurePy/FullIJCNN2013/02/00024.ppm')
     imgs = [img,img]
-    p = {'octaves':8, 'persistence':0.8, 'lacunarity': 8, 'alpha': 0.4}
+    fog = {'octaves':6, 'persistence':0.2, 'lacunarity': 2, 'alpha': 0.1}
     day = {'factor':1.0} 
     night = {'factor':0.3}
-    rain = {'rain_drops':500, 'drop_length':2,'drop_width':1,'blurr':(2,2),'color':(200,200,255)}
+    #snow = {'density':(0.2,0.3),'density_uniformity':(0.95,1.0),'drop_size':(0.8,0.9), 'drop_size_uniformity':(0.2,0.6),'angle':(-30,30),'speed':(0.08,0.15),'blur':(0.004,0.01)}
+    #snow = {'density':(0.1,0.15),'density_uniformity':(0.95,1.0),'drop_size':(0.8,0.9),'drop_size_uniformity':(0.2,0.6),'angle':(-30,30),'speed':(0.1,0.15),'blur':(0.004,0.01)}
+    # rain = {}
+    #rain_mild["density"] = (0.5, 1)
 
-    Filter_Con = {'fog_set':p, 'day_set':day, 'wh_set':rain}
+    Filter_Con = {'day_set':night}
     F = Filter(Filter_Con)
 
-    snow = premade_single_filter('fog')
-    (F + img).show()
+    night = premade_single_filter('night')
+    #(F + img).show()
+    (F + img).save('C:/Users/Jamie/Desktop' + '/' + 'night.png')
     #newImage = F*imgs
     #newImage[0].show()
     #newImage[1].show()
 
-# QuickDebugL()
+QuickDebug()
 #fog_set=(1)
 #day_set=(0.5)
 #wh_set = (70,7,2,(2,2),(130,130,130))
