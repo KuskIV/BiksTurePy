@@ -40,8 +40,7 @@ def find_ideal_model(h5_obj:object, model_object_list:list, epochs:int=10, lazy_
     for j in range(lazy_split):
 
         # generate models
-        del(train_images)
-        del(test_images)
+
         
         train_images, train_labels, test_images, test_labels = h5_obj.shuffle_and_lazyload(j, lazy_split)
 
@@ -55,7 +54,12 @@ def find_ideal_model(h5_obj:object, model_object_list:list, epochs:int=10, lazy_
                 train_and_eval_models_for_size(model_object_list[i].img_shape, model_object_list[i].model, train_images, train_labels, test_images, test_labels, epochs)
             else:
                 print(f"\n\nMESSAGE: For epoch {epochs} model {model_object_list[i].get_csv_name()} will not train anymore, as the limit is {model_object_list[i].epoch}")
-            
+        
+        del(train_images)
+        del(test_images)
+        
+        break     
+    
     if save_models:
         for models in model_object_list:
             store_model(models.model, models.path)
@@ -154,6 +158,13 @@ def max_epoch_from_list(epoch_list):
     
     return best_epoch
 
+def big_yeet_print(h5_obj, name):
+    print(name)
+    print(f"PPM_NAMES: {sys.getsizeof(h5_obj.ppm_names)}")
+    print(f"GROUP: {sys.getsizeof(h5_obj.group)}")
+    print(f"DATA: {sys.getsizeof(h5_obj.data)}")
+        
+
 def run_experiment_one(lazy_split:int, train_h5_path:str, test_h5_path:str, epochs_end:int=10, dataset_split:int=0.7)->None:
     """This method runs experiment one, and is done in several steps:
             1. For each epoch to train for, the models are trained. After each epoch, the accuracy is saved on the object.
@@ -201,10 +212,19 @@ def run_experiment_one(lazy_split:int, train_h5_path:str, test_h5_path:str, epoc
         sum_plot(model_object_list)
         sum_class_accuracy(model_object_list)
 
-
     # best_model_names = get_best_models(model_object_list)
     # generate_csv_for_best_model(best_model_names)
-    # best_index = get_largest_index(best_model_names) #TODO These lines should generate a model for each model and epoch
+    # best_index = get_largest_index(best_model_names) #TODO These lines should generate a    # best_model_names = get_best_models(model_object_list)
+    # generate_csv_for_best_model(best_model_names)
+    # model_object_list = get_belgian_model_object_list(h5_train.class_in_h5)
+    # image_dataset, lable_dataset, _, _ = h5_test.shuffle_and_lazyload(0, 1)
+
+    # for i in range(len(model_object_list)):
+    #     model_object_list[i].set_epoch(best_model_names[i][1])
+
+    # find_ideal_model(h5_train, model_object_list, lazy_split=lazy_split, epochs=max_epoch_from_list(best_model_names), save_models=True)
+
+    # iterate_trough_models(model_object_list, -1, image_dataset, lable_dataset) model for each model and epoch
     # best_model = get_belgian_model_object_list(h5_train.class_in_h5)[best_index]
     # best_model.path = get_paths('ex_one_ideal')
     # find_ideal_model(h5_train, [best_model], lazy_split=lazy_split, epochs=int(best_model_names[best_index][1]), save_models=True)
@@ -214,7 +234,7 @@ def run_experiment_one(lazy_split:int, train_h5_path:str, test_h5_path:str, epoc
     # image_dataset, lable_dataset, _, _ = h5_test.shuffle_and_lazyload(0, 1)
     # iterate_trough_models([best_model], test_label_dict, int(best_model_names[best_index][1]), image_dataset, lable_dataset)
 
-    best_model_names = get_best_models(model_object_list)
+    best_model_names = get_best_models(model_object_list) #TODO from here yeet
     generate_csv_for_best_model(best_model_names)
     model_object_list = get_belgian_model_object_list(h5_train.class_in_h5)
     image_dataset, lable_dataset, _, _ = h5_test.shuffle_and_lazyload(0, 1)
@@ -307,7 +327,9 @@ def iterate_trough_models(model_object_list:list, e:int, image_dataset, lable_da
     """
     update_epoch = True if e == -1 else False
     
+    
 
+    
     for i in range(len(model_object_list)):
         if update_epoch:
             e = model_object_list[i].epoch
@@ -383,7 +405,7 @@ def update_values(key:int,label_dict:dict,prt:bool)->tuple:
     class_percent = round((label_dict[key][1]/class_size)*100, 2)
 
     if prt:
-        print(f"class: {class_name.zfill(2)} | right: {right_name} | wrong: {wrong_name} | procent: {round(class_percent, 2)}")
+        print(f"class: {class_name.zfill(3)} | right: {right_name} | wrong: {wrong_name} | procent: {round(class_percent, 2)}")
 
     return class_name, class_percent, class_size
 

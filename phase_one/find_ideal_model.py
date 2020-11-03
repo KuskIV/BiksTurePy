@@ -3,6 +3,8 @@ from PIL import Image
 import tensorflow as tf
 import math
 from matplotlib import pyplot as plt
+from tqdm import tqdm
+from tqdm import trange
 
 
 from tensorflow.keras import datasets, layers, models
@@ -161,9 +163,15 @@ def reshape_numpy_array_of_images(images:np.array, size:tuple)->np.array:
         numpy.array: numpy array of the re-sized images
     """
     reshaped_images = []
+    
+    done = len(images)
+    progress = trange(done, desc='Reshape stuff')
 
-    for image in images:
-        reshaped_images.append(tf.keras.preprocessing.image.smart_resize(image, size))
+    for i in progress:
+        progress.set_description(F"Reshaping image {i} / {progress}")
+        progress.refresh()
+
+        reshaped_images.append(tf.keras.preprocessing.image.smart_resize(images[i], size))
 
     return np.array(reshaped_images)
 
@@ -257,8 +265,8 @@ def get_belgian_model_object_list(shape:int, load_trained_models=False)->list:
     belgium_model_median = return_model(get_belgium_model_median(), get_belgium_model_median_path(), shape, load_trained_models)
     belgium_model = return_model(get_belgium_model(), get_belgium_model_path(), shape, load_trained_models)
 
-    # return [belgium_model]
-    return [belgium_model_avg, belgium_model_median, belgium_model]
+    return [belgium_model]
+    #return [belgium_model_avg, belgium_model_median, belgium_model]
 
 def load_best_model_and_image_size(model_path:str)->tuple:
     model = tf.keras.models.load_model(model_path)
