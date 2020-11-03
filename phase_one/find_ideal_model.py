@@ -132,8 +132,8 @@ def reshape_numpy_array_of_images(images:np.array, size:tuple)->np.array:
 def train_model(model:tf.python.keras.engine.sequential.Sequential,
                 train_images:np.array,
                 train_labels:np.array,
-                test_images:np.array,
-                test_labels:np.array,
+                val_images:np.array,
+                val_labels:np.array,
                 epochs:int)->None:
     """Method for using the data set on some input model
 
@@ -146,18 +146,33 @@ def train_model(model:tf.python.keras.engine.sequential.Sequential,
         test_images (numpy.array): test images
         test_labels (numpy.array): labels for the test images
     """
+
+    if len(train_images) == 0 or len(train_labels) == 0 or len(val_images) == 0 or len(val_labels) == 0:
+        print(f"ERROR: When training, either the train or validation set contains an empty list.")
+        print(f"    - train images     : {len(train_images)}\n")
+        print(f"    - train lables     : {len(train_labels)}\n")
+        print(f"    - validation images: {len(val_images)}\n")
+        print(f"    - validation images: {len(val_labels)}\n")
+        sys.exit()
+
+    if len(train_labels) != len(train_images) or len(val_images) != len(val_labels):
+        print(f"ERROR: the image and label lists are not the same size:")
+        print(f"    - train images : {len(train_images)} - {len(train_labels)} : train lables")
+        print(f"    - validation images : {len(val_images)} - {len(val_labels)} : validation lables")
+        sys.exit()
+
     model.compile(optimizer='adam',
                 loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
                 metrics=['sparse_categorical_accuracy'])
 
-    test_images = test_images
-    train_images = train_images #TODO ask toi about this
+    # test_images = test_images
+    # train_images = train_images
 
     history = model.fit(train_images, train_labels, epochs=epochs,
-            validation_data=(test_images, test_labels))
+            validation_data=(val_images, val_labels))
 
 
-def train_and_eval_models_for_size(#TODO pls help
+def train_and_eval_models_for_size(
         size:tuple,
         model:tf.python.keras.engine.sequential.Sequential,
         train_images:np.array,

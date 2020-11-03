@@ -10,10 +10,10 @@ sys.path.insert(0, parent_dir)
 import global_paths
 from general_image_func import changeImageSize
 from Noise_Generators.weather_gen import weather
-from Noise_Generators.Perlin_noise import perlin
+from Noise_Generators.perlin_noise import perlin
 from Noise_Generators.brightness import brightness
 
-class Filter:
+class Filter: #TODO create homophobic filter
     """The filter class is a combination the three noises fog, 
     brightness and weather, the purpose is to provide a easy way the reuse and repeat the settings for a filter.
     And bmake them easier to iterface with in general.
@@ -25,6 +25,7 @@ class Filter:
     fog_set = None
     day_set = None
     wh_set = None
+    configuration = None
     def __init__(self,config:dict):
         """The to configure the default variables in perlin noise.
 
@@ -33,6 +34,7 @@ class Filter:
             The value would then be the value refresen by the keyword.
             Keys = ['fog_set','day_set','wh_set']
         """
+        self.configuration = config
         Keys = ['fog_set','day_set','wh_set']
         if Keys[0] in config:
             self.fog_set = config.get(Keys[0])
@@ -91,6 +93,9 @@ class Filter:
         for img in imgs:
             returnList.append(self + img)
         return returnList
+        
+    def get_config(self):
+        return self.configuration
 
 def normal_distribution(lst:list):
     mean = (len(lst) - 1) / 2

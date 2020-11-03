@@ -13,7 +13,7 @@ from find_ideal_model import train_and_eval_models_for_size, get_belgian_model_o
 import os,sys,inspect
 current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parent_dir = os.path.dirname(current_dir)
-sys.path.insert(0, parent_dir) 
+sys.path.insert(0, parent_dir)
 
 from Dataset.load_h5 import h5_object
 from Models.create_model import store_model
@@ -38,18 +38,21 @@ def find_ideal_model(h5_obj:object, model_object_list:list, epochs:int=10, lazy_
     test_images = []
 
     for j in range(lazy_split):
-        
+
         # generate models
         train_images, train_labels, test_images, test_labels = h5_obj.shuffle_and_lazyload(j, lazy_split)
-        
+
         print(f"Images in train_set: {len(train_images)} ({len(train_images) == len(train_labels)}), Images in val_set: {len(test_images)} ({len(test_images) == len(test_labels)})")
         print(f"This version will split the dataset in {lazy_split} sizes.")
 
         # train models
         for i in range(len(model_object_list)):
-            print(f"\n\nTraining model {i + 1} / {len(model_object_list) } for part in dataset {j + 1} / {lazy_split}")
-            train_and_eval_models_for_size(model_object_list[i].img_shape, model_object_list[i].model, train_images, train_labels, test_images, test_labels, epochs)
-    
+            if model_object_list[i].run_on_epoch(epochs):
+                print(f"\n\nTraining model {i + 1} / {len(model_object_list) } for part in dataset {j + 1} / {lazy_split}")
+                train_and_eval_models_for_size(model_object_list[i].img_shape, model_object_list[i].model, train_images, train_labels, test_images, test_labels, epochs)
+            else:
+                print(f"\n\nMESSAGE: For epoch {epochs} model {model_object_list[i].get_csv_name()} will not train anymore, as the limit is {model_object_list[i].epoch}")
+            
     if save_models:
         for models in model_object_list:
             store_model(models.model, models.path)
@@ -59,7 +62,7 @@ def get_best_models(model_object_list:list)->list:
     The model name will be returned, in addition to the amount of epocs and the accuracy
 
     Args:
-        model_object_list (list): The list of model objects 
+        model_object_list (list): The list of model objects
 
     Returns:
         list: A list of tupes consisting of the accuracy, epoch and the resolution
@@ -70,7 +73,7 @@ def get_best_models(model_object_list:list)->list:
         if not path.exists(model_object.get_summed_csv_path()):
             print(f"\nThe following path does not exist: {model_object.get_summed_csv_path()}\nCode: plot.write_csv_file.py")
             sys.exit()
-        
+
         with open(model_object.get_summed_csv_path(), 'r') as csvfile:
             plots = csv.reader(csvfile, delimiter=',')
 
@@ -85,9 +88,9 @@ def get_best_models(model_object_list:list)->list:
                     highest_accuracy = float(row[1])
                     best_epoch = row[0]
                     resolution = row[2]
-        
+
         best_models.append((highest_accuracy, best_epoch, resolution))
-    
+
     print("\nThe best epoch for each model is as follows:")
     for bm in best_models:
         print(f"    - model{bm[2]}_{bm[1]}, accuracy: {round(bm[0], 2)}")
@@ -97,7 +100,7 @@ def get_best_models(model_object_list:list)->list:
 
 
 def generate_csv_for_best_model(best_model_names:list)->None:
-    """Will based on the model object list produce a csv illustrating the accuracy for each epoch. 
+    """Will based on the model object list produce a csv illustrating the accuracy for each epoch.
     This data is saved on the object when they are training
 
     Args:
@@ -109,7 +112,7 @@ def generate_csv_for_best_model(best_model_names:list)->None:
     data = [['class']]
     data[0].extend(model_names)
 
-    csv_base_path = get_paths('phase_one_csv') 
+    csv_base_path = get_paths('phase_one_csv')
     csv_path = f"{csv_base_path}/class_accuracy.csv"
     save_path = f"{csv_base_path}/class_accuracy_minimized.csv"
 
@@ -125,7 +128,7 @@ def generate_csv_for_best_model(best_model_names:list)->None:
 
         for i in range(1, len(rows)):
             data.append([rows[i][x] for x in model_indexes])
-    
+
     csv_obj = cvs_object(save_path)
     csv_obj.write(data)
 
@@ -139,13 +142,21 @@ def get_largest_index(best_model_names:list)->int:
             best_index = i
 
     return best_index
- 
+
+def max_epoch_from_list(epoch_list):
+    best_epoch = 0
+    
+    for epoch in epoch_list:
+        best_epoch = epoch[1] if epoch[1] > best_epoch else best_epoch
+    
+    return best_epoch
+
 def run_experiment_one(lazy_split:int, train_h5_path:str, test_h5_path:str, epochs_end:int=10, dataset_split:int=0.7)->None:
     """This method runs experiment one, and is done in several steps:
             1. For each epoch to train for, the models are trained. After each epoch, the accuracy is saved on the object.
             2. When the training is done, all the data is saved in csv files as (Epochs,Resolution,Class,Class_Acuracy,Total_in_Class)
                 Here the accuracy for all classes has its own row.
-            3. Once this is done, rather than representing all classes in each epoch in seperate row, this is combined with one row for 
+            3. Once this is done, rather than representing all classes in each epoch in seperate row, this is combined with one row for
                 each epoch (Epochs,Model_accuracy,Resolution).
             4. All the summed files are now combined into one file, as (class, model[resolution 1]_[epoch 1], ... , model[resolution n]_[epoch n])
             5. Now for each model, the maximal accuracy is found, and the given epoch is saved
@@ -158,8 +169,6 @@ def run_experiment_one(lazy_split:int, train_h5_path:str, test_h5_path:str, epoc
         epochs_end (int, optional): The upper limit for how many epochs to train the modesl for. Defaults to 10.
         dataset_split (int, optional): The split between the training and validation set. Defaults to 0.7.
     """
-    label_dict = {}
-
     h5_train = h5_object(train_h5_path, training_split=dataset_split)
     h5_test = h5_object(test_h5_path, training_split=1)
 
@@ -167,42 +176,58 @@ def run_experiment_one(lazy_split:int, train_h5_path:str, test_h5_path:str, epoc
         print(f"The input train and test set does not have matching classes {h5_train.class_in_h5} - {h5_test.class_in_h5}")
         sys.exit()
 
-    model_object_list = get_belgian_model_object_list(h5_train.class_in_h5) 
-    
+    model_object_list = get_belgian_model_object_list(h5_train.class_in_h5)
+
     epochs_end += 1
 
     for e in range(1, epochs_end): #TODO: This loop should be reworked to taking one model at a time.
         print(f"\n----------------\nRun {e} / {epochs_end - 1}\n----------------\n")
-        
-        find_ideal_model(h5_train, model_object_list, lazy_split=lazy_split, epochs=1, save_models=True)
-        
+
+        find_ideal_model(h5_train, model_object_list, lazy_split=lazy_split, epochs=1, save_models=False)
+
         print(f"\n------------------------\nTraining done. Now evaluation will be made, using {e} epochs.\n\n")
 
         _, _, image_dataset, lable_dataset = h5_train.shuffle_and_lazyload(0, 1)
-        
-        iterate_trough_models(model_object_list, label_dict, e, image_dataset, lable_dataset) #TODO This should not use h5_test, rather the h5_trainig and evaluation set.
+
+        iterate_trough_models(model_object_list, e, image_dataset, lable_dataset) #TODO This should not use h5_test, rather the h5_trainig and evaluation set.
+
+        del image_dataset #TODO this might be better
+        del lable_dataset
 
         save_plot(model_object_list)
         sum_plot(model_object_list)
         sum_class_accuracy(model_object_list)
-    
+
+
+    # best_model_names = get_best_models(model_object_list)
+    # generate_csv_for_best_model(best_model_names)
+    # best_index = get_largest_index(best_model_names) #TODO These lines should generate a model for each model and epoch
+    # best_model = get_belgian_model_object_list(h5_train.class_in_h5)[best_index]
+    # best_model.path = get_paths('ex_one_ideal')
+    # find_ideal_model(h5_train, [best_model], lazy_split=lazy_split, epochs=int(best_model_names[best_index][1]), save_models=True)
+
+    # test_label_dict = {}
+
+    # image_dataset, lable_dataset, _, _ = h5_test.shuffle_and_lazyload(0, 1)
+    # iterate_trough_models([best_model], test_label_dict, int(best_model_names[best_index][1]), image_dataset, lable_dataset)
+
     best_model_names = get_best_models(model_object_list)
     generate_csv_for_best_model(best_model_names)
-    best_index = get_largest_index(best_model_names) #TODO These lines should generate a model for each model and epoch
-    best_model = get_belgian_model_object_list(h5_train.class_in_h5)[best_index] 
-    best_model.path = get_paths('ex_one_ideal')
-    find_ideal_model(h5_train, [best_model], lazy_split=lazy_split, epochs=int(best_model_names[best_index][1]), save_models=True)   
-    
-    test_label_dict = {}
-    
+    model_object_list = get_belgian_model_object_list(h5_train.class_in_h5)
     image_dataset, lable_dataset, _, _ = h5_test.shuffle_and_lazyload(0, 1)
-    iterate_trough_models([best_model], test_label_dict, int(best_model_names[best_index][1]), image_dataset, lable_dataset)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
+
+    for i in range(len(model_object_list)):
+        model_object_list[i].set_epoch(best_model_names[i][1])
+
+    find_ideal_model(h5_train, model_object_list, lazy_split=lazy_split, epochs=max_epoch_from_list(best_model_names), save_models=True)
+
+    iterate_trough_models(model_object_list, -1, image_dataset, lable_dataset)
 
 def sum_class_accuracy(model_object_list:list)->dict:
     """When training the accuracy for each class for each epoch is recorded. Here the sum of all accuracies for all classes for each epoch is summed together.
 
     Args:
-        model_object_list (list): The list of 
+        model_object_list (list): The list of
 
     Returns:
         dict: [description]
@@ -211,20 +236,20 @@ def sum_class_accuracy(model_object_list:list)->dict:
 
     for model_object in model_object_list:
         model_class_accuracy[model_object.get_csv_name()] = {}
-        
+
         if not path.exists(model_object.get_csv_path()):
                 print(f"\nThe following path does not exist: {model_object.get_csv_path()}\nCode: plot.write_csv_file.py")
                 sys.exit()
-        
+
         with open(model_object.get_csv_path(), 'r') as csvfile:
                 plots = csv.reader(csvfile, delimiter=',')
 
                 next(plots)
                 for row in plots:
-                    if not row[0] in model_class_accuracy[model_object.get_csv_name()]: 
+                    if not row[0] in model_class_accuracy[model_object.get_csv_name()]:
                         model_class_accuracy[model_object.get_csv_name()][row[0]] = {}
                     model_class_accuracy[model_object.get_csv_name()][row[0]][row[2]] = row[3]
-    
+
     data_list = convert_dict_to_list(model_class_accuracy)
     save_data_obj = cvs_object(f"{get_paths('phase_one_csv')}/class_accuracy.csv")
     save_data_obj.write(data_list)
@@ -244,7 +269,7 @@ def convert_dict_to_list(model_class_accuracy:dict)->list:
                     data_list.append([keys[i]])
                 data_list[int(i) + 1].append(model_class_accuracy[key][key2][str(keys[i])])
 
-    return data_list  
+    return data_list
 
 def sum_plot(model_object_list:list)->None:
     csv_object_list =  []
@@ -267,7 +292,7 @@ def iniitalize_dict(lable_dataset:list)->dict:
     return label_dict
 
 
-def iterate_trough_models(model_object_list:list, label_dict:dict, e:int, image_dataset, lable_dataset)->None:
+def iterate_trough_models(model_object_list:list, e:int, image_dataset, lable_dataset)->None:
     """Iterates through the modesl to get the accuracy using the validation set. This information is saved on the object,
     and later saved in a csv file
 
@@ -277,10 +302,17 @@ def iterate_trough_models(model_object_list:list, label_dict:dict, e:int, image_
         e (int): The current epoch
         h5_test (object): The h5py object containg the images
     """
-    # _, _, image_dataset, lable_dataset = h5_train.shuffle_and_lazyload(0, 1) #TODO: use train validation set, should look something like this
-    # image_dataset, lable_dataset, _, _ = h5_test.shuffle_and_lazyload(0, 1) # TODO: This might cause a "run out of memory" error. Implement as loop.
+    update_epoch = True if e == -1 else False
     
+
     for i in range(len(model_object_list)):
+        if update_epoch:
+            e = model_object_list[i].epoch
+            
+        if e < 0:
+            print(f"\nERROR: when iterating through the models, the epoch is smaller than 0 ({e})\n")
+            sys.exit()
+        
         label_dict = iniitalize_dict(lable_dataset)
 
         image_dataset = auto_reshape_images(model_object_list[i].img_shape, image_dataset)
@@ -307,10 +339,10 @@ def iterate_trough_imgs(model_object:object,image_dataset:list,lable_dataset:lis
 
     right = 0
     wrong = 0
-    
+
     data_len = len(image_dataset)
     progress = trange(data_len, desc='Image stuff', leave=True)
-    
+
     for j in progress:
         progress.set_description(f"Image {j + 1} / {data_len} has been predicted")
         progress.refresh()
@@ -346,10 +378,10 @@ def update_values(key:int,label_dict:dict,prt:bool)->tuple:
     wrong_name = str(label_dict[key][0]).rjust(4, ' ')
     class_size = label_dict[key][0]+label_dict[key][1]
     class_percent = round((label_dict[key][1]/class_size)*100, 2)
-    
+
     if prt:
         print(f"class: {class_name.zfill(2)} | right: {right_name} | wrong: {wrong_name} | procent: {round(class_percent, 2)}")
-    
+
     return class_name, class_percent, class_size
 
 def get_model_results(lable_dict:dict, model_object:object ,settings:tuple,should_print:bool=True)->None:
@@ -361,7 +393,7 @@ def get_model_results(lable_dict:dict, model_object:object ,settings:tuple,shoul
         settings (tuple): Settings include the current epoch
         should_print (bool, optional): A boolean representing wether or not to print. Defaults to True.
     """
-    
+
     if should_print:
         print(f"----------------\n\nDetails regarding each class accuracy is as follows:\n")
 
@@ -378,4 +410,4 @@ def quick()->None:
     test_path = get_h5_test()
     train_path = get_h5_train()
 
-    run_experiment_one(lazy_split, train_path, test_path, epochs_end=4)
+    run_experiment_one(lazy_split, train_path, test_path, epochs_end=1)

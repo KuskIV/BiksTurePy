@@ -152,15 +152,21 @@ class h5_object():
         self.get_key = os_tuple[3]
         self.get_keys = os_tuple[4]
 
-        self.error_index = 2 if self.os == 'windows' else 3 #TODO: FIX, NOT HARDCODE
-        self.nested_level = len(re.split('/', get_h5_path())) - (1 if self.os == 'windows' else 0) #TODO: FIX NOT HARDCODE, BASE ON PATH
+        self.error_index = 2 if self.os == 'windows' else 3                                         #TODO: FIX, NOT HARDCODE
+        self.nested_level = len(re.split('/', get_h5_path())) - (1 if self.os == 'windows' else 0)  #TODO: FIX NOT HARDCODE, BASED ON PATH
 
         self.ppm_names = []
         self.img_in_h5 = 0
         self.class_in_h5 = 0
+        self.epoch = -1
         
         self.ppm_keys_to_list()
 
+    def set_epoch(self, epoch:int):
+        self.epoch = epoch
+        
+    def run_on_epoch(self, current_epoch:int)->bool:
+        return True if self.epoch >= current_epoch or self.epoch == -1 else False
 
     def get_ppm_img_index(self, index:int)->int:
         """Returns the index of class currently in, subtracting the unused ones
@@ -197,7 +203,7 @@ class h5_object():
             images.append(arr)
             labels.append(int(keys[-1]) if self.os == 'linux' else int(keys[-1].split('\\')[1]))
 
-    def print_class_data(self)->None:
+    def print_class_data(self)->None: #TODO: data to csv file
         """A table generator method for latex, which prints out the amount of images in each class
         """
         for i in range(len(self.group)):
