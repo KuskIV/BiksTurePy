@@ -66,6 +66,7 @@ def satina_median()->object:
     return model, img_shape[:2]
 
 def satina_gauss_mode()->object:
+    
     img_shape = (25, 25, 3)
     model = models.Sequential()
     model.add(layers.Conv2D(32, (3, 3), activation='relu', padding='same', input_shape=(32, 32, 3)))
