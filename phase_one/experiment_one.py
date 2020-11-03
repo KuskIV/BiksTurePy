@@ -47,9 +47,12 @@ def find_ideal_model(h5_obj:object, model_object_list:list, epochs:int=10, lazy_
 
         # train models
         for i in range(len(model_object_list)):
-            print(f"\n\nTraining model {i + 1} / {len(model_object_list) } for part in dataset {j + 1} / {lazy_split}")
-            train_and_eval_models_for_size(model_object_list[i].img_shape, model_object_list[i].model, train_images, train_labels, test_images, test_labels, epochs)
-
+            if model_object_list[i].run_on_epoch(epochs):
+                print(f"\n\nTraining model {i + 1} / {len(model_object_list) } for part in dataset {j + 1} / {lazy_split}")
+                train_and_eval_models_for_size(model_object_list[i].img_shape, model_object_list[i].model, train_images, train_labels, test_images, test_labels, epochs)
+            else:
+                print(f"\n\nMESSAGE: For epoch {epochs} model {model_object_list[i].get_csv_name()} will not train anymore, as the limit is {model_object_list[i].epoch}")
+            
     if save_models:
         for models in model_object_list:
             store_model(models.model, models.path)
@@ -140,6 +143,14 @@ def get_largest_index(best_model_names:list)->int:
 
     return best_index
 
+def max_epoch_from_list(epoch_list):
+    best_epoch = 0
+    
+    for epoch in epoch_list:
+        best_epoch = epoch[1] if epoch[1] > best_epoch else best_epoch
+    
+    return best_epoch
+
 def run_experiment_one(lazy_split:int, train_h5_path:str, test_h5_path:str, epochs_end:int=10, dataset_split:int=0.7)->None:
     """This method runs experiment one, and is done in several steps:
             1. For each epoch to train for, the models are trained. After each epoch, the accuracy is saved on the object.
@@ -158,8 +169,6 @@ def run_experiment_one(lazy_split:int, train_h5_path:str, test_h5_path:str, epoc
         epochs_end (int, optional): The upper limit for how many epochs to train the modesl for. Defaults to 10.
         dataset_split (int, optional): The split between the training and validation set. Defaults to 0.7.
     """
-    label_dict = {}
-
     h5_train = h5_object(train_h5_path, training_split=dataset_split)
     h5_test = h5_object(test_h5_path, training_split=1)
 
@@ -174,20 +183,20 @@ def run_experiment_one(lazy_split:int, train_h5_path:str, test_h5_path:str, epoc
     for e in range(1, epochs_end): #TODO: This loop should be reworked to taking one model at a time.
         print(f"\n----------------\nRun {e} / {epochs_end - 1}\n----------------\n")
 
-        find_ideal_model(h5_train, model_object_list, lazy_split=lazy_split, epochs=1, save_models=True)
+        find_ideal_model(h5_train, model_object_list, lazy_split=lazy_split, epochs=1, save_models=False)
 
         print(f"\n------------------------\nTraining done. Now evaluation will be made, using {e} epochs.\n\n")
 
-        # _, _, image_dataset, lable_dataset = h5_train.shuffle_and_lazyload(0, 1)
+        _, _, image_dataset, lable_dataset = h5_train.shuffle_and_lazyload(0, 1)
 
-        # iterate_trough_models(model_object_list, label_dict, e, image_dataset, lable_dataset) #TODO This should not use h5_test, rather the h5_trainig and evaluation set.
+        iterate_trough_models(model_object_list, e, image_dataset, lable_dataset) #TODO This should not use h5_test, rather the h5_trainig and evaluation set.
 
-        # del image_dataset #TODO this might be better
-        # del lable_dataset
+        del image_dataset #TODO this might be better
+        del lable_dataset
 
-        # save_plot(model_object_list)
-        # sum_plot(model_object_list)
-        # sum_class_accuracy(model_object_list)
+        save_plot(model_object_list)
+        sum_plot(model_object_list)
+        sum_class_accuracy(model_object_list)
 
 
     # best_model_names = get_best_models(model_object_list)
@@ -204,17 +213,15 @@ def run_experiment_one(lazy_split:int, train_h5_path:str, test_h5_path:str, epoc
 
     best_model_names = get_best_models(model_object_list)
     generate_csv_for_best_model(best_model_names)
-    # best_index = get_largest_index(best_model_names) #TODO These lines should generate a model for each model and epoch
     model_object_list = get_belgian_model_object_list(h5_train.class_in_h5)
-    # best_model.path = get_paths('ex_one_ideal')
     image_dataset, lable_dataset, _, _ = h5_test.shuffle_and_lazyload(0, 1)
 
     for i in range(len(model_object_list)):
-        find_ideal_model([h5_train, model_object_list[i]], lazy_split=lazy_split, epochs=int(best_model_names[i][1]), save_models=True) #TODO: modify this to input epochs as a list
+        model_object_list[i].set_epoch(best_model_names[i][1])
 
-        test_label_dict = {}
+    find_ideal_model(h5_train, model_object_list, lazy_split=lazy_split, epochs=max_epoch_from_list(best_model_names), save_models=True)
 
-        iterate_trough_models([model_object_list[i]], test_label_dict, int(best_model_names[i][1]), image_dataset, lable_dataset)
+    iterate_trough_models(model_object_list, -1, image_dataset, lable_dataset)
 
 def sum_class_accuracy(model_object_list:list)->dict:
     """When training the accuracy for each class for each epoch is recorded. Here the sum of all accuracies for all classes for each epoch is summed together.
@@ -285,7 +292,7 @@ def iniitalize_dict(lable_dataset:list)->dict:
     return label_dict
 
 
-def iterate_trough_models(model_object_list:list, label_dict:dict, e:int, image_dataset, lable_dataset)->None:
+def iterate_trough_models(model_object_list:list, e:int, image_dataset, lable_dataset)->None:
     """Iterates through the modesl to get the accuracy using the validation set. This information is saved on the object,
     and later saved in a csv file
 
@@ -295,8 +302,17 @@ def iterate_trough_models(model_object_list:list, label_dict:dict, e:int, image_
         e (int): The current epoch
         h5_test (object): The h5py object containg the images
     """
+    update_epoch = True if e == -1 else False
+    
 
     for i in range(len(model_object_list)):
+        if update_epoch:
+            e = model_object_list[i].epoch
+            
+        if e < 0:
+            print(f"\nERROR: when iterating through the models, the epoch is smaller than 0 ({e})\n")
+            sys.exit()
+        
         label_dict = iniitalize_dict(lable_dataset)
 
         image_dataset = auto_reshape_images(model_object_list[i].img_shape, image_dataset)
