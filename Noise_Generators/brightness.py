@@ -74,7 +74,7 @@ class brightness:
         img = self.AdjustBrightness(img)
         if self.factor < 1:
             img = self.AdjustColor(img)
-            blue = self.GetRGB(0,0,220, 800, 500)
+            blue = self.GetRGB(0,0,0, 800, 500)
             img, blue = EnsureUniformImageShape(img,blue)
             return merge_two_images(img, blue,alpha=0.2)
         else:
