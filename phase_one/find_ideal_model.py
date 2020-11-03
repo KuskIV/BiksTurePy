@@ -27,6 +27,7 @@ class return_model(object):
         self.model, self.img_shape = model_and_resolution
         self.model = flatten_and_dense(self.model, output_layer_size=out_layer_size)
         self.path = model_path
+        self.epoch = -1
 
         if load_trained_models:
             if path.exists(self.path):
@@ -36,6 +37,12 @@ class return_model(object):
                 sys.exit()
 
         self.csv_data = [['Epochs', 'Resolution', 'Class', 'Class_Acuracy', 'Total_in_Class']]
+
+    def set_epoch(self, epoch:int):
+        self.epoch = epoch
+        
+    def run_on_epoch(self, current_epoch:int)->bool:
+        return True if int(self.epoch) >= int(current_epoch) or int(self.epoch) == -1 else False
 
     def get_size_tuple(self, last_size:int)->tuple:
         return (self.img_shape[0], self.img_shape[1], last_size)
@@ -219,8 +226,8 @@ def get_belgian_model_object_list(shape:int, load_trained_models=False)->list:
     belgium_model_median = return_model(get_belgium_model_median(), get_belgium_model_median_path(), shape, load_trained_models)
     belgium_model = return_model(get_belgium_model(), get_belgium_model_path(), shape, load_trained_models)
 
-    return [belgium_model]
-    # return [belgium_model_avg, belgium_model_median, belgium_model]
+    # return [belgium_model]
+    return [belgium_model_avg, belgium_model_median, belgium_model]
 
 def load_best_model_and_image_size(model_path:str)->tuple:
     model = tf.keras.models.load_model(model_path)

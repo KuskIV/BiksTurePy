@@ -40,6 +40,9 @@ def find_ideal_model(h5_obj:object, model_object_list:list, epochs:int=10, lazy_
     for j in range(lazy_split):
 
         # generate models
+        del(train_images)
+        del(test_images)
+        
         train_images, train_labels, test_images, test_labels = h5_obj.shuffle_and_lazyload(j, lazy_split)
 
         print(f"Images in train_set: {len(train_images)} ({len(train_images) == len(train_labels)}), Images in val_set: {len(test_images)} ({len(test_images) == len(test_labels)})")
@@ -147,7 +150,7 @@ def max_epoch_from_list(epoch_list):
     best_epoch = 0
     
     for epoch in epoch_list:
-        best_epoch = epoch[1] if epoch[1] > best_epoch else best_epoch
+        best_epoch = int(epoch[1]) if int(epoch[1]) > best_epoch else best_epoch
     
     return best_epoch
 
@@ -309,7 +312,7 @@ def iterate_trough_models(model_object_list:list, e:int, image_dataset, lable_da
         if update_epoch:
             e = model_object_list[i].epoch
             
-        if e < 0:
+        if int(e) < 0:
             print(f"\nERROR: when iterating through the models, the epoch is smaller than 0 ({e})\n")
             sys.exit()
         

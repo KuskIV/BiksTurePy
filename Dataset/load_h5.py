@@ -158,15 +158,9 @@ class h5_object():
         self.ppm_names = []
         self.img_in_h5 = 0
         self.class_in_h5 = 0
-        self.epoch = -1
         
         self.ppm_keys_to_list()
 
-    def set_epoch(self, epoch:int):
-        self.epoch = epoch
-        
-    def run_on_epoch(self, current_epoch:int)->bool:
-        return True if self.epoch >= current_epoch or self.epoch == -1 else False
 
     def get_ppm_img_index(self, index:int)->int:
         """Returns the index of class currently in, subtracting the unused ones
