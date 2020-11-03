@@ -11,10 +11,10 @@ sys.path.insert(0, parent_dir)
 import global_paths
 from general_image_func import changeImageSize
 from Noise_Generators.weather_gen import weather
-from Noise_Generators.Perlin_noise import perlin
+from Noise_Generators.perlin_noise import perlin
 from Noise_Generators.brightness import brightness
 
-class Filter:
+class Filter: #TODO create homophobic filter
     """The filter class is a combination the three noises fog, 
     brightness and weather, the purpose is to provide a easy way the reuse and repeat the settings for a filter.
     And bmake them easier to iterface with in general.
@@ -26,6 +26,7 @@ class Filter:
     fog_set = None
     day_set = None
     wh_set = None
+    configuration = None
     def __init__(self,config:dict):
         """The to configure the default variables in perlin noise.
 
@@ -34,6 +35,7 @@ class Filter:
             The value would then be the value refresen by the keyword.
             Keys = ['fog_set','day_set','wh_set']
         """
+        self.configuration = config
         Keys = ['fog_set','day_set','wh_set']
         if Keys[0] in config:
             self.fog_set = config.get(Keys[0])
@@ -92,6 +94,9 @@ class Filter:
         for img in imgs:
             returnList.append(self + img)
         return returnList
+        
+    def get_config(self):
+        return self.configuration
 
 def normal_distribution(lst:list):
     mean = (len(lst) - 1) / 2
@@ -247,14 +252,14 @@ def QuickDebugL():
 def QuickDebug():
     """Small debug function
     """
-    img = Image.open('Dataset/images/00000/00000_00000.ppm')
+    img = Image.open('Dataset/images/00000/00000_00029.ppm')
     imgs = [img,img]
-    p = {'octaves':8, 'persistence':0.8, 'lacunarity': 8, 'alpha': 0.4}
-    day = {'factor':1.0} 
+    p = {'octaves':6, 'persistence':0.5, 'lacunarity': 2, 'alpha': 0.1, 'darkness':0.4}
+    day = {'factor':20.0} 
     night = {'factor':0.3}
     rain = {'rain_drops':500, 'drop_length':2,'drop_width':1,'blurr':(2,2),'color':(200,200,255)}
 
-    Filter_Con = {'fog_set':p, 'day_set':day, 'wh_set':rain}
+    Filter_Con = {'fog_set':p}
     F = Filter(Filter_Con)
 
     snow = premade_single_filter('fog')
@@ -263,7 +268,7 @@ def QuickDebug():
     #newImage[0].show()
     #newImage[1].show()
 
-# QuickDebugL()
+QuickDebug()
 #fog_set=(1)
 #day_set=(0.5)
 #wh_set = (70,7,2,(2,2),(130,130,130))

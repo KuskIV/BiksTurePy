@@ -146,7 +146,7 @@ def train_model(model:tf.python.keras.engine.sequential.Sequential,
         test_images (numpy.array): test images
         test_labels (numpy.array): labels for the test images
     """
-    
+
     if len(train_images) == 0 or len(train_labels) == 0 or len(val_images) == 0 or len(val_labels) == 0:
         print(f"ERROR: When training, either the train or validation set contains an empty list.")
         print(f"    - train images     : {len(train_images)}\n")
@@ -154,13 +154,13 @@ def train_model(model:tf.python.keras.engine.sequential.Sequential,
         print(f"    - validation images: {len(val_images)}\n")
         print(f"    - validation images: {len(val_labels)}\n")
         sys.exit()
-        
+
     if len(train_labels) != len(train_images) or len(val_images) != len(val_labels):
         print(f"ERROR: the image and label lists are not the same size:")
         print(f"    - train images : {len(train_images)} - {len(train_labels)} : train lables")
         print(f"    - validation images : {len(val_images)} - {len(val_labels)} : validation lables")
         sys.exit()
-    
+
     model.compile(optimizer='adam',
                 loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
                 metrics=['sparse_categorical_accuracy'])

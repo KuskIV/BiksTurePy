@@ -29,6 +29,7 @@ class perlin:
     lacunarity = 2.0
     seed = None
     alpha = 0.3
+    darkness = 0.0
 
     def __init__(self, config:dict)->object:
         """The to configure the default variables in perlin noise.
@@ -38,7 +39,7 @@ class perlin:
             The value would then be the value refresen by the keyword.
             keys = ["shape","scale","octaves","persistence","lacunarity","seed","alpha"]
         """
-        Keys = ["shape","scale","octaves","persistence","lacunarity","seed","alpha"]
+        Keys = ["shape","scale","octaves","persistence","lacunarity","seed","alpha","darkness"]
         Test = config.keys()
         if Keys[0] in config:
             self.shape = config.get(Keys[0])
@@ -54,6 +55,8 @@ class perlin:
             self.seed = config.get(Keys[5])
         if config.get(Keys[6]) != None:
             self.alpha = config.get(Keys[6])
+        if config.get(Keys[7]) != None:
+            self.darkness = config.get(Keys[7])
 
     def perlin_array(self)->list:
         """
@@ -86,6 +89,27 @@ class perlin:
         arr = norm_me(arr)
         return arr
 
+    def Transparentfy(self,img):
+        #img = Image.open('open_science_logo.png')
+        img = img.convert("RGBA")
+        datas = img.getdata()
+        newData = []
+        for item in datas:
+            if item[0] == 255 and item[1] == 255 and item[2] == 255:
+                newData.append((255, 255, 255, 0))
+            else:
+                if item[0] > 150:
+                    newData.append((0, 0, 0, 255))
+                else:
+                    newData.append(item)
+                    
+        img.putdata(newData)
+        img.show()
+        return img
+
+    def get_white(self)->Image.Image:
+        return Image.new("RGBA", (self.shape[0], self.shape[1]), (255, 255, 255, 255))
+
     def Foggyfy(self,img:Image.Image)->Image.Image:
         """
         Foggyfy is the method that applys some generated perlin noise to an image
@@ -97,7 +121,10 @@ class perlin:
             PIL.Image.Image: The returned image will of the same type and shape, but will have a perlin noise overlay.
         """
         perlin = self.perlin_array()
-        return merge_two_images(convertToPILImg(perlin),img, alpha=self.alpha)
+        
+        #perlin = self.Transparentfy(convertToPILImg(perlin))
+        perlin = merge_two_images(convertToPILImg(perlin), self.get_white(),alpha = self.darkness)
+        return merge_two_images(perlin,img, alpha=self.alpha)
 
 def QuickDebug()->None:
     """Small function that shows how to call the perlin class with some config dict. And shows the resulting image

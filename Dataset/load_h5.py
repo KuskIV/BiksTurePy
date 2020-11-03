@@ -152,8 +152,8 @@ class h5_object():
         self.get_key = os_tuple[3]
         self.get_keys = os_tuple[4]
 
-        self.error_index = 2 if self.os == 'windows' else 3 #TODO: FIX, NOT HARDCODE
-        self.nested_level = len(re.split('/', get_h5_path())) - (1 if self.os == 'windows' else 0) #TODO: FIX NOT HARDCODE, BASE ON PATH
+        self.error_index = 2 if self.os == 'windows' else 3                                         #TODO: FIX, NOT HARDCODE
+        self.nested_level = len(re.split('/', get_h5_path())) - (1 if self.os == 'windows' else 0)  #TODO: FIX NOT HARDCODE, BASED ON PATH
 
         self.ppm_names = []
         self.img_in_h5 = 0
