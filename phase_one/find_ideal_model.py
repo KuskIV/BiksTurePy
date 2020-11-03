@@ -62,6 +62,37 @@ class return_model(object):
 def get_2d_image_shape(shape:tuple)->tuple:
     return shape[0], shape[1]
 
+def satina_median()->object:
+    img_shape = (35, 35, 3)
+    model = models.Sequential()
+    model.add(layers.Conv2D(32, (3, 3), activation='relu', padding='same', input_shape=(32, 32, 3)))
+    model.add(layers.MaxPooling2D((2, 2)))
+    model.add(layers.Conv2D(64, (3, 3), activation='relu', padding='same'))
+    model.add(layers.MaxPooling2D((2, 2)))
+    model.add(layers.Conv2D(64, (3, 3), activation='relu', padding='same'))
+    return model, img_shape[:2]
+
+def satina_gauss_mode()->object:
+    
+    img_shape = (25, 25, 3)
+    model = models.Sequential()
+    model.add(layers.Conv2D(32, (3, 3), activation='relu', padding='same', input_shape=(32, 32, 3)))
+    model.add(layers.MaxPooling2D((2, 2)))
+    model.add(layers.Conv2D(64, (3, 3), activation='relu', padding='same'))
+    model.add(layers.MaxPooling2D((2, 2)))
+    model.add(layers.Conv2D(64, (3, 3), activation='relu', padding='same'))
+    return model, img_shape[:2]
+
+def satina_avg()->object:
+    img_shape = (45, 45, 3)
+    model = models.Sequential()
+    model.add(layers.Conv2D(32, (5, 5), activation='relu', padding='same', input_shape=(32, 32, 3)))
+    model.add(layers.MaxPooling2D((2, 2)))
+    model.add(layers.Conv2D(64, (5, 5), activation='relu', padding='same'))
+    model.add(layers.MaxPooling2D((2, 2)))
+    model.add(layers.Conv2D(64, (5, 5), activation='relu', padding='same'))
+    return model, img_shape[:2]
+
 def get_belgium_model()->object:
     img_shape = (82,82,3)
     den_danske_model = models.Sequential()
