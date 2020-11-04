@@ -58,8 +58,7 @@ def sum_to_list(csv_data, current_category, current_train, current_test,current_
     else:
         csv_data.append([current_category, current_train, current_test])
         
-def sum_test_train_graph(input_path, base_path):
-    save_path = f"{base_path}/sum_train_test_sub_cat.csv"
+def sum_test_train_graph(input_path, save_path):
     f = open(input_path, 'r')
     reader = csv.reader(f)
     headers = next(reader, None)
@@ -99,7 +98,6 @@ def sum_test_train_graph(input_path, base_path):
     
     
 def sum_summed_test_train_graph(input_path, save_path):
-    save_path = f"{base_path}/sum_summed_train_test_sub_cat.csv"
     f = open(input_path, 'r')
     reader = csv.reader(f)
     headers = next(reader, None)
@@ -134,7 +132,13 @@ def sum_summed_test_train_graph(input_path, save_path):
 
 def generate_both_summed():
     base_path = get_paths('phase_one_csv')
+    
     train_test_path = f"{base_path}/train_test_dist.csv"
+    sum_path = f"{base_path}/sum_train_test_sub_cat.csv"
+    sum_summed_path = f"{base_path}/sum_summed_train_test_sub_cat.csv"
+    
     make_train_test_size_graph(train_test_path)
-    sum_train_test_path = sum_test_train_graph(train_test_path, base_path)
-    sum_summed_test_train_graph(sum_train_test_path, base_path)
+    sum_train_test_path = sum_test_train_graph(train_test_path, sum_path)
+    sum_summed_test_train_graph(sum_train_test_path, sum_summed_path)
+
+generate_both_summed()
