@@ -14,7 +14,7 @@ from Noise_Generators.noise_main import Filter,premade_single_filter,apply_multi
 from Dataset.load_h5 import h5_object
 from global_paths import get_test_model_paths, get_paths, get_h5_test, get_h5_train
 from Models.test_model import partial_accumilate_distribution, print_accumilate_distribution, make_prediction
-from phase_one.find_ideal_model import get_belgian_model_object_list
+from phase_one.find_ideal_model import get_belgian_model_object_list, get_satina_gains_model_object_list
 from global_paths import  get_h5_test, get_h5_train, get_phase_two_csv
 from general_image_func import auto_reshape_images,changeImageSize,rgba_to_rgb,convert_between_pill_numpy
 from plot.write_csv_file import cvs_object
@@ -87,7 +87,7 @@ def group_by_feature(header,csv_reader,feature_lable:str):
             groups[row[colum_num]] = [row]
     return groups
 
-def merge_csv(filter_names, saved_path):
+def merge_csv(filter_names, saved_path, class_size_dict):
     class_dict = {}
 
     for name in filter_names:
@@ -100,8 +100,14 @@ def merge_csv(filter_names, saved_path):
                 if not row[0] in class_dict:
                     class_dict[row[0]] = [row[0]]
                 class_dict[row[0]].append(row[2])
-                if len(class_dict[row[0]]) > 2 and row[0] != 'class':
-                    class_dict[row[0]][-1] = round(float(class_dict[row[0]][-1]) - float(class_dict[row[0]][1]), 2)
+                
+                if name == filter_names[-1] and row[0] in class_size_dict:
+                    class_dict[row[0]].append(class_size_dict[row[0]])
+                elif name == filter_names[-1]:
+                    class_dict[row[0]].append('images')
+                    
+                # if len(class_dict[row[0]]) > 2 and row[0] != 'class':
+                    # class_dict[row[0]][-1] = round(float(class_dict[row[0]][-1]) - float(class_dict[row[0]][1]), 2)
 
     list_data = [class_dict[key] for key in class_dict.keys()]
     sort_list = list_data[1:]
@@ -130,6 +136,20 @@ def create_csv_to_plot():
             newdatapoint = [('class','filters','error')]
     return filter_names
 
+def sum_merged_csv(input_path:str, output_path:str)->None:
+    ouput_data = [['category', 'subcategory', 'images']]
+    
+    if not os.path.exists(input_path):
+        print(f"ERROR: the csv file \"{input_path}\" does not exists. The program will now execute")
+        sys.exit()
+        
+    with open(input_path, 'r') as read_obj:
+        reader = csv.reader(read_obj)
+        data = list(reader)
+        
+        
+        
+
 def quick_debug():
     test_path = get_h5_test()
     filters = load_filters()
@@ -137,13 +157,14 @@ def quick_debug():
     trainin_split = 1
     
     h5_obj = h5_object(test_path, training_split=trainin_split)
-    models = get_belgian_model_object_list(h5_obj.class_in_h5, load_trained_models=True)
+    models = get_satina_gains_model_object_list(h5_obj.class_in_h5, load_trained_models=True)
     
     for n_filter in filters:
         phase_2_1(models[2],h5_obj,1,models[2].img_shape, n_filter)
         filter_names.extend(create_csv_to_plot())
     
-    merge_csv(list(dict.fromkeys(filter_names)), get_phase_two_csv('merged_file'))
+    merge_csv(list(dict.fromkeys(filter_names)), get_phase_two_csv('merged_file'), h5_obj.images_in_classes)
+    sum_merged_csv(get_phase_two_csv('merged_file'), get_phase_two_csv('summed_merged_file'))
 
 quick_debug()
 

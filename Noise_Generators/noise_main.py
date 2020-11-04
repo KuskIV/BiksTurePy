@@ -289,7 +289,7 @@ def QuickDebug():
     #newImage[0].show()
     #newImage[1].show()
 
-QuickDebug()
+# QuickDebug()
 #fog_set=(1)
 #day_set=(0.5)
 #wh_set = (70,7,2,(2,2),(130,130,130))

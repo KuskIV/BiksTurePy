@@ -136,6 +136,8 @@ class h5_object():
                 self.class_in_h5 += 1
                 for j in self.get_key(self.h5, keys):
                     self.ppm_names[-1].append(j)
+                self.images_in_classes[keys[-1]] = len(self.ppm_names[-1]) 
+                # print(f"class {keys[-1]}, len {len(self.ppm_names[-1])}")
                 random.shuffle(self.ppm_names[-1])
 
     def __init__(self, h5_path:str, training_split=0.7, os_constructor=osc.get_os_constructor):
@@ -146,6 +148,7 @@ class h5_object():
         
         os_tuple = os_constructor()
 
+        
         self.os = os_tuple[0]
         self.key_to_string = os_tuple[1]
         self.get_ppm_arr = os_tuple[2]
@@ -155,9 +158,11 @@ class h5_object():
         self.error_index = 2 if self.os == 'windows' else 3                                         #TODO: FIX, NOT HARDCODE
         self.nested_level = len(re.split('/', get_h5_path())) - (1 if self.os == 'windows' else 0)  #TODO: FIX NOT HARDCODE, BASED ON PATH
 
+        self.images_in_classes = {}
         self.ppm_names = []
         self.img_in_h5 = 0
         self.class_in_h5 = 0
+        
         
         self.ppm_keys_to_list()
 
