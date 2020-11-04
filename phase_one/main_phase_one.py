@@ -33,7 +33,7 @@ def acc_dist_for_images(h5_obj:object, models:list, sizes:list, lazy_split)->Non
         print_accumilate_distribution(accArr[i], size=sizes[i])
 
 if __name__ == "__main__":
-    lazy_split = 5
+    lazy_split = 1
 
     test_path = get_h5_test()
     train_path = get_h5_train()
@@ -41,7 +41,7 @@ if __name__ == "__main__":
     # reset_nvidia_memory()
 
     # run_experiment_one(lazy_split, train_path, test_path, epochs_end=2)
-    run_experiment_one(lazy_split, train_path, test_path, epochs_end=35)
+    run_experiment_one(lazy_split, train_path, test_path, epochs_end=1)
 
     # path = "/home/biks/Desktop"
     # test_path = "/imagesForMads"

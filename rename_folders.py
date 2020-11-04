@@ -21,11 +21,28 @@ def rename_folders(path):
     for i in range(len(folder_names)):
         # print(folder_names[i])
         os.rename(f"{path}/{folder_names[i]}", f"{path}/{i}")
-        
-rename_folders(test_path)
-rename_folders(train_path)
 
-# for i in range(len(a)):
-#     print(f"{a[i]} - {b[i]}")
+def add_folders(train_path, test_path):
+    test_folder_names = []
+    train_folder_names = []
     
-# print(f"\n\n{len(a)} - {len(b)}")
+    for filename in os.listdir(train_path):
+        train_folder_names.append(filename)
+    
+    for filename in os.listdir(test_path):
+        test_folder_names.append(filename)
+    
+    for train_folder in train_folder_names:
+        if not train_folder in test_folder_names:
+            os.mkdir(f"{test_path}/{train_folder}")
+            test_folder_names.append(train_folder)
+    
+    for test_folder in test_folder_names:
+        if not test_folder in train_folder_names:
+            os.mkdir(f"{train_path}/{test_folder}")
+            train_folder_names.append(test_folder)
+
+add_folders(train_path, test_path)
+
+rename_folders(train_path)
+rename_folders(test_path)

@@ -5,6 +5,8 @@ import  tensorflow as tf
 from PIL import Image
 import random
 import os
+from tqdm import tqdm
+from tqdm import trange
 
 def changeImageSize(maxWidth: int, 
                     maxHeight: int, 
@@ -199,6 +201,8 @@ def auto_reshape_images(fixed_size: tuple, numpy_images: list, smart_resize:bool
     max_width = 0
     max_height = 0
     reshaped_images = []
+    
+
 
     # find max width and height
     for image in numpy_images:
@@ -216,12 +220,17 @@ def auto_reshape_images(fixed_size: tuple, numpy_images: list, smart_resize:bool
 
     print("reshape size")
     print(reshape_size)
+    
+    done = len(numpy_images)
+    progress = trange(done, desc='Resize stuff', leave=True)
 
-    for image in numpy_images:
+    for i in progress:
+        progress.set_description(f"Reshaping image {i} / {progress}")
+        progress.refresh()
         if smart_resize:
-            reshaped_images.append(tf.keras.preprocessing.image.smart_resize(image, reshape_size))
+            reshaped_images.append(tf.keras.preprocessing.image.smart_resize(numpy_images[i], reshape_size))
         else:
-            reshaped_images.append(tf.image.resize(image, reshape_size))
+            reshaped_images.append(tf.image.resize(numpy_images[i], reshape_size))
 
     return np.array(reshaped_images)
 
