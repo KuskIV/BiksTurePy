@@ -41,7 +41,7 @@ if __name__ == "__main__":
     # reset_nvidia_memory()
 
     # run_experiment_one(lazy_split, train_path, test_path, epochs_end=2)
-    run_experiment_one(lazy_split, train_path, test_path, epochs_end=1)
+    run_experiment_one(lazy_split, train_path, test_path, epochs_end=2)
 
     # path = "/home/biks/Desktop"
     # test_path = "/imagesForMads"

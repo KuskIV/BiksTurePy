@@ -16,6 +16,9 @@ paths = {
     'belgium_avg': 'Models/saved_models/belgium_avg.h5',
     'belgium_median': 'Models/saved_models/belgium_median.h5',
     'phase_one_csv': 'phase_one/csv_data',
+    'satina_avg':'Models/saved_models/satina_avg.h5',
+    'satina_median':'Models/saved_models/satina_median.h5',
+    'satina_mode':'Models/saved_models/satina_mode.h5',
     'txt_file': 'labels.txt'
 }
 
@@ -127,6 +130,17 @@ def get_belgium_model_avg_path() -> str:
 
 def get_belgium_model_median_path() -> str:
     return paths.get('belgium_median')
+
+def get_satina_model_mode_path() -> str:
+    return paths.get('satina_mode')
+
+
+def get_satina_model_avg_path() -> str:
+    return paths.get('satina_avg')
+
+
+def get_satina_model_median_path() -> str:
+    return paths.get('satina_median')
 
 
 def get_test_model_paths() -> tuple:

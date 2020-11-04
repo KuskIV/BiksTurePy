@@ -8,7 +8,7 @@ import os.path
 from os import path
 from matplotlib import pyplot as plt
 
-from find_ideal_model import train_and_eval_models_for_size, get_belgian_model_object_list
+from find_ideal_model import train_and_eval_models_for_size, get_belgian_model_object_list, get_satina_gains_model_object_list
 
 import os,sys,inspect
 current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
@@ -158,13 +158,34 @@ def max_epoch_from_list(epoch_list):
     
     return best_epoch
 
-def big_yeet_print(h5_obj, name):
-    print(name)
-    print(f"PPM_NAMES: {sys.getsizeof(h5_obj.ppm_names)}")
-    print(f"GROUP: {sys.getsizeof(h5_obj.group)}")
-    print(f"DATA: {sys.getsizeof(h5_obj.data)}")
-        
+def sum_summed_plots(model_object_list:list)->None:
+    csv_data = []
+    raw_data = []
+    
+    for model_object in model_object_list:
+        if not path.exists(model_object.get_summed_csv_path()):
+            print(f"ERROR: the file \"{model_object.get_summed_csv_path()}\" does not exists when trying to sum it. Program will exit.")
+            sys.exit()
+        with open(model_object.get_summed_csv_path(), 'r') as csv_obj:
+            rows = csv.reader(csv_obj, delimiter=',')
+            rows = list(rows)
+            
+            if not len(rows) > 0:
+                print(f"ERROR: the file \"{model_object.get_summed_csv_path()}\" only has {len(rows)} items, should be {model_object.output_layer_size}")
 
+            rows[0][1] = model_object.get_csv_name()
+            
+            raw_data.append(rows)
+    
+    csv_data = [x[0:1] for x in raw_data[0]]
+    
+    for i in range(len(raw_data)):
+        for j in range(len(csv_data)):
+            csv_data[j].append(raw_data[i][j][1])
+        
+    csv_obj = cvs_object(f"{get_paths('phase_one_csv')}/sum_summed.csv")
+    csv_obj.write(csv_data)
+        
 def run_experiment_one(lazy_split:int, train_h5_path:str, test_h5_path:str, epochs_end:int=10, dataset_split:int=0.7)->None:
     """This method runs experiment one, and is done in several steps:
             1. For each epoch to train for, the models are trained. After each epoch, the accuracy is saved on the object.
@@ -190,7 +211,7 @@ def run_experiment_one(lazy_split:int, train_h5_path:str, test_h5_path:str, epoc
         print(f"The input train and test set does not have matching classes {h5_train.class_in_h5} - {h5_test.class_in_h5}")
         sys.exit()
 
-    model_object_list = get_belgian_model_object_list(h5_train.class_in_h5)
+    model_object_list = get_satina_gains_model_object_list(h5_train.class_in_h5)
 
     epochs_end += 1
 
@@ -205,38 +226,17 @@ def run_experiment_one(lazy_split:int, train_h5_path:str, test_h5_path:str, epoc
 
         iterate_trough_models(model_object_list, e, image_dataset, lable_dataset) #TODO This should not use h5_test, rather the h5_trainig and evaluation set.
 
-        del image_dataset #TODO this might be better
+        del image_dataset
         del lable_dataset
 
-        save_plot(model_object_list)
-        sum_plot(model_object_list)
-        sum_class_accuracy(model_object_list)
-
-    # best_model_names = get_best_models(model_object_list)
-    # generate_csv_for_best_model(best_model_names)
-    # best_index = get_largest_index(best_model_names) #TODO These lines should generate a    # best_model_names = get_best_models(model_object_list)
-    # generate_csv_for_best_model(best_model_names)
-    # model_object_list = get_belgian_model_object_list(h5_train.class_in_h5)
-    # image_dataset, lable_dataset, _, _ = h5_test.shuffle_and_lazyload(0, 1)
-
-    # for i in range(len(model_object_list)):
-    #     model_object_list[i].set_epoch(best_model_names[i][1])
-
-    # find_ideal_model(h5_train, model_object_list, lazy_split=lazy_split, epochs=max_epoch_from_list(best_model_names), save_models=True)
-
-    # iterate_trough_models(model_object_list, -1, image_dataset, lable_dataset) model for each model and epoch
-    # best_model = get_belgian_model_object_list(h5_train.class_in_h5)[best_index]
-    # best_model.path = get_paths('ex_one_ideal')
-    # find_ideal_model(h5_train, [best_model], lazy_split=lazy_split, epochs=int(best_model_names[best_index][1]), save_models=True)
-
-    # test_label_dict = {}
-
-    # image_dataset, lable_dataset, _, _ = h5_test.shuffle_and_lazyload(0, 1)
-    # iterate_trough_models([best_model], test_label_dict, int(best_model_names[best_index][1]), image_dataset, lable_dataset)
+    save_plot(model_object_list)
+    sum_plot(model_object_list)
+    sum_summed_plots(model_object_list)
+    sum_class_accuracy(model_object_list)
 
     best_model_names = get_best_models(model_object_list) #TODO from here yeet
     generate_csv_for_best_model(best_model_names)
-    model_object_list = get_belgian_model_object_list(h5_train.class_in_h5)
+    model_object_list = get_satina_gains_model_object_list(h5_train.class_in_h5)
     image_dataset, lable_dataset, _, _ = h5_test.shuffle_and_lazyload(0, 1)
 
     for i in range(len(model_object_list)):

@@ -19,7 +19,7 @@ sys.path.insert(0, parent_dir)
 
 from general_image_func import get_class_names, display_numpy_image                        # Not an error
 from Models.create_model import flatten_and_dense          # Not an error
-from global_paths import get_belgium_model_path, get_paths, get_belgium_model_avg_path, get_belgium_model_median_path
+from global_paths import get_belgium_model_path, get_paths, get_belgium_model_avg_path, get_belgium_model_median_path, get_satina_model_avg_path, get_satina_model_median_path, get_satina_model_mode_path
 
 class return_model(object):
     """
@@ -28,6 +28,7 @@ class return_model(object):
     def __init__(self, model_and_resolution:tuple, model_path:str, out_layer_size:int, load_trained_models:bool)->object:
         self.model, self.img_shape = model_and_resolution
         self.model = flatten_and_dense(self.model, output_layer_size=out_layer_size)
+        self.output_layer_size = out_layer_size
         self.path = model_path
         self.epoch = -1
 
@@ -64,7 +65,7 @@ class return_model(object):
 def get_2d_image_shape(shape:tuple)->tuple:
     return shape[0], shape[1]
 
-def satina_median()->object:
+def get_satina_median_model()->object:
     img_shape = (35, 35, 3)
     model = models.Sequential()
     model.add(layers.Conv2D(32, (3, 3), activation='relu', padding='same', input_shape=img_shape))
@@ -74,8 +75,7 @@ def satina_median()->object:
     model.add(layers.Conv2D(64, (3, 3), activation='relu', padding='same'))
     return model, img_shape[:2]
 
-def satina_gauss_mode()->object:
-
+def get_satina_mode_model()->object:
     img_shape = (25, 25, 3)
     model = models.Sequential()
     model.add(layers.Conv2D(32, (3, 3), activation='relu', padding='same', input_shape=img_shape))
@@ -85,7 +85,7 @@ def satina_gauss_mode()->object:
     model.add(layers.Conv2D(64, (3, 3), activation='relu', padding='same'))
     return model, img_shape[:2]
 
-def satina_avg()->object:
+def get_satina_avg_model()->object:
     img_shape = (45, 45, 3)
     model = models.Sequential()
     model.add(layers.Conv2D(32, (5, 5), activation='relu', padding='same', input_shape=img_shape))
@@ -165,7 +165,7 @@ def reshape_numpy_array_of_images(images:np.array, size:tuple)->np.array:
     reshaped_images = []
     
     done = len(images)
-    progress = trange(done, desc='Reshape stuff')
+    progress = trange(done, desc='Reshape stuff', leave=True)
 
     for i in progress:
         progress.set_description(F"Reshaping image {i} / {progress}")
@@ -259,6 +259,13 @@ def train_and_eval_models_for_size(
     # print("Evaluation for model")
 
     # print(model.evaluate(reshaped_test_images, test_labels))
+
+def get_satina_gains_model_object_list(shape:int, load_trained_models:bool=False)->list:
+    satina_model_avg = return_model(get_satina_avg_model(), get_satina_model_avg_path(), shape, load_trained_models)
+    satina_model_median = return_model(get_satina_median_model(), get_satina_model_median_path(), shape, load_trained_models)
+    satina_model_mode = return_model(get_satina_mode_model(), get_satina_model_mode_path(), shape, load_trained_models)
+
+    return [satina_model_avg, satina_model_median, satina_model_mode]
 
 def get_belgian_model_object_list(shape:int, load_trained_models=False)->list:
     belgium_model_avg = return_model(get_belgium_model_avg(), get_belgium_model_avg_path(), shape, load_trained_models)
