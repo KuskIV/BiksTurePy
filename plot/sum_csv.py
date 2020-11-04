@@ -185,6 +185,6 @@ def sum_for_both(csv_path):
     data = sum_for_sub_categories(csv_obj)
     csv_obj.write(data, path=f'{split_path(csv_path)}/phase2_sum_sub_cat.csv', overwrite_path=True)
     data = sum_for_categories(csv_obj)
-    csv_obj.write(data, path='phase_two/csv_output/phase2_merged_file_categories.csv')
+    csv_obj.write(data, path=f'{split_path(csv_path)}/phase2_sum_cat.csv')
     
 sum_for_both('phase_two/csv_output/phase2_merged_file.csv')
