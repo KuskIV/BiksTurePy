@@ -76,11 +76,14 @@ def get_category(class_name):
     return get_category_from_class(categories, int(class_name) + 1)
 
 
-def sum_to_list(sub_cvs_file, current_category, current_class_accuracy, current_total_in_class, current_sub_category):
+def sum_to_list(sub_cvs_file, current_category, current_class_accuracy, current_total_in_class, current_sub_category=None):
     class_accuracy = []
     for i in range(len(current_class_accuracy[0])):
         class_accuracy.append(get_class_accuracy([x[i] for x in current_class_accuracy] , current_total_in_class))
-    sub_cvs_file.append([current_category, current_sub_category, sum(current_total_in_class)])
+    if current_sub_category == None:
+        sub_cvs_file.append([current_category, sum(current_total_in_class)])
+    else:
+        sub_cvs_file.append([current_category, current_sub_category, sum(current_total_in_class)])
     sub_cvs_file[-1].extend(class_accuracy)
 
 def sum_for_sub_categories(csv_obj):
@@ -129,7 +132,43 @@ def sum_for_sub_categories(csv_obj):
     return sub_cvs_file
 
 def sum_for_categories(csv_obj):
-    return []
+    f = open(csv_obj.path, 'r')
+    reader = csv.reader(f)
+    headers = next(reader, None)
+
+    sub_cvs_file = [['category', headers[2]]]
+    sub_cvs_file[-1].extend(headers[3:-1])
+    with open(csv_obj.path, 'r') as csvfile:
+            if not path.exists(csv_obj.path):
+                print(f"\nThe following path does not exist: {csv_obj.path}\nCode: plot.write_csv_file.py")
+                sys.exit()
+            
+            first_row = next(reader, None)
+            
+            current_class_accuracy = [first_row[3:-1]]
+            current_total_in_class = [int(first_row[2])]
+            current_category = first_row[0]
+
+            plots = csv.reader(csvfile, delimiter=',')
+
+            next(plots)
+            next(plots)
+            for row in plots:
+                if current_category != row[0]:
+                    sum_to_list(sub_cvs_file, current_category, current_class_accuracy, current_total_in_class)
+                    
+                    current_category = row[0]
+                    current_class_accuracy = [row[3:-1]]
+                    current_total_in_class = [int(row[2])]
+                    
+                else:
+                    current_class_accuracy.append(row[3:-1])
+                    current_total_in_class.append(int(row[2]))
+
+            sum_to_list(sub_cvs_file, current_category, current_class_accuracy, current_total_in_class)
+
+                
+    return sub_cvs_file
     
 
 def split_path(csv_path):
@@ -145,7 +184,7 @@ def sum_for_both(csv_path):
     csv_obj = cvs_object(csv_path)
     data = sum_for_sub_categories(csv_obj)
     csv_obj.write(data, path=f'{split_path(csv_path)}/phase2_sum_sub_cat.csv', overwrite_path=True)
-    data = sum_for_categories(csv_obj.path)
+    data = sum_for_categories(csv_obj)
     csv_obj.write(data, path='phase_two/csv_output/phase2_merged_file_categories.csv')
     
 sum_for_both('phase_two/csv_output/phase2_merged_file.csv')
