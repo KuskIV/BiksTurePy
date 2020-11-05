@@ -21,7 +21,7 @@ from global_paths import get_test_model_paths, get_paths, get_h5_test, get_h5_tr
 from plot.write_csv_file import cvs_object, plot
 from general_image_func import auto_reshape_images, convert_numpy_image_to_image
 from Models.test_model import make_prediction
-from plot.sum_csv import sum_csv
+from plot.sum_for_model import sum_for_model
 
 def find_ideal_model(h5_obj:object, model_object_list:list, epochs:int=10, lazy_split:int=10, save_models:bool=False)->None:
     """Will based on a list of model objects, a h5py file an a max epochs amount, train the models and record the accracy in order to find the
@@ -58,8 +58,6 @@ def find_ideal_model(h5_obj:object, model_object_list:list, epochs:int=10, lazy_
         del(train_images)
         del(test_images)
         
-        break     
-    
     if save_models:
         for models in model_object_list:
             store_model(models.model, models.path)
@@ -186,7 +184,7 @@ def sum_summed_plots(model_object_list:list)->None:
     csv_obj = cvs_object(f"{get_paths('phase_one_csv')}/sum_summed.csv")
     csv_obj.write(csv_data)
         
-def run_experiment_one(lazy_split:int, train_h5_path:str, test_h5_path:str, epochs_end:int=10, dataset_split:int=0.7)->None:
+def run_experiment_one(lazy_split:int, train_h5_path:str, test_h5_path:str, get_models, epochs_end:int=10, dataset_split:int=0.7)->None:
     """This method runs experiment one, and is done in several steps:
             1. For each epoch to train for, the models are trained. After each epoch, the accuracy is saved on the object.
             2. When the training is done, all the data is saved in csv files as (Epochs,Resolution,Class,Class_Acuracy,Total_in_Class)
@@ -211,8 +209,9 @@ def run_experiment_one(lazy_split:int, train_h5_path:str, test_h5_path:str, epoc
         print(f"The input train and test set does not have matching classes {h5_train.class_in_h5} - {h5_test.class_in_h5}")
         sys.exit()
 
-    model_object_list = get_satina_gains_model_object_list(h5_train.class_in_h5)
-
+    # model_object_list = get_satina_gains_model_object_list(h5_train.class_in_h5)
+    model_object_list = get_models(h5_train.class_in_h5)
+    
     epochs_end += 1
 
     for e in range(1, epochs_end): #TODO: This loop should be reworked to taking one model at a time.
@@ -234,9 +233,9 @@ def run_experiment_one(lazy_split:int, train_h5_path:str, test_h5_path:str, epoc
     sum_summed_plots(model_object_list)
     sum_class_accuracy(model_object_list)
 
-    best_model_names = get_best_models(model_object_list) #TODO from here yeet
+    best_model_names = get_best_models(model_object_list)
     generate_csv_for_best_model(best_model_names)
-    model_object_list = get_satina_gains_model_object_list(h5_train.class_in_h5)
+    model_object_list = get_models(h5_train.class_in_h5)
     image_dataset, lable_dataset, _, _ = h5_test.shuffle_and_lazyload(0, 1)
 
     for i in range(len(model_object_list)):
@@ -298,7 +297,7 @@ def sum_plot(model_object_list:list)->None:
     csv_object_list =  []
     for model_object in model_object_list:
         obj = cvs_object(model_object.get_csv_path(), label=model_object.get_size())
-        data = sum_csv(obj)
+        data = sum_for_model(obj)
         obj.write(data, model_object.get_summed_csv_path(), overwrite_path=True)
         csv_object_list.append(obj)
     # plot(csv_object_list)

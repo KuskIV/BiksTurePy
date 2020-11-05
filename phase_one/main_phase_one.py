@@ -6,7 +6,7 @@ from tqdm import trange
 import os
 import sys,inspect
 from experiment_one import run_experiment_one
-from find_ideal_model import get_best_phase_one_model
+from find_ideal_model import get_satina_gains_model_object_list, get_belgian_model_object_list 
 
 current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parent_dir = os.path.dirname(current_dir)
@@ -38,17 +38,7 @@ if __name__ == "__main__":
     test_path = get_h5_test()
     train_path = get_h5_train()
 
-    # reset_nvidia_memory()
 
-    # run_experiment_one(lazy_split, train_path, test_path, epochs_end=2)
-    run_experiment_one(lazy_split, train_path, test_path, epochs_end=2)
-
-    # path = "/home/biks/Desktop"
-    # test_path = "/imagesForMads"
-
-    # class_names = open(get_paths("txt_file"), 'r').readlines()
-
-    # LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc.so.4 python phase_one/main_phase_one.py
-    
-    # LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc.so.4 HEAPPROFILE=/tmp/profile python phase_one/main_phase_one.py
+    run_experiment_one(lazy_split, train_path, test_path, get_satina_gains_model_object_list, epochs_end=2)
+    # run_experiment_one(lazy_split, train_path, test_path, get_belgian_model_object_list, epochs_end=420)
     
