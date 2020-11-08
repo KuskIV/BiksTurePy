@@ -22,24 +22,22 @@ from plot.write_csv_file import cvs_object
 
 def phase_2_1(model, h5_obj, lazy_split, image_size,noise_filter):
     values = [("image","filter","class","predicted_class")]
-    lazy_load = 2
-    for j in range(lazy_load):
-        original_images, original_labels, _, _ = h5_obj.shuffle_and_lazyload(j, lazy_split) #TODO need variant of this that does not generate test set or shuffle
+    original_images, original_labels, _, _ = h5_obj.shuffle_and_lazyload(0, 1) #TODO need variant of this that does not generate test set or shuffle
 
-        image_tuples = add_noise((convert_between_pill_numpy(original_images * 255,mode='numpy->pil'),original_labels),noise_filter) #tuple(image,class,filter)
-        numpy_imgs = convert_between_pill_numpy([changeImageSize(image_size[0],image_size[1],im[0].convert('RGB')) for im in image_tuples],mode='pil->numpy')
-        
-        #print(len(numpy_imgs))
-        for i in range(len(numpy_imgs)):
-            image_tuples[i] = list(image_tuples[i])
-            image_tuples[i][0] = numpy_imgs[i]
-            image_tuples[i] = tuple(image_tuples[i])
+    image_tuples = add_noise((convert_between_pill_numpy(original_images * 255,mode='numpy->pil'),original_labels),noise_filter) #tuple(image,class,filter)
+    numpy_imgs = convert_between_pill_numpy([changeImageSize(image_size[0],image_size[1],im[0].convert('RGB')) for im in image_tuples],mode='pil->numpy')
+    
+    #print(len(numpy_imgs))
+    for i in range(len(numpy_imgs)):
+        image_tuples[i] = list(image_tuples[i])
+        image_tuples[i][0] = numpy_imgs[i]
+        image_tuples[i] = tuple(image_tuples[i])
 
-        for i in range(len(image_tuples)):
-            prediction = make_prediction(model.model, image_tuples[i][0], (image_size[0], image_size[1], 3))
-            predicted_label = np.argmax(prediction) #Get the class with highest liklyhood of the predictions
-            image_tuples[i] = (image_tuples[i]+tuple([predicted_label,'yeet'])) #concatanate two tuples to create new tuple , which replacess the old one
-        values.extend(image_tuples)
+    for i in range(len(image_tuples)):
+        prediction = make_prediction(model.model, image_tuples[i][0], (image_size[0], image_size[1], 3))
+        predicted_label = np.argmax(prediction) #Get the class with highest liklyhood of the predictions
+        image_tuples[i] = (image_tuples[i]+tuple([predicted_label,'yeet'])) #concatanate two tuples to create new tuple , which replacess the old one
+    values.extend(image_tuples)
     convert_to_csv(get_phase_two_csv('results'),[val[1:4] for val in values]) #tuple(image,class,filter,predicted_class)
 
 def load_filters():
@@ -122,7 +120,7 @@ def merge_csv(filter_names, saved_path, class_size_dict):
 def create_csv_to_plot():
     newdatapoint = [('class','filters','error')]
     filter_names = []
-    with open(get_phase_two_csv('results'), 'r') as read_obj:#TODO @Jeppe, fix, dont hardcode this path | respond from jeppe 'no'
+    with open(get_phase_two_csv('results'), 'r') as read_obj:#TODO @Jeppe, fix, dont hardcode this path | respond from jeppe 'no' | respond from mads 'this is not a joke i know where you live. do as i say'
         csv_reader = csv.reader(read_obj)
         header = next(csv_reader)
         groups = group_by_feature(header,csv_reader,'filter')
@@ -150,21 +148,22 @@ def sum_merged_csv(input_path:str, output_path:str)->None:
         
         
 
-def quick_debug():
+def run_experiment_two():
     test_path = get_h5_test()
     filters = load_filters()
     filter_names = []
     trainin_split = 1
     
     h5_obj = h5_object(test_path, training_split=trainin_split)
-    models = get_satina_gains_model_object_list(h5_obj.class_in_h5, load_trained_models=True)
+    model_object_list = get_satina_gains_model_object_list(h5_obj.class_in_h5, load_trained_models=True)
     
     for n_filter in filters:
-        phase_2_1(models[2],h5_obj,1,models[2].img_shape, n_filter)
-        filter_names.extend(create_csv_to_plot())
+        for model_object in model_object_list:
+            phase_2_1(model_object,h5_obj,1,model_object.img_shape, n_filter)
+            filter_names.extend(create_csv_to_plot())
     
     merge_csv(list(dict.fromkeys(filter_names)), get_phase_two_csv('merged_file'), h5_obj.images_in_classes)
     sum_merged_csv(get_phase_two_csv('merged_file'), get_phase_two_csv('summed_merged_file'))
 
-quick_debug()
+run_experiment_two()
 
