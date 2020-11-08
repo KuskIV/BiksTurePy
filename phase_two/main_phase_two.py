@@ -122,7 +122,7 @@ def merge_csv(filter_names, saved_path, class_size_dict):
 def create_csv_to_plot():
     newdatapoint = [('class','filters','error')]
     filter_names = []
-    with open(get_phase_two_csv('results'), 'r') as read_obj:#TODO @Jeppe, fix, dont hardcode this path
+    with open(get_phase_two_csv('results'), 'r') as read_obj:#TODO @Jeppe, fix, dont hardcode this path | respond from jeppe 'no'
         csv_reader = csv.reader(read_obj)
         header = next(csv_reader)
         groups = group_by_feature(header,csv_reader,'filter')
