@@ -5,7 +5,7 @@ from tensorflow.keras import datasets, layers, models
 import os,sys,inspect
 current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parent_dir = os.path.dirname(current_dir)
-sys.path.insert(0, parent_dir) 
+sys.path.insert(0, parent_dir)
 
 from global_paths import  get_model_path
 
@@ -67,9 +67,8 @@ def store_model(model:tf.python.keras.engine.sequential.Sequential, path:str)->N
 #         store_model(model, SAVE_LOAD_PATH)
 
 def flatten_and_dense(model:tf.python.keras.engine.sequential.Sequential, output_layer_size=62):
-    """Returns a model flattened and densed to 43 categories of prediction"""
+    """Returns a model flattened and densed to output_layer_size number of categories of prediction"""
     model.add(layers.Flatten())
     model.add(layers.Dense(64, activation='relu'))
     model.add(layers.Dense(output_layer_size))
     return model
-
