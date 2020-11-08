@@ -39,6 +39,6 @@ if __name__ == "__main__":
     train_path = get_h5_train()
 
 
-    run_experiment_one(lazy_split, train_path, test_path, get_satina_gains_model_object_list, epochs_end=2)
+    run_experiment_one(lazy_split, train_path, test_path, get_satina_gains_model_object_list, epochs_end=100)
     # run_experiment_one(lazy_split, train_path, test_path, get_belgian_model_object_list, epochs_end=420)
     

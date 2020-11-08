@@ -5,6 +5,7 @@ import math
 from matplotlib import pyplot as plt
 from tqdm import tqdm
 from tqdm import trange
+import keras.backend as K
 
 
 from tensorflow.keras import datasets, layers, models
@@ -30,6 +31,7 @@ class return_model(object):
         self.model = flatten_and_dense(self.model, output_layer_size=out_layer_size)
         self.output_layer_size = out_layer_size
         self.path = model_path
+        self.fit_data = [['epoch', 'validation_loss', 'validation_accuracy']]
         self.epoch = -1
 
         if load_trained_models:
@@ -207,15 +209,39 @@ def train_model(model:tf.python.keras.engine.sequential.Sequential,
         print(f"    - validation images : {len(val_images)} - {len(val_labels)} : validation lables")
         sys.exit()
 
-    model.compile(optimizer='adam',
+    initial_learning_rate = 0.001 
+
+    opt = tf.keras.optimizers.Adam(
+        learning_rate=initial_learning_rate, beta_1=0.9, beta_2=0.999, epsilon=1e-07, amsgrad=False, name='Adam'
+    )
+    
+    earlystop = tf.keras.callbacks.EarlyStopping(
+        monitor='val_loss', min_delta=0.01, patience=10, verbose=0, mode='auto', baseline=None, restore_best_weights =False
+    )
+    
+    model.compile(optimizer=opt,
                 loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
                 metrics=['sparse_categorical_accuracy'])
 
     # test_images = test_images
     # train_images = train_images
+    
+    def lr_exp_decay(epoch, lr):
+        k = 0.1
+        return initial_learning_rate * math.exp(-k*epoch)
 
     history = model.fit(train_images, train_labels, epochs=epochs,
-            validation_data=(val_images, val_labels))
+            validation_data=(val_images, val_labels),
+            callbacks=[tf.keras.callbacks.LearningRateScheduler(lr_exp_decay, verbose=1),earlystop])
+    
+    validation_loss = history.history['val_loss']
+    validation_accuracy = history.history['val_sparse_categorical_accuracy']
+    learning_rate = K.eval(model.optimizer.lr) 
+    
+    print(f"The initial learning rate is: {initial_learning_rate}, and the final learning rate is: {learning_rate}")
+    
+    return validation_loss, validation_accuracy
+
 
 
 def train_and_eval_models_for_size(
@@ -253,8 +279,10 @@ def train_and_eval_models_for_size(
     print(size)
     print("---------------------\n")
 
-    train_model(model, reshaped_train_images, train_labels, reshaped_test_images, test_labels, epochs)
+    validation_loss, validation_accuracy = train_model(model, reshaped_train_images, train_labels, reshaped_test_images, test_labels, epochs)
 
+    
+    return validation_loss, validation_accuracy
     # evaluate each model
     # print("Evaluation for model")
 
@@ -265,6 +293,7 @@ def get_satina_gains_model_object_list(shape:int, load_trained_models:bool=False
     satina_model_median = return_model(get_satina_median_model(), get_satina_model_median_path(), shape, load_trained_models)
     satina_model_mode = return_model(get_satina_mode_model(), get_satina_model_mode_path(), shape, load_trained_models)
 
+    # return [satina_model_mode]
     return [satina_model_avg, satina_model_median, satina_model_mode]
 
 def get_belgian_model_object_list(shape:int, load_trained_models=False)->list:

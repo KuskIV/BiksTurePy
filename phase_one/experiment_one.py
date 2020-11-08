@@ -21,7 +21,8 @@ from global_paths import get_test_model_paths, get_paths, get_h5_test, get_h5_tr
 from plot.write_csv_file import cvs_object, plot
 from general_image_func import auto_reshape_images, convert_numpy_image_to_image
 from Models.test_model import make_prediction
-from plot.sum_for_model import sum_for_model
+from plot.sum_for_model import sum_for_model, sum_for_class_accuracy, sum_summed_for_class_accuracy
+
 
 def find_ideal_model(h5_obj:object, model_object_list:list, epochs:int=10, lazy_split:int=10, save_models:bool=False)->None:
     """Will based on a list of model objects, a h5py file an a max epochs amount, train the models and record the accracy in order to find the
@@ -51,7 +52,10 @@ def find_ideal_model(h5_obj:object, model_object_list:list, epochs:int=10, lazy_
         for i in range(len(model_object_list)):
             if model_object_list[i].run_on_epoch(epochs):
                 print(f"\n\nTraining model {i + 1} / {len(model_object_list) } for part in dataset {j + 1} / {lazy_split}")
-                train_and_eval_models_for_size(model_object_list[i].img_shape, model_object_list[i].model, train_images, train_labels, test_images, test_labels, epochs)
+                validation_loss, validation_accuracy = train_and_eval_models_for_size(model_object_list[i].img_shape, model_object_list[i].model, train_images, train_labels, test_images, test_labels, epochs)
+                
+                for j in range(len(validation_loss)):
+                    model_object_list[i].fit_data.append([j+1, validation_loss[j], validation_accuracy[j]])
             else:
                 print(f"\n\nMESSAGE: For epoch {epochs} model {model_object_list[i].get_csv_name()} will not train anymore, as the limit is {model_object_list[i].epoch}")
         
@@ -151,8 +155,8 @@ def get_largest_index(best_model_names:list)->int:
 def max_epoch_from_list(epoch_list):
     best_epoch = 0
     
-    for epoch in epoch_list:
-        best_epoch = int(epoch[1]) if int(epoch[1]) > best_epoch else best_epoch
+    for i in range(1, len(epoch_list)):
+        best_epoch = int(epoch_list[i][1]) if int(epoch_list[i][1]) > best_epoch else best_epoch
     
     return best_epoch
 
@@ -183,7 +187,17 @@ def sum_summed_plots(model_object_list:list)->None:
         
     csv_obj = cvs_object(f"{get_paths('phase_one_csv')}/sum_summed.csv")
     csv_obj.write(csv_data)
+
+def output_best_model_names(model_object_list):
+    output_names = []
+    # best_models.append((highest_accuracy, best_epoch, resolution))
+    # ['epoch', 'validation_loss', 'validation_accuracy']
+    
+    for model_object in model_object_list:
+        output_names.append([model_object.fit_data[-1][1], model_object.fit_data[-1][0], model_object.get_size()])
         
+    return output_names
+
 def run_experiment_one(lazy_split:int, train_h5_path:str, test_h5_path:str, get_models, epochs_end:int=10, dataset_split:int=0.7)->None:
     """This method runs experiment one, and is done in several steps:
             1. For each epoch to train for, the models are trained. After each epoch, the accuracy is saved on the object.
@@ -209,43 +223,116 @@ def run_experiment_one(lazy_split:int, train_h5_path:str, test_h5_path:str, get_
         print(f"The input train and test set does not have matching classes {h5_train.class_in_h5} - {h5_test.class_in_h5}")
         sys.exit()
 
-    # model_object_list = get_satina_gains_model_object_list(h5_train.class_in_h5)
     model_object_list = get_models(h5_train.class_in_h5)
+
+    find_ideal_model(h5_train, model_object_list, lazy_split=lazy_split, epochs=epochs_end, save_models=True)
+
+    print(f"\n------------------------\nTraining done. Now evaluation will be made.\n\n")
+
+    _, _, image_dataset, lable_dataset = h5_train.shuffle_and_lazyload(0, 1)
+
+    iterate_trough_models(model_object_list, epochs_end, image_dataset, lable_dataset) #TODO This should not use h5_test, rather the h5_trainig and evaluation set.
+
+    del image_dataset
+    del lable_dataset
+
+    for model in model_object_list:
+        csv_obj = cvs_object(f"{get_paths('phase_one_csv')}/{model.get_csv_name()}_fitdata.csv")
+        csv_obj.write(model.fit_data)
+
+    data = [['epoch']]
     
-    epochs_end += 1
+    max_len = max([len(x.fit_data) for x in model_object_list])
+    
+    for model_object in model_object_list:
+        for i in range(max_len):
+            if i+1 > len(data):
+                data.append([i])
+            
+            if i == 0:
+                data[i].append(model_object.get_csv_name())
+            else:
+                if i >= len(model_object.fit_data):
+                    data[i].append(' ')
+                else:
+                    data[i].append(model_object.fit_data[i][1])
+    csv_obj = cvs_object(f"{get_paths('phase_one_csv')}/fitdata_combined.csv")
+    csv_obj.write(data)
+            
+    
+    # save_plot(model_object_list) #TODO: LINES BELOW THIS SHOULD NOT BE OUT-COMMENTED
+    # sum_plot(model_object_list)
+    # sum_summed_plots(model_object_list)
+    # sum_class_accuracy(model_object_list)
 
-    for e in range(1, epochs_end): #TODO: This loop should be reworked to taking one model at a time.
-        print(f"\n----------------\nRun {e} / {epochs_end - 1}\n----------------\n")
+    # best_model_names = get_best_models(model_object_list)
+    # generate_csv_for_best_model(best_model_names)
+    # model_object_list = get_models(h5_train.class_in_h5)
+    # image_dataset, lable_dataset, _, _ = h5_test.shuffle_and_lazyload(0, 1)
 
-        find_ideal_model(h5_train, model_object_list, lazy_split=lazy_split, epochs=1, save_models=False)
+    # for i in range(len(model_object_list)):
+    #     model_object_list[i].set_epoch(best_model_names[i][1])
 
-        print(f"\n------------------------\nTraining done. Now evaluation will be made, using {e} epochs.\n\n")
+    # find_ideal_model(h5_train, model_object_list, lazy_split=lazy_split, epochs=max_epoch_from_list(best_model_names), save_models=True)
 
-        _, _, image_dataset, lable_dataset = h5_train.shuffle_and_lazyload(0, 1)
-
-        iterate_trough_models(model_object_list, e, image_dataset, lable_dataset) #TODO This should not use h5_test, rather the h5_trainig and evaluation set.
-
-        del image_dataset
-        del lable_dataset
-
+    # iterate_trough_models(model_object_list, -1, image_dataset, lable_dataset)
+    
     save_plot(model_object_list)
     sum_plot(model_object_list)
     sum_summed_plots(model_object_list)
-    sum_class_accuracy(model_object_list)
+    path = sum_class_accuracy(model_object_list, h5_train.images_in_classes)
+    data = sum_for_class_accuracy(cvs_object(path))
+    csv_obj = cvs_object(f"{get_paths('phase_one_csv')}/sum_class_accuracy.csv")
+    csv_obj.write(data)
+    data = sum_summed_for_class_accuracy(csv_obj)
+    csv_obj.write(data, path=f"{get_paths('phase_one_csv')}/sum_summed_class_accuracy.csv", overwrite_path=True)
+    
+    
+    # pathacc = f"{get_paths('phase_one_csv')}/sum_class_accuracy.csv"
+    # pathacc2 = f"{get_paths('phase_one_csv')}/sum_summed_class_accuracy.csv"
 
-    best_model_names = get_best_models(model_object_list)
-    generate_csv_for_best_model(best_model_names)
-    model_object_list = get_models(h5_train.class_in_h5)
+    # path = f"{get_paths('phase_one_csv')}/class_accuracy.csv"
+    # data = sum_for_class_accuracy(cvs_object(path))
+    # csv_obj = cvs_object(pathacc)
+    # csv_obj.write(data)
+    # data = sum_summed_for_class_accuracy(csv_obj)
+    # csv_obj.write(data, path=pathacc2, overwrite_path=True)
+
+    # best_model_names = get_best_models(model_object_list)
+    # generate_csv_for_best_model(best_model_names)
+    
+    # best_model_names = output_best_model_names(model_object_list)
+    
+    # generate_csv_for_best_model(best_model_names)
+    # model_object_list = get_models(h5_train.class_in_h5)
     image_dataset, lable_dataset, _, _ = h5_test.shuffle_and_lazyload(0, 1)
 
-    for i in range(len(model_object_list)):
-        model_object_list[i].set_epoch(best_model_names[i][1])
+    # best_model_names = get_best_models_loss(model_object_list)
+    # for i in range(len(model_object_list)):
+        # model_object_list[i].set_epoch(best_model_names[i][1])
 
-    find_ideal_model(h5_train, model_object_list, lazy_split=lazy_split, epochs=max_epoch_from_list(best_model_names), save_models=True)
+    # find_ideal_model(h5_train, model_object_list, lazy_split=lazy_split, epochs=max_epoch_from_list(best_model_names), save_models=True)
 
     iterate_trough_models(model_object_list, -1, image_dataset, lable_dataset)
 
-def sum_class_accuracy(model_object_list:list)->dict:
+
+
+def get_best_models_loss(model_object_list):
+    best_models = []
+    
+    for model_object in model_object_list:
+        resolution = model_object.get_size()
+        
+        min_list = [x[1] for x in model_object.fit_data[1:]]
+        min_index = np.argmin(np.array(min_list))
+        best_epoch = model_object.fit_data[min_index][0]
+        best_loss = model_object.fit_data[min_index][1]
+        
+        best_models.append([best_loss, best_epoch, resolution])
+        
+    return best_models
+
+def sum_class_accuracy(model_object_list:list, images_in_classes)->dict:
     """When training the accuracy for each class for each epoch is recorded. Here the sum of all accuracies for all classes for each epoch is summed together.
 
     Args:
@@ -254,6 +341,7 @@ def sum_class_accuracy(model_object_list:list)->dict:
     Returns:
         dict: [description]
     """
+    save_path = f"{get_paths('phase_one_csv')}/class_accuracy.csv"
     model_class_accuracy = {}
 
     for model_object in model_object_list:
@@ -272,14 +360,14 @@ def sum_class_accuracy(model_object_list:list)->dict:
                         model_class_accuracy[model_object.get_csv_name()][row[0]] = {}
                     model_class_accuracy[model_object.get_csv_name()][row[0]][row[2]] = row[3]
 
-    data_list = convert_dict_to_list(model_class_accuracy)
-    save_data_obj = cvs_object(f"{get_paths('phase_one_csv')}/class_accuracy.csv")
+    data_list = convert_dict_to_list(model_class_accuracy, images_in_classes)
+    save_data_obj = cvs_object(save_path)
     save_data_obj.write(data_list)
 
-    return model_class_accuracy
+    return save_path
 
-def convert_dict_to_list(model_class_accuracy:dict)->list:
-    data_list = [['Class']]
+def convert_dict_to_list(model_class_accuracy:dict, images_in_classes)->list:
+    data_list = [['Class', 'Size']]
     for key, value in model_class_accuracy.items():
         for key2, value2 in model_class_accuracy[key].items():
             data_list[0].append(f"{key}_{key2}")
@@ -288,7 +376,7 @@ def convert_dict_to_list(model_class_accuracy:dict)->list:
 
             for i in range(len(keys)):
                 if len(data_list) == i + 1:
-                    data_list.append([keys[i]])
+                    data_list.append([keys[i], images_in_classes[keys[i]]]) #TODO HERE
                 data_list[int(i) + 1].append(model_class_accuracy[key][key2][str(keys[i])])
 
     return data_list
@@ -326,12 +414,9 @@ def iterate_trough_models(model_object_list:list, e:int, image_dataset, lable_da
     """
     update_epoch = True if e == -1 else False
     
-    
-
-    
     for i in range(len(model_object_list)):
         if update_epoch:
-            e = model_object_list[i].epoch
+            e = model_object_list[i].fit_data[-1][0]
             
         if int(e) < 0:
             print(f"\nERROR: when iterating through the models, the epoch is smaller than 0 ({e})\n")
@@ -423,15 +508,15 @@ def get_model_results(lable_dict:dict, model_object:object ,settings:tuple,shoul
 
     for key in lable_dict.keys():
         class_name, class_percent, class_size = update_values(key, lable_dict,should_print)
-        model_object.csv_data.append([settings[0], model_object.get_size(), class_name, class_percent, class_size])
+        model_object.csv_data.append([model_object.fit_data[-1][0], model_object.get_size(), class_name, class_percent, class_size])
 
     if should_print:
         print("----------------")
 
-def quick()->None:
-    lazy_split = 1
+# def quick()->None:
+#     lazy_split = 1
 
-    test_path = get_h5_test()
-    train_path = get_h5_train()
+#     test_path = get_h5_test()
+#     train_path = get_h5_train()
 
-    run_experiment_one(lazy_split, train_path, test_path, epochs_end=1)
+#     run_experiment_one(lazy_split, train_path, test_path, epochs_end=1)
