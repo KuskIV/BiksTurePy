@@ -9,6 +9,7 @@ from os import path
 from matplotlib import pyplot as plt
 
 from find_ideal_model import train_and_eval_models_for_size, get_belgian_model_object_list, get_satina_gains_model_object_list
+from test_csv import combine_two_summed_class_accracy
 
 import os,sys,inspect
 current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
@@ -198,6 +199,7 @@ def output_best_model_names(model_object_list):
         
     return output_names
 
+
 def run_experiment_one(lazy_split:int, train_h5_path:str, test_h5_path:str, get_models, epochs_end:int=10, dataset_split:int=0.7)->None:
     """This method runs experiment one, and is done in several steps:
             1. For each epoch to train for, the models are trained. After each epoch, the accuracy is saved on the object.
@@ -258,62 +260,36 @@ def run_experiment_one(lazy_split:int, train_h5_path:str, test_h5_path:str, get_
                     data[i].append(model_object.fit_data[i][1])
     csv_obj = cvs_object(f"{get_paths('phase_one_csv')}/fitdata_combined.csv")
     csv_obj.write(data)
-            
-    
-    # save_plot(model_object_list) #TODO: LINES BELOW THIS SHOULD NOT BE OUT-COMMENTED
-    # sum_plot(model_object_list)
-    # sum_summed_plots(model_object_list)
-    # sum_class_accuracy(model_object_list)
 
-    # best_model_names = get_best_models(model_object_list)
-    # generate_csv_for_best_model(best_model_names)
-    # model_object_list = get_models(h5_train.class_in_h5)
-    # image_dataset, lable_dataset, _, _ = h5_test.shuffle_and_lazyload(0, 1)
+    sum_val_path = f"{get_paths('phase_one_csv')}/val_sum_class_accuracy.csv"
 
-    # for i in range(len(model_object_list)):
-    #     model_object_list[i].set_epoch(best_model_names[i][1])
-
-    # find_ideal_model(h5_train, model_object_list, lazy_split=lazy_split, epochs=max_epoch_from_list(best_model_names), save_models=True)
-
-    # iterate_trough_models(model_object_list, -1, image_dataset, lable_dataset)
-    
     save_plot(model_object_list)
     sum_plot(model_object_list)
     sum_summed_plots(model_object_list)
     path = sum_class_accuracy(model_object_list, h5_train.images_in_classes)
-    data = sum_for_class_accuracy(cvs_object(path))
-    csv_obj = cvs_object(f"{get_paths('phase_one_csv')}/sum_class_accuracy.csv")
-    csv_obj.write(data)
+    data_class_acc_val = sum_for_class_accuracy(cvs_object(path))
+    csv_obj = cvs_object(sum_val_path)
+    csv_obj.write(data_class_acc_val)
     data = sum_summed_for_class_accuracy(csv_obj)
-    csv_obj.write(data, path=f"{get_paths('phase_one_csv')}/sum_summed_class_accuracy.csv", overwrite_path=True)
-    
-    
-    # pathacc = f"{get_paths('phase_one_csv')}/sum_class_accuracy.csv"
-    # pathacc2 = f"{get_paths('phase_one_csv')}/sum_summed_class_accuracy.csv"
+    csv_obj.write(data, path=f"{get_paths('phase_one_csv')}/val_sum_summed_class_accuracy.csv", overwrite_path=True)
 
-    # path = f"{get_paths('phase_one_csv')}/class_accuracy.csv"
-    # data = sum_for_class_accuracy(cvs_object(path))
-    # csv_obj = cvs_object(pathacc)
-    # csv_obj.write(data)
-    # data = sum_summed_for_class_accuracy(csv_obj)
-    # csv_obj.write(data, path=pathacc2, overwrite_path=True)
-
-    # best_model_names = get_best_models(model_object_list)
-    # generate_csv_for_best_model(best_model_names)
-    
-    # best_model_names = output_best_model_names(model_object_list)
-    
-    # generate_csv_for_best_model(best_model_names)
-    # model_object_list = get_models(h5_train.class_in_h5)
+    model_object_list_loaded = get_models(h5_train.class_in_h5, load_trained_models=True)
     image_dataset, lable_dataset, _, _ = h5_test.shuffle_and_lazyload(0, 1)
 
-    # best_model_names = get_best_models_loss(model_object_list)
-    # for i in range(len(model_object_list)):
-        # model_object_list[i].set_epoch(best_model_names[i][1])
-
-    # find_ideal_model(h5_train, model_object_list, lazy_split=lazy_split, epochs=max_epoch_from_list(best_model_names), save_models=True)
-
-    iterate_trough_models(model_object_list, -1, image_dataset, lable_dataset)
+    sum_test_path = f"{get_paths('phase_one_csv')}/test_sum_class_accuracy.csv"
+    
+    iterate_trough_models(model_object_list_loaded, -1, image_dataset, lable_dataset, epochs=[x.fit_data[-1][0] for x in model_object_list])
+    save_plot(model_object_list_loaded)
+    sum_plot(model_object_list_loaded)
+    sum_summed_plots(model_object_list_loaded)
+    path = sum_class_accuracy(model_object_list_loaded, h5_train.images_in_classes)
+    data_class_acc_val = sum_for_class_accuracy(cvs_object(path))
+    csv_obj = cvs_object(sum_test_path)
+    csv_obj.write(data_class_acc_val)
+    data = sum_summed_for_class_accuracy(csv_obj)
+    csv_obj.write(data, path=f"{get_paths('phase_one_csv')}/test_sum_summed_class_accuracy.csv", overwrite_path=True)
+    
+    combine_two_summed_class_accracy(sum_test_path, sum_val_path)
 
 
 
@@ -402,7 +378,7 @@ def iniitalize_dict(lable_dataset:list)->dict:
     return label_dict
 
 
-def iterate_trough_models(model_object_list:list, e:int, image_dataset, lable_dataset)->None:
+def iterate_trough_models(model_object_list:list, e:int, image_dataset, lable_dataset, epochs=None)->None:
     """Iterates through the modesl to get the accuracy using the validation set. This information is saved on the object,
     and later saved in a csv file
 
@@ -415,8 +391,9 @@ def iterate_trough_models(model_object_list:list, e:int, image_dataset, lable_da
     update_epoch = True if e == -1 else False
     
     for i in range(len(model_object_list)):
-        if update_epoch:
-            e = model_object_list[i].fit_data[-1][0]
+        if update_epoch and epochs != None:
+            # e = model_object_list[i].fit_data[-1][0]
+            e = epochs[i]
             
         if int(e) < 0:
             print(f"\nERROR: when iterating through the models, the epoch is smaller than 0 ({e})\n")

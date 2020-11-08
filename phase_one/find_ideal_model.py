@@ -45,6 +45,7 @@ class return_model(object):
 
     def set_epoch(self, epoch:int):
         self.epoch = epoch
+        
 
     def run_on_epoch(self, current_epoch:int)->bool:
         return True if int(self.epoch) >= int(current_epoch) or int(self.epoch) == -1 else False
@@ -219,7 +220,7 @@ def train_model(model:tf.python.keras.engine.sequential.Sequential,
     )
     
     earlystop = tf.keras.callbacks.EarlyStopping(
-        monitor='val_loss', min_delta=0.01, patience=10, verbose=0, mode='auto', baseline=None, restore_best_weights =False
+        monitor='val_loss', min_delta=0.01, patience=20, verbose=0, mode='auto', baseline=None, restore_best_weights =False
     )
     
     model.compile(optimizer=opt,
