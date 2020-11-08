@@ -66,17 +66,20 @@ def get_2d_image_shape(shape:tuple)->tuple:
     return shape[0], shape[1]
 
 def get_satina_median_model()->object:
-    img_shape = (35, 35, 3)
+    img_shape = (55, 55, 3)
     model = models.Sequential()
     model.add(layers.Conv2D(32, (3, 3), activation='relu', padding='same', input_shape=img_shape))
+    model.add(layers.Conv2D(32, (3, 3), activation='relu', padding='same'))
     model.add(layers.MaxPooling2D((2, 2)))
     model.add(layers.Conv2D(64, (3, 3), activation='relu', padding='same'))
+    model.add(layers.Conv2D(64, (3, 3), activation='relu', padding='same'))
     model.add(layers.MaxPooling2D((2, 2)))
+    model.add(layers.Conv2D(32, (3, 3), activation='relu', padding='same'))
     model.add(layers.Conv2D(64, (3, 3), activation='relu', padding='same'))
     return model, img_shape[:2]
 
 def get_satina_mode_model()->object:
-    img_shape = (25, 25, 3)
+    img_shape = (24, 24, 3)
     model = models.Sequential()
     model.add(layers.Conv2D(32, (3, 3), activation='relu', padding='same', input_shape=img_shape))
     model.add(layers.MaxPooling2D((2, 2)))
@@ -163,7 +166,7 @@ def reshape_numpy_array_of_images(images:np.array, size:tuple)->np.array:
         numpy.array: numpy array of the re-sized images
     """
     reshaped_images = []
-    
+
     done = len(images)
     progress = trange(done, desc='Reshape stuff', leave=True)
 
