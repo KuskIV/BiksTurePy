@@ -1,0 +1,5 @@
+category,train,test
+Dangerous warning,9893,4553
+Regularoty,32314,13188
+Informative,2906,0
+Others,503,77

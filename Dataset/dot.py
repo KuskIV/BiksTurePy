@@ -92,39 +92,39 @@ def write_counting_to_csv(path, count_per_category, fieldnames):
 
 def get_category_from_class(category_split_list, class_id):
     for category in category_split_list:
-        if class_id >= int(category[1]) and class_id < int(category[2]):
+        if int(class_id) >= int(category[1]) and int(class_id) < int(category[2]):
             return category[0]
     return None
 
 
-if __name__ == '__main__':
-    training_counter_d = count(initial_path+training_sub_path)
-    test_counter_d = count(initial_path+test_sub_path)
+# if __name__ == '__main__':
+#     training_counter_d = count(initial_path+training_sub_path)
+#     test_counter_d = count(initial_path+test_sub_path)
 
-    combined_counter_d = combine_dictionaries(training_counter_d, test_counter_d)
+#     combined_counter_d = combine_dictionaries(training_counter_d, test_counter_d)
 
-    read_class_descrip(class_descrip_csv_path)
-    class_text_labels, categories, subcategories = read_class_descrip(class_descrip_csv_path)
-    #Adjusting subcategories
-    subcategories.append(categories[0]) #add danger as sub category
-    subcategories.append(categories[-1]) #add others as sub category
+#     read_class_descrip(class_descrip_csv_path)
+#     class_text_labels, categories, subcategories = read_class_descrip(class_descrip_csv_path)
+#     #Adjusting subcategories
+#     subcategories.append(categories[0]) #add danger as sub category
+#     subcategories.append(categories[-1]) #add others as sub category
 
-    count_per_category = count_categories(combined_counter_d, categories)
+#     count_per_category = count_categories(combined_counter_d, categories)
 
-    count_per_subcategory = count_categories(combined_counter_d, subcategories)
-    # Add Danger and other to subcategory
-    # count_per_subcategory['Dangerous warning'] = count_per_category['Dangerous warning']
-    # count_per_subcategory['Others'] = count_per_category['Others']
-    #
-    # print('Number of images per category printed to categories.csv')
-    # write_counting_to_csv('categories.csv', count_per_category, ['Category', 'Number of images'])
-    # print('Number of images per category printed to subcategories.csv')
-    # write_counting_to_csv('subcategories.csv', count_per_subcategory, ['Subcategory', 'Number of images'])
+#     count_per_subcategory = count_categories(combined_counter_d, subcategories)
+#     # Add Danger and other to subcategory
+#     # count_per_subcategory['Dangerous warning'] = count_per_category['Dangerous warning']
+#     # count_per_subcategory['Others'] = count_per_category['Others']
+#     #
+#     # print('Number of images per category printed to categories.csv')
+#     # write_counting_to_csv('categories.csv', count_per_category, ['Category', 'Number of images'])
+#     # print('Number of images per category printed to subcategories.csv')
+#     # write_counting_to_csv('subcategories.csv', count_per_subcategory, ['Subcategory', 'Number of images'])
 
-    list_of_categories = count_per_category.keys()
-    list_of_subcategories = count_per_subcategory.keys()
+#     list_of_categories = count_per_category.keys()
+#     list_of_subcategories = count_per_subcategory.keys()
 
-    print(subcategories)
+#     print(subcategories)
 
-    print(get_category_from_class(categories, 164))
-    print(get_category_from_class(subcategories, 1))
+#     print(get_category_from_class(categories, 164))
+#     print(get_category_from_class(subcategories, 1))

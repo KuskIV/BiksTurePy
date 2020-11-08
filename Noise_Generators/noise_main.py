@@ -10,8 +10,9 @@ sys.path.insert(0, parent_dir)
 import global_paths
 from general_image_func import changeImageSize
 from Noise_Generators.weather_gen import weather
-from Noise_Generators.Perlin_noise import perlin
+from Noise_Generators.perlin_noise import perlin
 from Noise_Generators.brightness import brightness
+from Noise_Generators.homo_noise import homo_noise
 
 class Filter: #TODO create homophobic filter
     """The filter class is a combination the three noises fog, 
@@ -25,23 +26,27 @@ class Filter: #TODO create homophobic filter
     fog_set = None
     day_set = None
     wh_set = None
+    homo_set = None
     configuration = None
+
     def __init__(self,config:dict):
         """The to configure the default variables in perlin noise.
 
         Args:
             config (dict): The input should be a dictionary where the key is the name of the variable to change,
             The value would then be the value refresen by the keyword.
-            Keys = ['fog_set','day_set','wh_set']
+            Keys = ['fog_set','day_set','wh_set','homo_set']
         """
         self.configuration = config
-        Keys = ['fog_set','day_set','wh_set']
+        Keys = ['fog_set','day_set','wh_set','homo_set']
         if Keys[0] in config:
             self.fog_set = config.get(Keys[0])
         if config.get(Keys[1]) != None:
             self.day_set = config.get(Keys[1])
         if config.get(Keys[2]) != None:
             self.wh_set = config.get(Keys[2])
+        if config.get(Keys[3]) != None:
+            self.homo_set = config.get(Keys[3])
         
     def Apply(self,img:Image.Image)->Image.Image:
         """The method that applies the filters onto the images
@@ -65,6 +70,11 @@ class Filter: #TODO create homophobic filter
         if(self.day_set != None):
             bn = brightness(self.day_set)
             img = bn.DayAdjustment(img)
+
+        if(self.homo_set != None):
+            hom = homo_noise(self.homo_set)
+            img = hom.homofy(img)
+
         img = changeImageSize(old_size[0],old_size[1],img)
         return img
 
@@ -250,6 +260,9 @@ def premade_single_filter(str:str)->Filter:
     if str == 'night_heavy':
         config = {'factor':0.15}
         result = Filter({'day_set':config})
+    if str == 'std_homo':
+        config = {'a':0.5,'b':1.5,'cutoff':30,'filorder':2,'mode':'butterworth'}
+        result = Filter({'homo_set':config})
     return result
 
 def QuickDebugL():
@@ -289,7 +302,7 @@ def QuickDebug():
     #newImage[0].show()
     #newImage[1].show()
 
-QuickDebug()
+# QuickDebug()
 #fog_set=(1)
 #day_set=(0.5)
 #wh_set = (70,7,2,(2,2),(130,130,130))

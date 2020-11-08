@@ -171,7 +171,7 @@ def reshape_numpy_array_of_images(images:np.array, size:tuple)->np.array:
     progress = trange(done, desc='Reshape stuff', leave=True)
 
     for i in progress:
-        progress.set_description(F"Reshaping image {i} / {progress}")
+        progress.set_description(f"Reshaping image {i} / {progress}")
         progress.refresh()
 
         reshaped_images.append(tf.keras.preprocessing.image.smart_resize(images[i], size))
@@ -276,7 +276,7 @@ def get_belgian_model_object_list(shape:int, load_trained_models=False)->list:
     belgium_model = return_model(get_belgium_model(), get_belgium_model_path(), shape, load_trained_models)
 
     return [belgium_model]
-    #return [belgium_model_avg, belgium_model_median, belgium_model]
+    # return [belgium_model_avg, belgium_model_median, belgium_model]
 
 def load_best_model_and_image_size(model_path:str)->tuple:
     model = tf.keras.models.load_model(model_path)

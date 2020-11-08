@@ -5,8 +5,8 @@ paths = {
     'h5_test': 'Dataset/h5Dataset/h5_test.h5py',
     'train_set': 'Dataset/satina_gains_images/satina_trains',
     'test_set': 'Dataset/satina_gains_images/satina_tests',
-    'train_set_noise': 'Dataset/belgian_images/training_noise',
-    'test_set_noise': 'Dataset/belgian_images/testing_noise',
+    'train_set_noise': 'Dataset/satina_gains_images/satina_trains_noise',
+    'test_set_noise': 'Dataset/satina_gains_images/satina_tests_noise',
     'model': 'Models/saved_models',
     'ex_one_ideal': 'Models/saved_models/ex_one_ideal.h5',
     'large': 'Models/saved_models/large200.h5',
@@ -19,9 +19,12 @@ paths = {
     'satina_avg':'Models/saved_models/satina_avg.h5',
     'satina_median':'Models/saved_models/satina_median.h5',
     'satina_mode':'Models/saved_models/satina_mode.h5',
+    'category_csv':'Dataset/class_descrip.csv',
     'txt_file': 'labels.txt'
 }
 
+def get_category_csv():
+    return paths['category_csv']
 
 def get_paths(key: str) -> str:
     """Given a key, the value for that key is returned
