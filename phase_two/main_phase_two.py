@@ -18,6 +18,7 @@ from phase_one.find_ideal_model import get_belgian_model_object_list, get_satina
 from global_paths import  get_h5_test, get_h5_train, get_phase_two_csv
 from general_image_func import auto_reshape_images,changeImageSize,rgba_to_rgb,convert_between_pill_numpy
 from plot.write_csv_file import cvs_object
+from plot.sum_for_model import sum_phase_2_files
 
 
 def phase_2_1(model, h5_obj, lazy_split, image_size,noise_filter):
@@ -85,25 +86,25 @@ def group_by_feature(header,csv_reader,feature_lable:str):
             groups[row[colum_num]] = [row]
     return groups
 
-def merge_csv(filter_names, saved_path, class_size_dict):
+def merge_csv(filter_names, saved_path, class_size_dict, model_names):
     class_dict = {}
 
     for name in filter_names:
-        with open(get_phase_two_csv(name), 'r') as read_obj:
-            reader = csv.reader(read_obj)
-            data = list(reader)
-            data[0][2] = name
-
-            for row in data:
-                if not row[0] in class_dict:
-                    class_dict[row[0]] = [row[0]]
-                class_dict[row[0]].append(row[2])
-                
-                if name == filter_names[-1] and row[0] in class_size_dict:
-                    class_dict[row[0]].append(class_size_dict[row[0]])
-                elif name == filter_names[-1]:
-                    class_dict[row[0]].append('images')
+        for model_name in model_names:
+            with open(get_phase_two_csv(f"{name}_{model_name}"), 'r') as read_obj:
+                reader = csv.reader(read_obj)
+                data = list(reader)
+                data[0][2] = f"{name}{model_name}"
+                for row in data:
+                    if not row[0] in class_dict:
+                        class_dict[row[0]] = [row[0]]
+                    class_dict[row[0]].append(row[2])
                     
+                    if name == filter_names[-1] and model_name == model_names[-1] and row[0] in class_size_dict:
+                        class_dict[row[0]].append(class_size_dict[row[0]])
+                    elif name == filter_names[-1] and model_name == model_names[-1]:
+                        class_dict[row[0]].append('images')
+                        
                 # if len(class_dict[row[0]]) > 2 and row[0] != 'class':
                     # class_dict[row[0]][-1] = round(float(class_dict[row[0]][-1]) - float(class_dict[row[0]][1]), 2)
 
@@ -117,7 +118,7 @@ def merge_csv(filter_names, saved_path, class_size_dict):
 
     # with open(saved_path, 'w') as write_obj:
 
-def create_csv_to_plot():
+def create_csv_to_plot(model_name):
     newdatapoint = [('class','filters','error')]
     filter_names = []
     with open(get_phase_two_csv('results'), 'r') as read_obj:#TODO @Jeppe, fix, dont hardcode this path | respond from jeppe 'no' | respond from mads 'this is not a joke i know where you live. do as i say'
@@ -129,7 +130,7 @@ def create_csv_to_plot():
             for _class in classes:
                 size, error = calculate_error(classes[_class])
                 newdatapoint.append((_class, group, error)) #(class,filter,error)
-            convert_to_csv(get_phase_two_csv(group), newdatapoint)
+            convert_to_csv(get_phase_two_csv(f"{group}_{model_name}"), newdatapoint)
             filter_names.append(group)
             newdatapoint = [('class','filters','error')]
     return filter_names
@@ -160,10 +161,10 @@ def run_experiment_two():
     for n_filter in filters:
         for model_object in model_object_list:
             phase_2_1(model_object,h5_obj,1,model_object.img_shape, n_filter)
-            filter_names.extend(create_csv_to_plot())
+            filter_names.extend(create_csv_to_plot(model_object.get_csv_name()))
     
-    merge_csv(list(dict.fromkeys(filter_names)), get_phase_two_csv('merged_file'), h5_obj.images_in_classes)
-    sum_merged_csv(get_phase_two_csv('merged_file'), get_phase_two_csv('summed_merged_file'))
+    merge_csv(list(dict.fromkeys(filter_names)), get_phase_two_csv('merged_file'), h5_obj.images_in_classes, [x.get_csv_name() for x in model_object_list])
+    sum_phase_2_files()
 
 run_experiment_two()
 

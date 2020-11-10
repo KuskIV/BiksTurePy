@@ -56,14 +56,23 @@ class return_model(object):
     def get_size(self)->int:
         return self.img_shape[0]
 
-    def get_csv_name(self)->str:
-        return f"model{return_model.get_size(self)}"
+    def get_csv_name(self, extension=None)->str:
+        if extension == None:
+            return f"model{return_model.get_size(self)}"
+        else:
+            return f"model{return_model.get_size(self)}_{extension}"
 
-    def get_csv_path(self)->str:
-        return f"{get_paths('phase_one_csv')}/{return_model.get_csv_name(self)}.csv"
+    def get_csv_path(self, extension=None)->str:
+        if extension == None:
+            return f"{get_paths('phase_one_csv')}/{return_model.get_csv_name(self)}.csv"
+        else:
+            return f"{get_paths('phase_one_csv')}/{return_model.get_csv_name(self)}_{extension}.csv"
 
-    def get_summed_csv_path(self)->str:
-        return f"{get_paths('phase_one_csv')}/model{return_model.get_size(self)}_summed.csv"
+    def get_summed_csv_path(self, extension=None)->str:
+        if extension == None:
+            return f"{get_paths('phase_one_csv')}/model{return_model.get_size(self)}_summed.csv"
+        else:
+            return f"{get_paths('phase_one_csv')}/model{return_model.get_size(self)}_{extension}_summed.csv"
 
 def get_2d_image_shape(shape:tuple)->tuple:
     return shape[0], shape[1]
