@@ -21,16 +21,18 @@ from plot.write_csv_file import cvs_object
 
 
 def phase_2_1(model, h5_obj, lazy_split, image_size,noise_filter):
-    values = [("image","filter","class","predicted_class")]
-    lazy_load = 2
-    for j in range(lazy_load):
-        original_images, original_labels, _, _ = h5_obj.shuffle_and_lazyload(j, lazy_split) #TODO need variant of this that does not generate test set or shuffle
+    values = [("image","filter","class","predicted_class")]#headers for the csv that will be generated
+    lazy_load = 2#! likly deprecated as lazy loading should not be used any more, because of the memory issues
+    for j in range(lazy_load):#!this whole loop likly need to be removed
+        original_images, original_labels, _, _ = h5_obj.shuffle_and_lazyload
+        
+        (j, lazy_split) #TODO need variant of this that does not generate test set or shuffle
 
-        image_tuples = add_noise((convert_between_pill_numpy(original_images * 255,mode='numpy->pil'),original_labels),noise_filter) #tuple(image,class,filter)
-        numpy_imgs = convert_between_pill_numpy([changeImageSize(image_size[0],image_size[1],im[0].convert('RGB')) for im in image_tuples],mode='pil->numpy')
+        image_tuples = add_noise((convert_between_pill_numpy(original_images * 255,mode='numpy->pil'),original_labels),noise_filter) #tuple(image,class,filter) the method returns the before show tuple where some of the images ahve been applied some noise
+        numpy_imgs = convert_between_pill_numpy([changeImageSize(image_size[0],image_size[1],im[0].convert('RGB')) for im in image_tuples],mode='pil->numpy')#?confused about the specefics, but the result seems to be a list of numpy imgs that is returned
         
         #print(len(numpy_imgs))
-        for i in range(len(numpy_imgs)):
+        for i in range(len(numpy_imgs)): #? very confused about the actuel effect of the loop. Think it may be a drunk way of replacing the pill with a numpy
             image_tuples[i] = list(image_tuples[i])
             image_tuples[i][0] = numpy_imgs[i]
             image_tuples[i] = tuple(image_tuples[i])

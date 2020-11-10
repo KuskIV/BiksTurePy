@@ -282,9 +282,9 @@ def QuickDebugL():
 def QuickDebug():
     """Small debug function
     """
-    img = Image.open('D:/BiksTurePy/FullIJCNN2013/02/00024.ppm')
+    img = Image.open('E:/satina_gains_images/satina_tests/13/G_11415.ppm')
     imgs = [img,img]
-    fog = {'octaves':4, 'persistence':0.2, 'lacunarity': 3, 'alpha': 0.25, 'darkness':0.5}
+    fog = {'octaves':8, 'persistence':0.3, 'lacunarity': 5, 'alpha': 0.4}
     day = {'factor':1.0} 
     night = {'factor':0.3}
     #snow = {'density':(0.2,0.3),'density_uniformity':(0.95,1.0),'drop_size':(0.8,0.9), 'drop_size_uniformity':(0.2,0.6),'angle':(-30,30),'speed':(0.08,0.15),'blur':(0.004,0.01)}
@@ -297,12 +297,12 @@ def QuickDebug():
 
     fog = premade_single_filter('fog')
     #(F + img).show()
-    (F + img).save('C:/Users/Jamie/Desktop' + '/' + 'fog.png')
+    (F + img).save('C:/Users/jeppe/Desktop/Coroni_wrong/fog.png')
     #newImage = F*imgs
     #newImage[0].show()
     #newImage[1].show()
 
-# QuickDebug()
+QuickDebug()
 #fog_set=(1)
 #day_set=(0.5)
 #wh_set = (70,7,2,(2,2),(130,130,130))
