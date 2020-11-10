@@ -10,7 +10,7 @@ sys.path.insert(0, parent_dir)
 import global_paths
 from general_image_func import changeImageSize
 from Noise_Generators.weather_gen import weather
-from Noise_Generators.perlin_noise import perlin
+from Noise_Generators.Perlin_noise import perlin
 from Noise_Generators.brightness import brightness
 from Noise_Generators.homo_noise import homo_noise
 

@@ -30,6 +30,6 @@ def get_class_accuracy(current_class_accuracy, current_total_in_class):
 
     return (right / total) * 100
 
+
 if __name__ == '__main__':
-    sum_merged_file(get_category, get_sub_category, get_class_accuracy)
     sum_train_test_file(get_category, get_sub_category, get_class_accuracy)

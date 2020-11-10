@@ -7,7 +7,9 @@ from sum_constructors.sum_constructor_object import sum_constructor
 
 def get_object(get_sub_category, get_category, get_class_accuracy):
     def get_headers(headers):
-        return [['category', 'sub-category', headers[-1]]]
+        return_list = [['category', 'sub-category', headers[-1]]]
+        return_list[0].extend(headers[1:-1]) 
+        return return_list
 
     def get_current_data(row):
         current_class_accuracy = [row[1:-1]]
