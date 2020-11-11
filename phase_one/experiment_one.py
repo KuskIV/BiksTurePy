@@ -8,17 +8,17 @@ import os.path
 from os import path
 from matplotlib import pyplot as plt
 
-from find_ideal_model import train_and_eval_models_for_size, get_belgian_model_object_list, get_satina_gains_model_object_list
-from test_csv import combine_two_summed_class_accracy
-
 import os,sys,inspect
 current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parent_dir = os.path.dirname(current_dir)
 sys.path.insert(0, parent_dir)
 
+
+from phase_one.find_ideal_model import train_and_eval_models_for_size, get_satina_gains_model_object_list
+from phase_one.test_csv import combine_two_summed_class_accracy
 from Dataset.load_h5 import h5_object
 from Models.create_model import store_model
-from global_paths import get_test_model_paths, get_paths, get_h5_test, get_h5_train
+from global_paths import get_paths
 from plot.write_csv_file import cvs_object, plot
 from general_image_func import auto_reshape_images, convert_numpy_image_to_image
 from Models.test_model import make_prediction
@@ -109,38 +109,38 @@ def get_best_models(model_object_list:list)->list:
     return best_models
 
 
-def generate_csv_for_best_model(best_model_names:list)->None:
-    """Will based on the model object list produce a csv illustrating the accuracy for each epoch.
-    This data is saved on the object when they are training
+# def generate_csv_for_best_model(best_model_names:list)->None:
+#     """Will based on the model object list produce a csv illustrating the accuracy for each epoch.
+#     This data is saved on the object when they are training
 
-    Args:
-        best_model_names (list): The input list of model objects
-    """
+#     Args:
+#         best_model_names (list): The input list of model objects
+#     """
 
-    model_names = [f"model{x[2]}_{x[1]}" for x in best_model_names]
-    model_indexes = [0]
-    data = [['class']]
-    data[0].extend(model_names)
+#     model_names = [f"model{x[2]}_{x[1]}" for x in best_model_names]
+#     model_indexes = [0]
+#     data = [['class']]
+#     data[0].extend(model_names)
 
-    csv_base_path = get_paths('phase_one_csv')
-    csv_path = f"{csv_base_path}/class_accuracy.csv"
-    save_path = f"{csv_base_path}/class_accuracy_minimized.csv"
+#     csv_base_path = get_paths('phase_one_csv')
+#     csv_path = f"{csv_base_path}/class_accuracy.csv"
+#     save_path = f"{csv_base_path}/class_accuracy_minimized.csv"
 
-    if not path.exists(csv_path):
-        print(f"\nThe following path does not exist: {csv_path}\nCode: plot.write_csv_file.py")
-        sys.exit()
+#     if not path.exists(csv_path):
+#         print(f"\nThe following path does not exist: {csv_path}\nCode: plot.write_csv_file.py")
+#         sys.exit()
 
-    with open(csv_path, 'r') as csv_obj:
-        rows = csv.reader(csv_obj, delimiter=',')
-        rows = list(rows)
+#     with open(csv_path, 'r') as csv_obj:
+#         rows = csv.reader(csv_obj, delimiter=',')
+#         rows = list(rows)
 
-        model_indexes.extend([rows[0].index(x) for x in model_names if x in rows[0]])
+#         model_indexes.extend([rows[0].index(x) for x in model_names if x in rows[0]])
 
-        for i in range(1, len(rows)):
-            data.append([rows[i][x] for x in model_indexes])
+#         for i in range(1, len(rows)):
+#             data.append([rows[i][x] for x in model_indexes])
 
-    csv_obj = cvs_object(save_path)
-    csv_obj.write(data)
+#     csv_obj = cvs_object(save_path)
+#     csv_obj.write(data)
 
 def get_largest_index(best_model_names:list)->int:
     best_acc = 0
@@ -161,7 +161,7 @@ def max_epoch_from_list(epoch_list):
     
     return best_epoch
 
-def sum_summed_plots(model_object_list:list, extension)->None:
+def sum_summed_plots(model_object_list:list, extension, base_path)->None:
     csv_data = []
     raw_data = []
     
@@ -186,7 +186,7 @@ def sum_summed_plots(model_object_list:list, extension)->None:
         for j in range(len(csv_data)):
             csv_data[j].append(raw_data[i][j][1])
         
-    csv_obj = cvs_object(f"{get_paths('phase_one_csv')}/{extension}_sum_summed.csv")
+    csv_obj = cvs_object(f"{base_path}/{extension}_sum_summed.csv")
     csv_obj.write(csv_data)
 
 def output_best_model_names(model_object_list):
@@ -199,21 +199,21 @@ def output_best_model_names(model_object_list):
         
     return output_names
 
-def iterate_and_sum(model_object_list, extension, sum_path, image_dataset, lable_dataset, epochs_end, images_in_classes):
-    iterate_trough_models(model_object_list, epochs_end, image_dataset, lable_dataset)
+def iterate_and_sum(model_object_list, extension, sum_path, image_dataset, lable_dataset, epochs_end, images_in_classes, base_path, epochs=None):
+    iterate_trough_models(model_object_list, epochs_end, image_dataset, lable_dataset, epochs=epochs)
 
     save_plot(model_object_list, extension)
     sum_plot(model_object_list, extension)
-    sum_summed_plots(model_object_list, extension)
-    path = sum_class_accuracy(model_object_list, images_in_classes, extension)
+    sum_summed_plots(model_object_list, extension, base_path)
+    path = sum_class_accuracy(model_object_list, images_in_classes, extension, base_path)
     data_class_acc_val = sum_for_class_accuracy(cvs_object(path))
     csv_obj = cvs_object(sum_path)
     csv_obj.write(data_class_acc_val)
     data = sum_summed_for_class_accuracy(csv_obj)
-    csv_obj.write(data, path=f"{get_paths('phase_one_csv')}/{extension}_sum_summed_class_accuracy.csv", overwrite_path=True)
+    csv_obj.write(data, path=f"{base_path}/{extension}_sum_summed_class_accuracy.csv", overwrite_path=True)
 
 
-def run_experiment_one(lazy_split:int, train_h5_path:str, test_h5_path:str, get_models, epochs_end:int=10, dataset_split:int=0.7)->None:
+def run_experiment_one(lazy_split:int, train_h5_path:str, test_h5_path:str, get_models, epochs_end:int=10, dataset_split:int=0.7, folder_extension = None, model_paths=None)->None:
     """This method runs experiment one, and is done in several steps:
             1. For each epoch to train for, the models are trained. After each epoch, the accuracy is saved on the object.
             2. When the training is done, all the data is saved in csv files as (Epochs,Resolution,Class,Class_Acuracy,Total_in_Class)
@@ -231,6 +231,10 @@ def run_experiment_one(lazy_split:int, train_h5_path:str, test_h5_path:str, get_
         epochs_end (int, optional): The upper limit for how many epochs to train the modesl for. Defaults to 10.
         dataset_split (int, optional): The split between the training and validation set. Defaults to 0.7.
     """
+    base_path = get_paths('phase_one_csv') if folder_extension == None else f"{get_paths('phase_one_csv')}/{folder_extension}"
+    if not folder_extension == None and not os.path.exists(base_path):
+        os.mkdir(base_path)
+        
     h5_train = h5_object(train_h5_path, training_split=dataset_split)
     h5_test = h5_object(test_h5_path, training_split=1)
 
@@ -238,60 +242,30 @@ def run_experiment_one(lazy_split:int, train_h5_path:str, test_h5_path:str, get_
         print(f"The input train and test set does not have matching classes {h5_train.class_in_h5} - {h5_test.class_in_h5}")
         sys.exit()
 
-    model_object_list = get_models(h5_train.class_in_h5)
+    model_object_list = get_models(h5_train.class_in_h5, model_paths)
 
     find_ideal_model(h5_train, model_object_list, lazy_split=lazy_split, epochs=epochs_end, save_models=True)
 
     print(f"\n------------------------\nTraining done. Now evaluation will be made.\n\n")
 
-    
-
-    base_path = get_paths('phase_one_csv')
 
     sum_test_path = f"{base_path}/test_sum_class_accuracy.csv"
     sum_val_path = f"{base_path}/val_sum_class_accuracy.csv"
-    
-    # iterate_trough_models(model_object_list, epochs_end, image_dataset, lable_dataset) #TODO This should not use h5_test, rather the h5_trainig and evaluation set.
-
-    # del image_dataset
-    # del lable_dataset
-
-    # save_plot(model_object_list)
-    # sum_plot(model_object_list)
-    # sum_summed_plots(model_object_list)
-    # path = sum_class_accuracy(model_object_list, h5_train.images_in_classes)
-    # data_class_acc_val = sum_for_class_accuracy(cvs_object(path))
-    # csv_obj = cvs_object(sum_val_path)
-    # csv_obj.write(data_class_acc_val)
-    # data = sum_summed_for_class_accuracy(csv_obj)
-    # csv_obj.write(data, path=f"{get_paths('phase_one_csv')}/val_sum_summed_class_accuracy.csv", overwrite_path=True)
 
     model_object_list_loaded = get_models(h5_train.class_in_h5, load_trained_models=True)
     
-
-    
-    # iterate_trough_models(model_object_list_loaded, -1, image_dataset, lable_dataset, epochs=[x.fit_data[-1][0] for x in model_object_list])
-    # save_plot(model_object_list_loaded)
-    # sum_plot(model_object_list_loaded)
-    # sum_summed_plots(model_object_list_loaded)
-    # path = sum_class_accuracy(model_object_list_loaded, h5_train.images_in_classes)
-    # data_class_acc_val = sum_for_class_accuracy(cvs_object(path))
-    # csv_obj = cvs_object(sum_test_path)
-    # csv_obj.write(data_class_acc_val)
-    # data = sum_summed_for_class_accuracy(csv_obj)
-    # csv_obj.write(data, path=f"{get_paths('phase_one_csv')}/test_sum_summed_class_accuracy.csv", overwrite_path=True)
-    
+    #TODO: Fix epoch count in test_val_sum_class_accuracy.csv
     _, _, image_dataset, lable_dataset = h5_train.shuffle_and_lazyload(0, 1)
-    iterate_and_sum(model_object_list, 'val', sum_test_path, image_dataset, lable_dataset, epochs_end, h5_train.images_in_classes)
+    iterate_and_sum(model_object_list, 'val', sum_val_path, image_dataset, lable_dataset, epochs_end, h5_train.images_in_classes, base_path)
     
     image_dataset, lable_dataset, _, _ = h5_test.shuffle_and_lazyload(0, 1)
-    iterate_and_sum(model_object_list_loaded, 'test', sum_val_path, image_dataset, lable_dataset, [x.fit_data[-1][0] for x in model_object_list], h5_test.images_in_classes)
-    combine_two_summed_class_accracy(sum_test_path, sum_val_path)
+    iterate_and_sum(model_object_list_loaded, 'test', sum_test_path, image_dataset, lable_dataset, -1, h5_test.images_in_classes, base_path, epochs=[x.fit_data[-1][0] for x in model_object_list])
+    combine_two_summed_class_accracy(sum_test_path, sum_val_path, base_path)
 
 
 
     for model in model_object_list:
-        csv_obj = cvs_object(f"{get_paths('phase_one_csv')}/{model.get_csv_name()}_fitdata.csv")
+        csv_obj = cvs_object(f"{base_path}/{model.get_csv_name()}_fitdata.csv")
         csv_obj.write(model.fit_data)
 
     data = [['epoch']]
@@ -310,11 +284,8 @@ def run_experiment_one(lazy_split:int, train_h5_path:str, test_h5_path:str, get_
                     data[i].append(' ')
                 else:
                     data[i].append(model_object.fit_data[i][1])
-    csv_obj = cvs_object(f"{get_paths('phase_one_csv')}/fitdata_combined.csv")
+    csv_obj = cvs_object(f"{base_path}/fitdata_combined.csv")
     csv_obj.write(data)
-
-
-
 
 
 def get_best_models_loss(model_object_list):
@@ -332,7 +303,7 @@ def get_best_models_loss(model_object_list):
         
     return best_models
 
-def sum_class_accuracy(model_object_list:list, images_in_classes, extension)->dict:
+def sum_class_accuracy(model_object_list:list, images_in_classes, extension, base_path)->dict:
     """When training the accuracy for each class for each epoch is recorded. Here the sum of all accuracies for all classes for each epoch is summed together.
 
     Args:
@@ -341,7 +312,7 @@ def sum_class_accuracy(model_object_list:list, images_in_classes, extension)->di
     Returns:
         dict: [description]
     """
-    save_path = f"{get_paths('phase_one_csv')}/{extension}_class_accuracy.csv"
+    save_path = f"{base_path}/{extension}_class_accuracy.csv"
     model_class_accuracy = {}
 
     for model_object in model_object_list:
@@ -384,15 +355,15 @@ def convert_dict_to_list(model_class_accuracy:dict, images_in_classes)->list:
 def sum_plot(model_object_list:list, extension)->None:
     csv_object_list =  []
     for model_object in model_object_list:
-        obj = cvs_object(f"{model_object.get_csv_path()}_{extension}", label=model_object.get_size())
+        obj = cvs_object(model_object.get_csv_path(extension=extension), label=model_object.get_size())
         data = sum_for_model(obj)
-        obj.write(data, f"{model_object.get_summed_csv_path()}_{extension}", overwrite_path=True)
+        obj.write(data, model_object.get_summed_csv_path(extension=extension), overwrite_path=True)
         csv_object_list.append(obj)
     # plot(csv_object_list)
 
 def save_plot(model_object_list:list, extension)->None:
     for model_object in model_object_list:
-        cvs_obj = cvs_object(f"{model_object.get_csv_path()}_{extension}")
+        cvs_obj = cvs_object(model_object.get_csv_path(extension=extension))
         cvs_obj.write(model_object.csv_data)
 
 def iniitalize_dict(lable_dataset:list)->dict:
@@ -513,11 +484,3 @@ def get_model_results(lable_dict:dict, model_object:object ,settings:tuple,shoul
 
     if should_print:
         print("----------------")
-
-# def quick()->None:
-#     lazy_split = 1
-
-#     test_path = get_h5_test()
-#     train_path = get_h5_train()
-
-#     run_experiment_one(lazy_split, train_path, test_path, epochs_end=1)

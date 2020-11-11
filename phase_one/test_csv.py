@@ -44,8 +44,8 @@ def combine_rows(test_rows, val_rows):
         result[i].extend(val_rows[i][indent:])
     return result
 
-def combine_two_summed_class_accracy(sum_test_path, sum_val_path):
-    save_path = f"{get_paths('phase_one_csv')}/test_val_sum_class_accuracy.csv"
+def combine_two_summed_class_accracy(sum_test_path, sum_val_path, base_path):
+    save_path = f"{base_path}/test_val_sum_class_accuracy.csv"
     test_rows = get_rows(sum_test_path, 'test')
     val_rows = get_rows(sum_val_path, 'val')
     

@@ -75,7 +75,7 @@ class Filter: #TODO create homophobic filter
             hom = homo_noise(self.homo_set)
             img = hom.homofy(img)
 
-        img = changeImageSize(old_size[0],old_size[1],img)
+        img = changeImageSize(old_size[1],old_size[0],img)
         return img
 
     def __add__(self,img:Image.Image)->Image.Image:
@@ -92,7 +92,7 @@ class Filter: #TODO create homophobic filter
 
     def __mul__(self, imgs:list)->list:
         """Method for applying the same filter on multiple images
-
+        #TODO loading bar pls mads
         Args:
             imgs (list): List of Pil images
 
@@ -100,8 +100,14 @@ class Filter: #TODO create homophobic filter
             list: List of Pil images with the filter
         """
         returnList = []
-        for img in imgs:
-            returnList.append(self + img)
+
+        done = len(imgs)
+        progress = trange(done, desc='mult stuff', leave=True)
+
+        for i in progress:
+            progress.set_description(f"{i}/{done} multi done")
+            progress.refresh()
+            returnList.append(self + imgs[i])
         return returnList
         
     def get_config(self):
@@ -150,10 +156,9 @@ def apply_multiple_filters(Imgs:list,mode = 'rand', KeepOriginal:bool=True, filt
 
     fil = list(filters.items())
     if mode == 'linear':
-        imlist = []
-        indexes=chunk_it(range(len(images)),len(fil))
+        indexes=chunk_it(range(len(images)),len(fil)+4) #TODO find ideal number to add here(didnt work)
 
-        done = len(indexes)
+        done = len(indexes)-4
         progress = trange(done, desc='index stuff', leave=True)        
 
         for i in progress:
@@ -163,8 +168,13 @@ def apply_multiple_filters(Imgs:list,mode = 'rand', KeepOriginal:bool=True, filt
             for j in range(len(fil)):
 
                 temp_list = fil[j][1]*images[indexes[i].start:indexes[i].stop]
-                lst = [(entry,fil[j][0],lables[0]) for entry in temp_list]
-                result.extend(lst)
+                temptemp_list = lables[indexes[i].start:indexes[i].stop]
+                for k in range(len(temp_list)):
+                    temp_list[k] = (temp_list[k],fil[j][0],temptemp_list[k])
+                    
+                # lst = [(entry,fil[j][0],lables[0]) for entry in temp_list]
+                
+                result.extend(temp_list)
 
     done = len(lables)
     progress = trange(done, desc="Lable stuff", leave=True)
@@ -302,7 +312,8 @@ def QuickDebug():
     #newImage[0].show()
     #newImage[1].show()
 
-QuickDebug()
+if __name__ == '__main__':
+    QuickDebug()
 #fog_set=(1)
 #day_set=(0.5)
 #wh_set = (70,7,2,(2,2),(130,130,130))

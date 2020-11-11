@@ -8,40 +8,37 @@ from operator import itemgetter
 import os,sys,inspect
 current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parent_dir = os.path.dirname(current_dir)
-sys.path.insert(0, parent_dir) 
+sys.path.insert(0, parent_dir)
 
 from Noise_Generators.noise_main import Filter,premade_single_filter,apply_multiple_filters
 from Dataset.load_h5 import h5_object
-from global_paths import get_test_model_paths, get_paths, get_h5_test, get_h5_train
+from global_paths import get_paths, get_h5_test, get_h5_train, get_phase_two_csv
 from Models.test_model import partial_accumilate_distribution, print_accumilate_distribution, make_prediction
-from phase_one.find_ideal_model import get_belgian_model_object_list, get_satina_gains_model_object_list
-from global_paths import  get_h5_test, get_h5_train, get_phase_two_csv
+from phase_one.find_ideal_model import get_satina_gains_model_object_list
 from general_image_func import auto_reshape_images,changeImageSize,rgba_to_rgb,convert_between_pill_numpy
 from plot.write_csv_file import cvs_object
 from plot.sum_for_model import sum_phase_2_files
 
 
-def phase_2_1(model, h5_obj, lazy_split, image_size,noise_filter):
+def phase_2_1(model, h5_obj, lazy_split, image_size,noise_filter, base_path):
     values = [("image","filter","class","predicted_class")]#headers for the csv that will be generated
-    lazy_load = 2#! likly deprecated as lazy loading should not be used any more, because of the memory issues
-    for j in range(lazy_load):#!this whole loop likly need to be removed
-        original_images, original_labels, _, _ = h5_obj.shuffle_and_lazyload(j, lazy_split) #TODO need variant of this that does not generate test set or shuffle
+    original_images, original_labels, _, _ = h5_obj.shuffle_and_lazyload(0, 1) #TODO need variant of this that does not generate test set or shuffle
 
-        image_tuples = add_noise((convert_between_pill_numpy(original_images * 255,mode='numpy->pil'),original_labels),noise_filter) #tuple(image,class,filter) the method returns the before show tuple where some of the images ahve been applied some noise
-        numpy_imgs = convert_between_pill_numpy([changeImageSize(image_size[0],image_size[1],im[0].convert('RGB')) for im in image_tuples],mode='pil->numpy')#?confused about the specefics, but the result seems to be a list of numpy imgs that is returned
-        
-        #print(len(numpy_imgs))
-        for i in range(len(numpy_imgs)): #? very confused about the actuel effect of the loop. Think it may be a drunk way of replacing the pill with a numpy
-            image_tuples[i] = list(image_tuples[i])
-            image_tuples[i][0] = numpy_imgs[i]
-            image_tuples[i] = tuple(image_tuples[i])
+    image_tuples = add_noise((convert_between_pill_numpy(original_images * 255,mode='numpy->pil'),original_labels),noise_filter) #tuple(image,class,filter) the method returns the before show tuple where some of the images ahve been applied some noise
+    numpy_imgs = convert_between_pill_numpy([changeImageSize(image_size[0],image_size[1],im[0].convert('RGB')) for im in image_tuples],mode='pil->numpy')#?confused about the specefics, but the result seems to be a list of numpy imgs that is returned
 
-        for i in range(len(image_tuples)):
-            prediction = make_prediction(model.model, image_tuples[i][0], (image_size[0], image_size[1], 3))
-            predicted_label = np.argmax(prediction) #Get the class with highest liklyhood of the predictions
-            image_tuples[i] = (image_tuples[i]+tuple([predicted_label,'yeet'])) #concatanate two tuples to create new tuple , which replacess the old one
-        values.extend(image_tuples)
-    convert_to_csv(get_phase_two_csv('results'),[val[1:4] for val in values]) #tuple(image,class,filter,predicted_class)
+    #print(len(numpy_imgs))
+    for i in range(len(numpy_imgs)): #? very confused about the actuel effect of the loop. Think it may be a drunk way of replacing the pill with a numpy
+        image_tuples[i] = list(image_tuples[i])
+        image_tuples[i][0] = numpy_imgs[i]
+        image_tuples[i] = tuple(image_tuples[i])
+
+    for i in range(len(image_tuples)):
+        prediction = make_prediction(model.model, image_tuples[i][0], (image_size[0], image_size[1], 3))
+        predicted_label = np.argmax(prediction) #Get the class with highest liklyhood of the predictions
+        image_tuples[i] = (image_tuples[i]+tuple([predicted_label,'yeet'])) #concatanate two tuples to create new tuple , which replacess the old one
+    values.extend(image_tuples)
+    convert_to_csv(f"{base_path}/{model.get_csv_name()}_result.csv",[val[1:4] for val in values]) #tuple(image,class,filter,predicted_class)
 
 def load_filters():
     F = premade_single_filter('fog')
@@ -59,7 +56,7 @@ def add_noise(imgs,noise_filter):
 def convert_to_csv(path,values):
     with open(path, mode='w') as phase2_results:
         phase2_writer = csv.writer(phase2_results, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-        
+
         for value in values:
             phase2_writer.writerow(list(value))
 
@@ -77,7 +74,7 @@ def find_feature_colume(headers:list,feature_lable:str)->int:
     for i in range(len(headers)):
         if headers[i] == feature_lable:
             return i
-        
+
 def group_by_feature(header,csv_reader,feature_lable:str):
     groups = {}
     colum_num = find_feature_colume(header,feature_lable)
@@ -88,12 +85,12 @@ def group_by_feature(header,csv_reader,feature_lable:str):
             groups[row[colum_num]] = [row]
     return groups
 
-def merge_csv(filter_names, saved_path, class_size_dict, model_names):
+def merge_csv(filter_names, saved_path, class_size_dict, model_names, base_path):
     class_dict = {}
 
     for name in filter_names:
         for model_name in model_names:
-            with open(get_phase_two_csv(f"{name}_{model_name}"), 'r') as read_obj:
+            with open(f"{base_path}/{name}_{model_name}.csv", 'r') as read_obj:
                 reader = csv.reader(read_obj)
                 data = list(reader)
                 data[0][2] = f"{name}{model_name}"
@@ -101,12 +98,12 @@ def merge_csv(filter_names, saved_path, class_size_dict, model_names):
                     if not row[0] in class_dict:
                         class_dict[row[0]] = [row[0]]
                     class_dict[row[0]].append(row[2])
-                    
+
                     if name == filter_names[-1] and model_name == model_names[-1] and row[0] in class_size_dict:
                         class_dict[row[0]].append(class_size_dict[row[0]])
                     elif name == filter_names[-1] and model_name == model_names[-1]:
                         class_dict[row[0]].append('images')
-                        
+
                 # if len(class_dict[row[0]]) > 2 and row[0] != 'class':
                     # class_dict[row[0]][-1] = round(float(class_dict[row[0]][-1]) - float(class_dict[row[0]][1]), 2)
 
@@ -120,10 +117,25 @@ def merge_csv(filter_names, saved_path, class_size_dict, model_names):
 
     # with open(saved_path, 'w') as write_obj:
 
-def create_csv_to_plot(model_name):
+def complete_newdatapoints(data_points, images_in_classes, group):
+    new_points = []
+    for key, value in images_in_classes.items():
+        if key not in [x[0] for x in data_points]:
+            new_points.append([key,group,0])
+    return new_points
+
+
+def create_csv_to_plot(model_name, base_path, images_in_classes):
     newdatapoint = [('class','filters','error')]
     filter_names = []
-    with open(get_phase_two_csv('results'), 'r') as read_obj:#TODO @Jeppe, fix, dont hardcode this path | respond from jeppe 'no' | respond from mads 'this is not a joke i know where you live. do as i say'
+    
+    csv_path = f"{base_path}/{model_name}_result.csv"
+    
+    if not os.path.exists(csv_path):
+        print(f"ERROR: The path \"{csv_path}\" does not exists. The program will now exit.")
+        sys.exit()
+    
+    with open(csv_path, 'r') as read_obj:#TODO @Jeppe, fix, dont hardcode this path | respond from jeppe 'no' | respond from mads 'this is not a joke i know where you live. do as i say'
         csv_reader = csv.reader(read_obj)
         header = next(csv_reader)
         groups = group_by_feature(header,csv_reader,'filter')
@@ -132,41 +144,28 @@ def create_csv_to_plot(model_name):
             for _class in classes:
                 size, error = calculate_error(classes[_class])
                 newdatapoint.append((_class, group, error)) #(class,filter,error)
-            convert_to_csv(get_phase_two_csv(f"{group}_{model_name}"), newdatapoint)
+            newdatapoint.extend(complete_newdatapoints(newdatapoint, images_in_classes, group))
+            convert_to_csv(f"{base_path}/{group}_{model_name}.csv", newdatapoint)
             filter_names.append(group)
             newdatapoint = [('class','filters','error')]
     return filter_names
 
-def sum_merged_csv(input_path:str, output_path:str)->None:
-    ouput_data = [['category', 'subcategory', 'images']]
-    
-    if not os.path.exists(input_path):
-        print(f"ERROR: the csv file \"{input_path}\" does not exists. The program will now execute")
-        sys.exit()
-        
-    with open(input_path, 'r') as read_obj:
-        reader = csv.reader(read_obj)
-        data = list(reader)
-        
-        
-        
-
-def run_experiment_two():
-    test_path = get_h5_test()
+def ex_two_eval_noise(test_path, folder_extension, get_models=get_satina_gains_model_object_list, training_split=1, model_paths=None):
     filters = load_filters()
     filter_names = []
-    trainin_split = 1
     
-    h5_obj = h5_object(test_path, training_split=trainin_split)
-    model_object_list = get_satina_gains_model_object_list(h5_obj.class_in_h5, load_trained_models=True)
-    
-    for n_filter in filters:
+    base_path = get_paths('phase_two_csv') if folder_extension == None else f"{get_paths('phase_two_csv')}/{folder_extension}"
+    if not folder_extension == None and not os.path.exists(base_path):
+        os.mkdir(base_path)
+
+    h5_obj = h5_object(test_path, training_split=training_split)
+    model_object_list = get_models(h5_obj.class_in_h5, load_trained_models=True, model_paths=model_paths)
+
+    for filter in filters:
         for model_object in model_object_list:
-            phase_2_1(model_object,h5_obj,1,model_object.img_shape, n_filter)
-            filter_names.extend(create_csv_to_plot(model_object.get_csv_name()))
-    
-    merge_csv(list(dict.fromkeys(filter_names)), get_phase_two_csv('merged_file'), h5_obj.images_in_classes, [x.get_csv_name() for x in model_object_list])
-    sum_phase_2_files()
+            phase_2_1(model_object,h5_obj,1,model_object.img_shape, filter, base_path)
+            filter_names.extend(create_csv_to_plot(model_object.get_csv_name(), base_path, h5_obj.images_in_classes))
 
-run_experiment_two()
-
+    merge_csv_path = f"{base_path}/merged_file.csv"
+    merge_csv(list(dict.fromkeys(filter_names)), merge_csv_path, h5_obj.images_in_classes, [x.get_csv_name() for x in model_object_list], base_path)
+    sum_phase_2_files(base_path)

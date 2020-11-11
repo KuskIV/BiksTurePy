@@ -20,7 +20,7 @@ sys.path.insert(0, parent_dir)
 
 from general_image_func import get_class_names, display_numpy_image                        # Not an error
 from Models.create_model import flatten_and_dense          # Not an error
-from global_paths import get_belgium_model_path, get_paths, get_belgium_model_avg_path, get_belgium_model_median_path, get_satina_model_avg_path, get_satina_model_median_path, get_satina_model_mode_path
+from global_paths import get_paths, get_satina_model_avg_path, get_satina_model_median_path, get_satina_model_mode_path, get_satina_model_avg_path_norm, get_satina_model_median_path_norm, get_satina_model_mode_path_norm
 
 class return_model(object):
     """
@@ -110,61 +110,46 @@ def get_satina_avg_model()->object:
     model.add(layers.Conv2D(64, (5, 5), activation='relu', padding='same'))
     return model, img_shape[:2]
 
-def get_belgium_model()->object:
-    img_shape = (82,82,3)
-    den_danske_model = models.Sequential()
-    den_danske_model.add(layers.Conv2D(32, (4, 4), activation='relu', padding='same', input_shape=img_shape))
-    den_danske_model.add(layers.Conv2D(32, (4, 4), activation='relu', padding='valid'))
-    den_danske_model.add(layers.MaxPool2D((2,2)))
-    den_danske_model.add(layers.Conv2D(32, (4, 4), activation='relu', padding='same'))
-    den_danske_model.add(layers.Conv2D(32, (4, 4), activation='relu', padding='valid'))
-    den_danske_model.add(layers.MaxPool2D((2,2)))
-    den_danske_model.add(layers.Conv2D(32, (4, 4), activation='relu', padding='same'))
-    den_danske_model.add(layers.Conv2D(32, (4, 4), activation='relu', padding='valid'))
-    den_danske_model.add(layers.MaxPool2D((2,2)))
-    den_danske_model.add(layers.Conv2D(64, (4, 4), activation='relu'))
-    return den_danske_model, img_shape[:2]
-
-def get_belgium_model_avg()->object:
-    img_shape = (131, 131, 3)
+def get_satina_median_model_norm()->object:
+    img_shape = (55, 55, 3)
     model = models.Sequential()
-
-    model.add(layers.Conv2D(32, (3,3), activation='relu', padding='same', input_shape=img_shape))
-    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
-    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
-    model.add(layers.Conv2D(32, (3, 3), padding='valid', activation='relu'))
+    model.add(layers.Conv2D(32, (3, 3), activation='relu', padding='same', input_shape=img_shape))
+    model.add(layers.Conv2D(32, (3, 3), activation='relu', padding='same'))
+    model.add(layers.LayerNormalization(axis=1, center=True, scale=True))
     model.add(layers.MaxPooling2D((2, 2)))
-    model.add(layers.Conv2D(64, (3, 3), padding='same', activation='relu'))
-    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
-    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
-    model.add(layers.Conv2D(32, (3, 3), padding='valid', activation='relu'))
-    model.add(layers.MaxPooling2D(2, 2))
-    model.add(layers.Conv2D(64, (3, 3), activation='relu'))
-    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
-    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
-    model.add(layers.Conv2D(32, (3, 3), padding='valid', activation='relu'))
-    model.add(layers.MaxPooling2D(2, 2))
-    model.add(layers.Conv2D(64, (3, 3), activation='relu'))
-
+    model.add(layers.Conv2D(64, (3, 3), activation='relu', padding='same'))
+    model.add(layers.Conv2D(64, (3, 3), activation='relu', padding='same'))
+    model.add(layers.LayerNormalization(axis=1, center=True, scale=True))
+    model.add(layers.MaxPooling2D((2, 2)))
+    model.add(layers.Conv2D(32, (3, 3), activation='relu', padding='same'))
+    model.add(layers.Conv2D(64, (3, 3), activation='relu', padding='same'))
+    model.add(layers.LayerNormalization(axis=1, center=True, scale=True))
     return model, img_shape[:2]
 
-def get_belgium_model_median()->object:
-    img_shape = (101, 101, 3)
+def get_satina_mode_model_norm()->object:
+    img_shape = (24, 24, 3)
     model = models.Sequential()
-
-    model.add(layers.Conv2D(32, (3,3), activation='relu', padding='same', input_shape=img_shape))
-    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
-    model.add(layers.Conv2D(32, (3, 3), padding='valid', activation='relu'))
+    model.add(layers.Conv2D(32, (3, 3), activation='relu', padding='same', input_shape=img_shape))
+    model.add(layers.LayerNormalization(axis=1, center=True, scale=True))
     model.add(layers.MaxPooling2D((2, 2)))
-    model.add(layers.Conv2D(64, (3, 3), padding='same', activation='relu'))
-    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
-    model.add(layers.Conv2D(32, (3, 3), padding='valid', activation='relu'))
-    model.add(layers.MaxPooling2D(2, 2))
-    model.add(layers.Conv2D(64, (3, 3), activation='relu'))
-    model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
-    model.add(layers.Conv2D(32, (3, 3), padding='valid', activation='relu'))
-    model.add(layers.MaxPooling2D(2, 2))
-    model.add(layers.Conv2D(64, (3, 3), activation='relu'))
+    model.add(layers.Conv2D(64, (3, 3), activation='relu', padding='same'))
+    model.add(layers.LayerNormalization(axis=1, center=True, scale=True))
+    model.add(layers.MaxPooling2D((2, 2)))
+    model.add(layers.Conv2D(64, (3, 3), activation='relu', padding='same'))
+    model.add(layers.LayerNormalization(axis=1, center=True, scale=True))
+    return model, img_shape[:2]
+
+def get_satina_avg_model_norm()->object:
+    img_shape = (45, 45, 3)
+    model = models.Sequential()
+    model.add(layers.Conv2D(32, (5, 5), activation='relu', padding='same', input_shape=img_shape))
+    model.add(layers.LayerNormalization(axis=1, center=True, scale=True))
+    model.add(layers.MaxPooling2D((2, 2)))
+    model.add(layers.Conv2D(64, (5, 5), activation='relu', padding='same'))
+    model.add(layers.LayerNormalization(axis=1, center=True, scale=True))
+    model.add(layers.MaxPooling2D((2, 2)))
+    model.add(layers.Conv2D(64, (5, 5), activation='relu', padding='same'))
+    model.add(layers.LayerNormalization(axis=1, center=True, scale=True))
     return model, img_shape[:2]
 
 def reshape_numpy_array_of_images(images:np.array, size:tuple)->np.array:
@@ -229,7 +214,7 @@ def train_model(model:tf.python.keras.engine.sequential.Sequential,
     )
     
     earlystop = tf.keras.callbacks.EarlyStopping(
-        monitor='val_loss', min_delta=0.01, patience=20, verbose=0, mode='auto', baseline=None, restore_best_weights =False
+        monitor='val_loss', min_delta=0.01, patience=20, verbose=0, mode='auto', baseline=None, restore_best_weights=False
     )
     
     model.compile(optimizer=opt,
@@ -301,27 +286,39 @@ def train_and_eval_models_for_size(
 
     # print(model.evaluate(reshaped_test_images, test_labels))
 
-def get_satina_gains_model_object_list(shape:int, load_trained_models:bool=False)->list:
-    satina_model_avg = return_model(get_satina_avg_model(), get_satina_model_avg_path(), shape, load_trained_models)
-    satina_model_median = return_model(get_satina_median_model(), get_satina_model_median_path(), shape, load_trained_models)
-    satina_model_mode = return_model(get_satina_mode_model(), get_satina_model_mode_path(), shape, load_trained_models)
+def get_satina_gains_model_object_list(shape:int, load_trained_models:bool=False, model_paths=None)->list:
+    if model_paths != None:
+        if len(model_paths) != 3:
+            print("ERROR: model path length is not correct witn getting models (satina gains models)")
+            sys.exit()
+            
+    median_path = get_satina_model_median_path() if model_paths==None else model_paths[0]
+    avg_path = get_satina_model_avg_path() if model_paths==None else model_paths[1]
+    small_path = get_satina_model_mode_path() if model_paths==None else model_paths[2]
+    
+    
+    satina_model_avg = return_model(get_satina_avg_model(), median_path, shape, load_trained_models)
+    satina_model_median = return_model(get_satina_median_model(), avg_path, shape, load_trained_models)
+    satina_model_mode = return_model(get_satina_mode_model(), small_path, shape, load_trained_models)
 
     # return [satina_model_mode]
     return [satina_model_avg, satina_model_median, satina_model_mode]
 
-def get_belgian_model_object_list(shape:int, load_trained_models=False)->list:
-    belgium_model_avg = return_model(get_belgium_model_avg(), get_belgium_model_avg_path(), shape, load_trained_models)
-    belgium_model_median = return_model(get_belgium_model_median(), get_belgium_model_median_path(), shape, load_trained_models)
-    belgium_model = return_model(get_belgium_model(), get_belgium_model_path(), shape, load_trained_models)
+def get_satina_gains_model_norm_object_list(shape:int, load_trained_models:bool=False, model_paths=None)->list:
+    if model_paths != None:
+        if len(model_paths) != 3:
+            print("ERROR: model path length is not correct witn getting models (satina gains normalized models)")
+            sys.exit()
+    
+    median_path = get_satina_model_median_path() if model_paths==None else model_paths[0]
+    avg_path = get_satina_model_avg_path() if model_paths==None else model_paths[1]
+    small_path = get_satina_model_mode_path() if model_paths==None else model_paths[2]
+    
+    
+    satina_model_avg = return_model(get_satina_avg_model_norm(), median_path, shape, load_trained_models)
+    satina_model_median = return_model(get_satina_median_model_norm(), avg_path, shape, load_trained_models)
+    satina_model_mode = return_model(get_satina_mode_model_norm(), small_path, shape, load_trained_models)
 
-    return [belgium_model]
-    # return [belgium_model_avg, belgium_model_median, belgium_model]
+    # return [satina_model_mode]
+    return [satina_model_avg, satina_model_median, satina_model_mode]
 
-def load_best_model_and_image_size(model_path:str)->tuple:
-    model = tf.keras.models.load_model(model_path)
-    return model, model.input_shape[1:3]
-
-
-def get_best_phase_one_model(shape:int)->object:
-    model_path = get_paths('ex_one_ideal')
-    return return_model(load_best_model_and_image_size(model_path), model_path, shape, True)

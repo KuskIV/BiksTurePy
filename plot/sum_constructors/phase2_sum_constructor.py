@@ -13,7 +13,7 @@ def get_object(get_sub_category, get_category, get_class_accuracy):
 
     def get_current_data(row):
         current_class_accuracy = [row[1:-1]]
-        current_total_in_class = [int(row[-1])]
+        current_total_in_class = [int(float(row[-1]))]
         current_category = get_category(row[0])
         current_sub_category = get_sub_category(row[0])
         
@@ -32,7 +32,7 @@ def get_object(get_sub_category, get_category, get_class_accuracy):
 
     def add_to_current_data(data, row):
         data[0].append(row[1:-1])
-        data[1].append(int(row[-1]))
+        data[1].append(int(float(row[-1])))
 
     def category_changed(data, row):
         return data[3] != get_sub_category(row[0])

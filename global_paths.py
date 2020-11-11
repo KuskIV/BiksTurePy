@@ -7,18 +7,24 @@ paths = {
     'test_set': 'Dataset/satina_gains_images/satina_tests',
     'train_set_noise': 'Dataset/satina_gains_images/satina_trains_noise',
     'test_set_noise': 'Dataset/satina_gains_images/satina_tests_noise',
+    'h5_train_noise': 'Dataset/h5Dataset/h5_train_noise.h5py',
+    'h5_test_noise': 'Dataset/h5Dataset/h5_test_noise.h5py',
     'model': 'Models/saved_models',
     'ex_one_ideal': 'Models/saved_models/ex_one_ideal.h5',
     'large': 'Models/saved_models/large200.h5',
     'medium': 'Models/saved_models/medium128.h5',
     'small': 'Models/saved_models/small32.h5',
-    'belgium': 'Models/saved_models/belgium.h5',
-    'belgium_avg': 'Models/saved_models/belgium_avg.h5',
-    'belgium_median': 'Models/saved_models/belgium_median.h5',
     'phase_one_csv': 'phase_one/csv_data',
+    'phase_two_csv': 'phase_two/csv_output',
     'satina_avg':'Models/saved_models/satina_avg.h5',
     'satina_median':'Models/saved_models/satina_median.h5',
     'satina_mode':'Models/saved_models/satina_mode.h5',
+    'satina_avg_norm':'Models/saved_models/satina_avg_norm.h5',
+    'satina_median_norm':'Models/saved_models/satina_median_norm.h5',
+    'satina_mode_norm':'Models/saved_models/satina_mode_norm.h5',
+    'satina_avg_noise':'Models/saved_models/satina_avg_noise.h5',
+    'satina_median_noise':'Models/saved_models/satina_median_noise.h5',
+    'satina_mode_noise':'Models/saved_models/satina_mode_noise.h5',
     'category_csv':'Dataset/class_descrip.csv',
     'txt_file': 'labels.txt'
 }
@@ -57,6 +63,13 @@ def get_h5_train() -> str:
 
 def get_h5_test() -> str:
     return paths.get('h5_test')
+
+def get_h5_train_noise() -> str:
+    return paths.get('h5_train_noise')
+
+
+def get_h5_test_noise() -> str:
+    return paths.get('h5_test_noise')
 
 
 def get_training_set_path() -> str:
@@ -123,17 +136,6 @@ def get_small_model_path() -> str:
     return paths.get('small')
 
 
-def get_belgium_model_path() -> str:
-    return paths.get('belgium')
-
-
-def get_belgium_model_avg_path() -> str:
-    return paths.get('belgium_avg')
-
-
-def get_belgium_model_median_path() -> str:
-    return paths.get('belgium_median')
-
 def get_satina_model_mode_path() -> str:
     return paths.get('satina_mode')
 
@@ -146,8 +148,27 @@ def get_satina_model_median_path() -> str:
     return paths.get('satina_median')
 
 
-def get_test_model_paths() -> tuple:
-    return get_large_model_path(), get_medium_model_path(), get_small_model_path(), get_belgium_model_path()
+def get_satina_model_mode_path_norm() -> str:
+    return paths.get('satina_mode_norm')
 
-def get_phase_two_csv(name:str)->str:
-    return f'phase_two/csv_output/phase2_{name}.csv'
+
+def get_satina_model_avg_path_norm() -> str:
+    return paths.get('satina_avg_norm')
+
+
+def get_satina_model_median_path_norm() -> str:
+    return paths.get('satina_median_norm')
+
+def get_satina_model_mode_path_noise() -> str:
+    return paths.get('satina_mode_noise')
+
+
+def get_satina_model_avg_path_noise() -> str:
+    return paths.get('satina_avg_norm')
+
+def get_satina_model_median_path_noise() -> str:
+    return paths.get('satina_median_noise')
+
+def get_phase_two_csv(name:str=None, extension:str=None)->str:
+    base_path=get_paths('phase_two_csv')
+    return f'{base_path}/phase2_{name}.csv' if extension==None else f'{base_path}/{extension}/phase2_{name}.csv'

@@ -11,10 +11,11 @@ def generalized_sum(csv_obj, methods):
 
     new_cvs_file = methods.get_headers(headers)
 
+    if not path.exists(csv_obj.path):
+        print(f"\nThe following path does not exist: {csv_obj.path}\nCode: plot.write_csv_file.py")
+        sys.exit()
+
     with open(csv_obj.path, 'r') as csvfile:
-            if not path.exists(csv_obj.path):
-                print(f"\nThe following path does not exist: {csv_obj.path}\nCode: plot.write_csv_file.py")
-                sys.exit()
             first_row = next(reader, None)
             current_data = methods.get_current_data(first_row)
             plots = csv.reader(csvfile, delimiter=',')

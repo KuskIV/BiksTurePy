@@ -41,8 +41,15 @@ def add_folders(train_path, test_path):
         if not test_folder in train_folder_names:
             os.mkdir(f"{train_path}/{test_folder}")
             train_folder_names.append(test_folder)
+            
+def rename_and_add_folders(train_path,test_path):
+    add_folders(train_path, test_path)
 
-add_folders(train_path, test_path)
+    # rename_folders(train_path)
+    # rename_folders(test_path)
+    
+if __name__ == "__main__":
+    add_folders(train_path, test_path)
 
-rename_folders(train_path)
-rename_folders(test_path)
+    rename_folders(train_path)
+    rename_folders(test_path)
