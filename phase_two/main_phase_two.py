@@ -157,7 +157,7 @@ def initailize_initial_values(folder_extension):
 
     return filters, filter_names, base_path
 
-def get_h5_with_models(h5_path, training_split = 1, get_models=get_satina_gains_model_object_list,model_paths=model_paths):
+def get_h5_with_models(h5_path, training_split = 1, get_models=get_satina_gains_model_object_list,model_paths=None):
     h5_obj = h5_object(h5_path, training_split=training_split)
     model_object_list = get_models(h5_obj.class_in_h5, load_trained_models=True, model_paths=model_paths)
     return h5_obj,model_object_list
