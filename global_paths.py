@@ -164,7 +164,7 @@ def get_satina_model_mode_path_noise() -> str:
 
 
 def get_satina_model_avg_path_noise() -> str:
-    return paths.get('satina_avg_norm')
+    return paths.get('satina_avg_noise')
 
 def get_satina_model_median_path_noise() -> str:
     return paths.get('satina_median_noise')

@@ -11,7 +11,7 @@ from plot.sum_constructors.class_accuracy_constructor import get_object as acc_c
 from plot.sum_constructors.model_obj_summed_constructor import get_object as model_con
 from plot.sum_main import get_class_accuracy, get_sub_category, get_category
 from plot.generalized_sum import generalized_sum
-from plot.phase2_merged_file_sum import sum_merged_file
+from plot.phase2_merged_file_sum import sum_merged_file, sum_cat_file
 
 def sum_for_model(csv_obj):
     return generalized_sum(csv_obj, model_con(get_class_accuracy))
@@ -24,6 +24,9 @@ def sum_summed_for_class_accuracy(csv_obj):
 
 def sum_phase_2_files(base_path):
     sum_merged_file(get_category, get_sub_category, get_class_accuracy, base_path)
+    
+def sum_phase_2_cat_file(base_path, csv_name):
+    return sum_cat_file(csv_name, get_category, get_sub_category, get_class_accuracy, base_path)
 
 
 

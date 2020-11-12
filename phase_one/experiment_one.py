@@ -66,6 +66,7 @@ def find_ideal_model(h5_obj:object, model_object_list:list, epochs:int=10, lazy_
     if save_models:
         for models in model_object_list:
             store_model(models.model, models.path)
+            print(f"A mode using resolution {models.img_shape} has successfully been saved at path \"{models.path}\"")
 
 def get_best_models(model_object_list:list)->list:
     """Will iterate through the csv file produced, and find at what epoch each model had the higest accuracy.
@@ -242,7 +243,8 @@ def run_experiment_one(lazy_split:int, train_h5_path:str, test_h5_path:str, get_
         print(f"The input train and test set does not have matching classes {h5_train.class_in_h5} - {h5_test.class_in_h5}")
         sys.exit()
 
-    model_object_list = get_models(h5_train.class_in_h5, model_paths)
+    model_object_list = get_models(h5_train.class_in_h5, model_paths=model_paths)
+    
 
     find_ideal_model(h5_train, model_object_list, lazy_split=lazy_split, epochs=epochs_end, save_models=True)
 
@@ -460,8 +462,8 @@ def update_values(key:int,label_dict:dict,prt:bool)->tuple:
     class_size = label_dict[key][0]+label_dict[key][1]
     class_percent = round((label_dict[key][1]/class_size)*100, 2)
 
-    if prt:
-        print(f"class: {class_name.zfill(3)} | right: {right_name} | wrong: {wrong_name} | procent: {round(class_percent, 2)}")
+    # if prt:
+        # print(f"class: {class_name.zfill(3)} | right: {right_name} | wrong: {wrong_name} | procent: {round(class_percent, 2)}")
 
     return class_name, class_percent, class_size
 

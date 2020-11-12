@@ -20,12 +20,12 @@ from plot.write_csv_file import cvs_object
 from plot.sum_for_model import sum_phase_2_files
 
 
-def phase_2_1(model, h5_obj, lazy_split, image_size,noise_filter, base_path):
+def phase_2_1(model,noise_filter, base_path, original_images, original_labels):
     values = [("image","filter","class","predicted_class")]#headers for the csv that will be generated
-    original_images, original_labels, _, _ = h5_obj.shuffle_and_lazyload(0, 1) #TODO need variant of this that does not generate test set or shuffle
+    # original_images, original_labels, _, _ = h5_obj.shuffle_and_lazyload(0, 1) #TODO need variant of this that does not generate test set or shuffle
 
     image_tuples = add_noise((convert_between_pill_numpy(original_images * 255,mode='numpy->pil'),original_labels),noise_filter) #tuple(image,class,filter) the method returns the before show tuple where some of the images ahve been applied some noise
-    numpy_imgs = convert_between_pill_numpy([changeImageSize(image_size[0],image_size[1],im[0].convert('RGB')) for im in image_tuples],mode='pil->numpy')#?confused about the specefics, but the result seems to be a list of numpy imgs that is returned
+    numpy_imgs = convert_between_pill_numpy([changeImageSize(model.img_shape[0],model.img_shape[1],im[0].convert('RGB')) for im in image_tuples],mode='pil->numpy')#?confused about the specefics, but the result seems to be a list of numpy imgs that is returned
 
     #print(len(numpy_imgs))
     for i in range(len(numpy_imgs)): #? very confused about the actuel effect of the loop. Think it may be a drunk way of replacing the pill with a numpy
@@ -34,7 +34,7 @@ def phase_2_1(model, h5_obj, lazy_split, image_size,noise_filter, base_path):
         image_tuples[i] = tuple(image_tuples[i])
 
     for i in range(len(image_tuples)):
-        prediction = make_prediction(model.model, image_tuples[i][0], (image_size[0], image_size[1], 3))
+        prediction = make_prediction(model.model, image_tuples[i][0], (model.img_shape[0], model.img_shape[1], 3))
         predicted_label = np.argmax(prediction) #Get the class with highest liklyhood of the predictions
         image_tuples[i] = (image_tuples[i]+tuple([predicted_label,'yeet'])) #concatanate two tuples to create new tuple , which replacess the old one
     values.extend(image_tuples)
@@ -162,10 +162,13 @@ def ex_two_eval_noise(test_path, folder_extension, get_models=get_satina_gains_m
     model_object_list = get_models(h5_obj.class_in_h5, load_trained_models=True, model_paths=model_paths)
 
     for filter in filters:
+        original_images, original_labels, _, _ = h5_obj.shuffle_and_lazyload(0, 1) #TODO need variant of this that does not generate test set or shuffle
         for model_object in model_object_list:
-            phase_2_1(model_object,h5_obj,1,model_object.img_shape, filter, base_path)
+            phase_2_1(model_object, filter, base_path, original_images, original_labels)
             filter_names.extend(create_csv_to_plot(model_object.get_csv_name(), base_path, h5_obj.images_in_classes))
 
     merge_csv_path = f"{base_path}/merged_file.csv"
     merge_csv(list(dict.fromkeys(filter_names)), merge_csv_path, h5_obj.images_in_classes, [x.get_csv_name() for x in model_object_list], base_path)
     sum_phase_2_files(base_path)
+    
+    

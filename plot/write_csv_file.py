@@ -46,6 +46,15 @@ class cvs_object():
         if return_object:
             return cvs_object(path)
         
+    def get_lines(self):
+        if not os.path.exists(self.path):
+            print(f"ERROR: The csv file \"{self.path}\" does not exists. The program will now exit.")
+            sys.exit()
+        
+        with open(self.path, 'r', newline='') as csvfile:
+            reader = csv.reader(csvfile)
+            data = list(reader)
+        return data
 
     
 def plot(cvs_list:object, title:str="look at this graph", lable:str="_")->None:

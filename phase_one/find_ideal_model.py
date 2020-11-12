@@ -291,7 +291,8 @@ def get_satina_gains_model_object_list(shape:int, load_trained_models:bool=False
         if len(model_paths) != 3:
             print("ERROR: model path length is not correct witn getting models (satina gains models)")
             sys.exit()
-            
+    
+    
     median_path = get_satina_model_median_path() if model_paths==None else model_paths[0]
     avg_path = get_satina_model_avg_path() if model_paths==None else model_paths[1]
     small_path = get_satina_model_mode_path() if model_paths==None else model_paths[2]
@@ -302,7 +303,7 @@ def get_satina_gains_model_object_list(shape:int, load_trained_models:bool=False
     satina_model_mode = return_model(get_satina_mode_model(), small_path, shape, load_trained_models)
 
     # return [satina_model_mode]
-    return [satina_model_avg, satina_model_median, satina_model_mode]
+    return [satina_model_median, satina_model_avg, satina_model_mode]
 
 def get_satina_gains_model_norm_object_list(shape:int, load_trained_models:bool=False, model_paths=None)->list:
     if model_paths != None:
@@ -320,5 +321,5 @@ def get_satina_gains_model_norm_object_list(shape:int, load_trained_models:bool=
     satina_model_mode = return_model(get_satina_mode_model_norm(), small_path, shape, load_trained_models)
 
     # return [satina_model_mode]
-    return [satina_model_avg, satina_model_median, satina_model_mode]
+    return [satina_model_median, satina_model_avg, satina_model_mode]
 

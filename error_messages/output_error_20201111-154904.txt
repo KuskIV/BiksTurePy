@@ -1,0 +1,1 @@
+[(<class 'AttributeError'>, AttributeError("'return_model' object has no attribute 'model_path'"), <traceback object at 0x7f6660294e40>)]

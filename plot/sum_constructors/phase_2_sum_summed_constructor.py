@@ -8,11 +8,11 @@ from sum_constructors.sum_constructor_object import sum_constructor
 def get_object(get_sub_category, get_category, get_class_accuracy):
     def get_headers(headers):
         headers_list = [['category', headers[2]]]
-        headers_list[-1].extend(headers[3:-1])
+        headers_list[-1].extend(headers[3:])
         return headers_list
 
     def get_current_data(row):
-        current_class_accuracy = [row[3:-1]]
+        current_class_accuracy = [row[3:]]
         current_total_in_class = [int(float(row[2]))]
         current_category = row[0]
         
@@ -30,7 +30,7 @@ def get_object(get_sub_category, get_category, get_class_accuracy):
         return return_list
 
     def add_to_current_data(data, row):
-        data[0].append(row[3:-1])
+        data[0].append(row[3:])
         data[1].append(int(float(row[2])))
 
     def category_changed(data, row):

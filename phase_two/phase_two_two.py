@@ -4,7 +4,7 @@ current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentfra
 parent_dir = os.path.dirname(current_dir)
 sys.path.insert(0, parent_dir)
 from phase_one.find_ideal_model import train_and_eval_models_for_size
-from global_paths import get_paths, get_training_set_noise_path, get_test_set_noise_path, get_h5_train
+from global_paths import get_paths, get_training_set_noise_path, get_test_set_noise_path, get_h5_train, get_h5_test
 from Noise_Generators.noise_main import Filter,premade_single_filter,apply_multiple_filters
 from Dataset.load_h5 import h5_object
 from Dataset.create_h5 import generate_h5
@@ -26,7 +26,6 @@ def save_dataset(dataset, path):
         
     for i in range(len(imgs)):
         imgs[i].save(f"{path}/{lables[i]}/{i}_{filters[i]}.ppm")#*saves the img as ppm, using the index and the filter used on it, sperates by and underscore for the ease of passing later.
-        #TODO the above line has never been tested so be aware that it is propably a liklt source of errors
 
 
 def create_dir(path):
@@ -36,27 +35,51 @@ def create_dir(path):
         os.mkdir(path)
 
 def generate_noise_dataset(h5_obj, dataset_split, filters,image_size, lazy_end=1, lazy_start=0):
-    original_images, original_labels, test_images, test_labels = h5_obj.shuffle_and_lazyload(lazy_start, lazy_end)#TODO this should be training and validation set instead. Since the test set should now be loaded in sperately
+    original_images, original_labels, _, _ = h5_obj.shuffle_and_lazyload(lazy_start, lazy_end)#TODO this should be training and validation set instead. Since the test set should now be loaded in sperately
     training_set = add_noise((original_images,original_labels), filters, image_size)#adds the noise to the images in linear
     # for i in range(len(training_set)):
     #     training_set[i][0].show()
     #     print(training_set[i][1])
-    test_set = add_noise((test_images,test_labels), filters, image_size)#adds the noise to the images in linear
-    return training_set,test_set
+    # test_set = add_noise((test_images,test_labels), filters, image_size)#adds the noise to the images in linear
+    return training_set #,test_set
 
-def train_noise_model(h5_obj,model_object_list,data_split,filters, generate_dataset=False):
+
+
+def generate_and_save_noise_dataset(h5_obj, data_split, filters, img_shape, data_set_noise_path, data_set_path, h5_noise_path):
+    dataset = generate_noise_dataset(h5_obj,data_split,filters,img_shape)#generates the dataset with noises on the training and validation set
+    save_dataset(dataset, get_training_set_noise_path()) #saves the dataset in the provided path
+    rename_and_add_folders(data_set_noise_path, data_set_path)
+    generate_h5(h5_noise_path,data_set_noise_path)
+
+def generate_train_set(data_split, filters, img_shape):
+    h5_path = get_h5_train()
+    h5_obj = h5_object(h5_path, training_split=1)
+    generate_and_save_noise_dataset(h5_obj, 
+                                    data_split, 
+                                    filters, 
+                                    img_shape, 
+                                    get_paths('train_set_noise'), 
+                                    get_paths('train_set'), 
+                                    get_paths('h5_train_noise')
+                                    )
+
+def generate_test_set(data_split, filters, img_shape):
+    h5_path = get_h5_test()
+    h5_obj = h5_object(h5_path, training_split=1)
+    generate_and_save_noise_dataset(h5_obj, 
+                                data_split, 
+                                filters, 
+                                img_shape, 
+                                get_paths('test_set_noise'), 
+                                get_paths('test_set'), 
+                                get_paths('h5_test_noise')
+                                )
+
+def train_noise_model(model_object_list,data_split,filters, generate_dataset=False):
     if generate_dataset:
-        dataset = generate_noise_dataset(h5_obj,data_split,filters,model_object_list.img_shape)#generates the dataset with noises on the training and validation set
-        save_dataset(dataset[0], get_training_set_noise_path()) #saves the dataset in the provided path
-        save_dataset(dataset[1], get_test_set_noise_path())
-        rename_and_add_folders(get_paths('train_set_noise'),get_paths('test_set_noise'))
-        generate_h5(get_paths('h5_train_noise'),get_paths('train_set_noise'))
-        generate_h5(get_paths('h5_test_noise'),get_paths('test_set_noise'))
-    
-    
-    
+        generate_train_set(data_split, filters,model_object_list.img_shape)
+        generate_test_set(data_split, filters,model_object_list.img_shape)
     # train_model(dataset,model_object) #trains model on new dataset
-
 
 def load_filters():
     F = premade_single_filter('fog')
@@ -91,20 +114,17 @@ def train_model(data_set, model_object, epochs = 10, save_model = True):
 
     train_and_eval_models_for_size(model_object.img_shape ,model_object.model,train_imgs,train_lables,test_imgs,test_lables,epochs=epochs)#!High potentiel to be patialy deprecated, and should propely be updated the a new form
 
-def test_model(model,test_path):
-    pass
-def create_csv():
-    pass
-
 def qucik_debug():#TODO insert params, these should idealy lead to a already generated dataset with applied noise
     #!All code blow this comment is propably deprecated as massive changes to the used classes have be made since, it was originaly written.
     h5_path = get_h5_train()
-    training_split = 0.7
+    training_split = 1
     h5_obj = h5_object(h5_path, training_split=training_split)
-    # ideal_model = get_best_phase_one_model(h5_obj.class_in_h5)
     model_object_list = get_satina_gains_model_object_list(h5_obj.class_in_h5)
     generat_dataset = True
     for model_object in model_object_list:
-        train_noise_model(h5_obj, model_object,0.6,load_filters(), generate_dataset=generat_dataset)
+        train_noise_model(model_object,0.6,load_filters(), generate_dataset=generat_dataset)
         generat_dataset=False
-qucik_debug()
+
+if __name__ == "__main__":
+    qucik_debug()
+    
