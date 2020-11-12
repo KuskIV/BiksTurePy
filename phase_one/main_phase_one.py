@@ -6,39 +6,28 @@ sys.path.insert(0, parent_dir)
 
 from phase_one.experiment_one import run_experiment_one
 from phase_one.find_ideal_model import get_satina_gains_model_object_list, get_satina_gains_model_norm_object_list 
-# from Models.test_model import partial_accumilate_distribution, print_accumilate_distribution
-# from global_paths import get_paths, get_h5_test, get_h5_train
-# from general_image_func import auto_reshape_images
 
+def ex_one(test_path:str, train_path:str, lazy_split:int=1, epoch_limit:int=100, folder_extension:str="experiment_one", model_paths:list=None)->None:
+    """Performs experiment one. This will train and save at default three models, in the folder 'folder_extension'
 
-# def acc_dist_for_images(h5_obj:object, models:list, sizes:list, lazy_split)->None: #! NOT UPDATED TO NEW DATASET
-#     accArr = np.zeros((3, 43, 2))
-
-#     for k in range(lazy_split):
-#         train_images, train_labels, _, _ = h5_obj.shuffle_and_lazyload(k, lazy_split)
-#         for i in range(len(models)):
-#             train_images = auto_reshape_images(sizes[i], train_images, smart_resize=True)
-#             arr = partial_accumilate_distribution(train_images, train_labels, sizes[i], model=models[i])
-#             for j in range(len(arr)):
-#                 accArr[i][j][0] += arr[j][0]
-#                 accArr[i][j][1] += arr[j][1]
-    
-#     for i in range(len(models)):
-#         print_accumilate_distribution(accArr[i], size=sizes[i])
-
-def ex_one(test_path, train_path, lazy_split=1, epoch_limit=100, folder_extension="experiment_one", model_paths=None):
+    Args:
+        test_path (str): path to the test h5 file
+        train_path (str): path to the train h5 file
+        lazy_split (int, optional): how many splits the train and test images are split into. Defaults to 1.
+        epoch_limit (int, optional): the upperlimit of how many epochs each model can be trained for. Defaults to 100.
+        folder_extension (str, optional): the name of the folder where the csv data from the models will be saved. Defaults to "experiment_one".
+        model_paths (list, optional): if the models should be saved in another path, this will be the list of pats. Defaults to None.
+    """
     run_experiment_one(lazy_split, train_path, test_path, get_satina_gains_model_object_list, epochs_end=epoch_limit, folder_extension=folder_extension, model_paths=model_paths)
 
-def ex_two_eval_norm(test_path, train_path, lazy_split=1, epoch_limit=100, folder_extension="experiment_two_eval_norm"):
+def ex_two_eval_norm(test_path:str, train_path:str, lazy_split:int=1, epoch_limit:int=100, folder_extension:str="experiment_two_eval_norm"):
+    """Trains at default three models with a normalization layer implemented, in a similar fashion as was done in experiment one
+
+    Args:
+        test_path (str): path to the test h5 file
+        train_path (str): path to the train h5 file
+        lazy_split (int, optional): how many splits the train an test datasets shouold be split into. Defaults to 1.
+        epoch_limit (int, optional): the upper limit of how many epochs the models can be trained for. Defaults to 100.
+        folder_extension (str, optional): the folder where the csv files will be saved from the experiment. Defaults to "experiment_two_eval_norm".
+    """
     run_experiment_one(lazy_split, train_path, test_path, get_satina_gains_model_norm_object_list, epochs_end=epoch_limit, folder_extension=folder_extension)
-    
-
-# if __name__ == "__main__":
-#     lazy_split = 1
-
-#     test_path = get_h5_test()
-#     train_path = get_h5_train()
-
-#     # experiment_one(test_path, train_path)
-#     experiment_two_eval_norm(test_path, train_path)
-    

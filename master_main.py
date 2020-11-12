@@ -36,14 +36,14 @@ if __name__ == "__main__":
     #     print(e)
     #     errors.append(e)
     
-    try:
-        ex_one(noise_test_path, noise_train_path, folder_extension="experiment_two_eval_noise", model_paths=noise_paths)
-        ex_two_eval_noise(test_path, 'experiment_two_eval_noise', model_paths=noise_paths)
-    except:
-        print("ERROR IN EXPERIMENT 'TRAIN ON NOISE' you suck")
-        e = sys.exc_info()
-        print(e)
-        errors.append(e)
+    # try:
+    #     ex_one(noise_test_path, noise_train_path, folder_extension="experiment_two_eval_noise", model_paths=noise_paths)
+    #     ex_two_eval_noise(test_path, 'experiment_two_eval_noise', model_paths=noise_paths)
+    # except:
+    #     print("ERROR IN EXPERIMENT 'TRAIN ON NOISE' you suck")
+    #     e = sys.exc_info()
+    #     print(e)
+    #     errors.append(e)
 
     sum_merged_files('phase_two/csv_output')
 
