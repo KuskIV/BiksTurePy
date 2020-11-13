@@ -18,26 +18,26 @@ if __name__ == "__main__":
     
     errors = []
 
-    try:
-        ex_one(test_path, train_path, folder_extension="experiment_one")
-        ex_two_eval_noise(test_path, 'experiment_two_eval_baseline')
-    except:
-        print("ERROR IN EXPERIMENT 'TRAIN ON BASELINE' you suck")
-        e = sys.exc_info()
-        print(e)
-        errors.append(e)
+    # try:
+    #     ex_one(test_path, train_path, folder_extension="experiment_one")
+    #     ex_two_eval_noise(test_path, 'experiment_two_eval_baseline')
+    # except:
+    #     print("ERROR IN EXPERIMENT 'TRAIN ON BASELINE' you suck")
+    #     e = sys.exc_info()
+    #     print(e)
+    #     errors.append(e)
 
-    try:
-        ex_two_eval_norm(test_path, train_path, folder_extension="experiment_two_eval_norm")
-        ex_two_eval_noise(test_path, 'experiment_two_eval_norm', get_models=get_satina_gains_model_norm_object_list)
-    except:
-        print("ERROR IN EXPERIMENT 'TRAIN ON NORM' you suck")
-        e = sys.exc_info()
-        print(e)
-        errors.append(e)
+    # try:
+    #     ex_two_eval_norm(test_path, train_path, folder_extension="experiment_two_eval_norm")
+    #     ex_two_eval_noise(test_path, 'experiment_two_eval_norm', get_models=get_satina_gains_model_norm_object_list)
+    # except:
+    #     print("ERROR IN EXPERIMENT 'TRAIN ON NORM' you suck")
+    #     e = sys.exc_info()
+    #     print(e)
+    #     errors.append(e)
     
     try:
-        ex_one(noise_test_path, noise_train_path, folder_extension="experiment_two_eval_noise", model_paths=noise_paths)
+        # ex_one(noise_test_path, noise_train_path, folder_extension="experiment_two_eval_noise", model_paths=noise_paths)
         ex_two_eval_noise(test_path, 'experiment_two_eval_noise', model_paths=noise_paths)
     except:
         print("ERROR IN EXPERIMENT 'TRAIN ON NOISE' you suck")

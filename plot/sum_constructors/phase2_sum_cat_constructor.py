@@ -9,7 +9,6 @@ def get_object(get_class_accuracy):
     def get_headers(headers):
         return_list = [[headers[1]]]
         return_list[0].extend(headers[2:]) 
-        print(headers[2:-1])
         return return_list
 
     def get_current_data(row):

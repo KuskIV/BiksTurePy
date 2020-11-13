@@ -246,7 +246,6 @@ def run_experiment_one(lazy_split:int, train_h5_path:str, test_h5_path:str, get_
         sys.exit()
 
     model_object_list = get_models(h5_train.class_in_h5, model_paths=model_paths)
-    
 
     find_ideal_model(h5_train, model_object_list, lazy_split=lazy_split, epochs=epochs_end, save_models=True)
 
