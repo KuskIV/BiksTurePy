@@ -9,7 +9,6 @@ def get_object(get_sub_category, get_category, get_class_accuracy):
     def get_headers(headers):
         return_list = [['category', 'sub-category', headers[-1]]]
         return_list[0].extend(headers[1:-1]) 
-        print(headers[1:-1])
         return return_list
 
     def get_current_data(row):

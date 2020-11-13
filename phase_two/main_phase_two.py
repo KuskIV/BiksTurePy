@@ -22,13 +22,9 @@ from plot.sum_for_model import sum_phase_2_files
 
 def phase_2_1(model,noise_filter, base_path, original_images, original_labels):
     values = [("image","filter","class","predicted_class")]#headers for the csv that will be generated
-    # original_images, original_labels, _, _ = h5_obj.shuffle_and_lazyload(0, 1) #TODO need variant of this that does not generate test set or shuffle
-
     image_tuples = add_noise((convert_between_pill_numpy(original_images * 255,mode='numpy->pil'),original_labels),noise_filter) #tuple(image,class,filter) the method returns the before show tuple where some of the images ahve been applied some noise
     numpy_imgs = convert_between_pill_numpy([changeImageSize(model.img_shape[0],model.img_shape[1],im[0].convert('RGB')) for im in image_tuples],mode='pil->numpy')#?confused about the specefics, but the result seems to be a list of numpy imgs that is returned
-
-    #print(len(numpy_imgs))
-    for i in range(len(numpy_imgs)): #? very confused about the actuel effect of the loop. Think it may be a drunk way of replacing the pill with a numpy
+    for i in range(len(numpy_imgs)):
         image_tuples[i] = list(image_tuples[i])
         image_tuples[i][0] = numpy_imgs[i]
         image_tuples[i] = tuple(image_tuples[i])
@@ -62,13 +58,13 @@ def convert_to_csv(path,values):
 
 def calculate_error(_class):
     wrong = 0
-    rigth = 0
+    right = 0
     for c in _class:
         if c[1] == c[2]:
-            rigth += 1
+            right += 1
         else:
             wrong += 1
-    return wrong + rigth, round((rigth / (wrong + rigth)) * 100, 2)
+    return wrong + right, round((right / (wrong + right)) * 100, 2)
 
 def find_feature_colume(headers:list,feature_lable:str)->int:
     for i in range(len(headers)):
@@ -104,9 +100,6 @@ def merge_csv(filter_names, saved_path, class_size_dict, model_names, base_path)
                     elif name == filter_names[-1] and model_name == model_names[-1]:
                         class_dict[row[0]].append('images')
 
-                # if len(class_dict[row[0]]) > 2 and row[0] != 'class':
-                    # class_dict[row[0]][-1] = round(float(class_dict[row[0]][-1]) - float(class_dict[row[0]][1]), 2)
-
     list_data = [class_dict[key] for key in class_dict.keys()]
     sort_list = list_data[1:]
     list_data = [list_data[0]]
@@ -115,7 +108,6 @@ def merge_csv(filter_names, saved_path, class_size_dict, model_names, base_path)
     csv_obj = cvs_object(saved_path)
     csv_obj.write(list_data)
 
-    # with open(saved_path, 'w') as write_obj:
 
 def complete_newdatapoints(data_points, images_in_classes, group):
     new_points = []
@@ -135,7 +127,7 @@ def create_csv_to_plot(model_name, base_path, images_in_classes):
         print(f"ERROR: The path \"{csv_path}\" does not exists. The program will now exit.")
         sys.exit()
     
-    with open(csv_path, 'r') as read_obj:#TODO @Jeppe, fix, dont hardcode this path | respond from jeppe 'no' | respond from mads 'this is not a joke i know where you live. do as i say'
+    with open(csv_path, 'r') as read_obj:
         csv_reader = csv.reader(read_obj)
         header = next(csv_reader)
         groups = group_by_feature(header,csv_reader,'filter')
@@ -150,25 +142,45 @@ def create_csv_to_plot(model_name, base_path, images_in_classes):
             newdatapoint = [('class','filters','error')]
     return filter_names
 
-def ex_two_eval_noise(test_path, folder_extension, get_models=get_satina_gains_model_object_list, training_split=1, model_paths=None):
+def check_if_valid_path(path):
+    if not os.path.exists(path):
+        print(f"The path:{path} dosen't seem to exsist")
+        sys.exit()
+    return path
+
+def initailize_initial_values(folder_extension):
     filters = load_filters()
     filter_names = []
-    
     base_path = get_paths('phase_two_csv') if folder_extension == None else f"{get_paths('phase_two_csv')}/{folder_extension}"
     if not folder_extension == None and not os.path.exists(base_path):
         os.mkdir(base_path)
 
-    h5_obj = h5_object(test_path, training_split=training_split)
-    model_object_list = get_models(h5_obj.class_in_h5, load_trained_models=True, model_paths=model_paths)
+    return filters, base_path
 
+def get_h5_with_models(h5_path, training_split=1, get_models=get_satina_gains_model_object_list, model_paths=None):
+    h5_obj = h5_object(h5_path, training_split=training_split)
+    model_object_list = get_models(h5_obj.class_in_h5, load_trained_models=True, model_paths=model_paths)
+    return h5_obj,model_object_list
+
+def evaluate_models_on_noise(filters, model_objs,h5_obj ,base_path):
+    filter_names = []
     for filter in filters:
-        original_images, original_labels, _, _ = h5_obj.shuffle_and_lazyload(0, 1) #TODO need variant of this that does not generate test set or shuffle
-        for model_object in model_object_list:
+        original_images, original_labels, _, _ = h5_obj.shuffle_and_lazyload(0, 1)
+        for model_object in model_objs:
             phase_2_1(model_object, filter, base_path, original_images, original_labels)
             filter_names.extend(create_csv_to_plot(model_object.get_csv_name(), base_path, h5_obj.images_in_classes))
+    return filter_names
 
+def generate_csv_files_for_phase2(filter_names, h5_obj, base_path): 
     merge_csv_path = f"{base_path}/merged_file.csv"
     merge_csv(list(dict.fromkeys(filter_names)), merge_csv_path, h5_obj.images_in_classes, [x.get_csv_name() for x in model_object_list], base_path)
     sum_phase_2_files(base_path)
+
+def ex_two_eval_noise(test_path, folder_extension, get_models=get_satina_gains_model_object_list, training_split=1, model_paths=None):
+    filters, base_path = initailize_initial_values(folder_extension)
+    h5_obj,model_object_list = get_h5_with_models(check_if_valid_path(test_path),training_split=training_split,get_models=get_models, model_paths=model_paths)
+    filter_names = evaluate_models_on_noise(filters, model_object_list, h5_obj, check_if_valid_path(base_path))
+    generate_csv_files_for_phase2(filter_names,h5_obj,base_path) #TODO move all csv related function into this method, speceficly the one from 2_1
+
     
     

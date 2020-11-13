@@ -39,11 +39,13 @@ def find_ideal_model(h5_obj:object, model_object_list:list, epochs:int=10, lazy_
     train_images = []
     test_images = []
 
+    print(f"-----------------")
+    print(f"Experiment one will now execute. This will be done using the following models:")
+    for model_object in model_object_list:
+        print(f"    - {model_object.get_csv_name()} ({model_object.path})")
+    print(f"-----------------")
+
     for j in range(lazy_split):
-
-        # generate models
-
-        
         train_images, train_labels, test_images, test_labels = h5_obj.shuffle_and_lazyload(j, lazy_split)
 
         print(f"Images in train_set: {len(train_images)} ({len(train_images) == len(train_labels)}), Images in val_set: {len(test_images)} ({len(test_images) == len(test_labels)})")
@@ -244,12 +246,10 @@ def run_experiment_one(lazy_split:int, train_h5_path:str, test_h5_path:str, get_
         sys.exit()
 
     model_object_list = get_models(h5_train.class_in_h5, model_paths=model_paths)
-    
 
     find_ideal_model(h5_train, model_object_list, lazy_split=lazy_split, epochs=epochs_end, save_models=True)
 
     print(f"\n------------------------\nTraining done. Now evaluation will be made.\n\n")
-
 
     sum_test_path = f"{base_path}/test_sum_class_accuracy.csv"
     sum_val_path = f"{base_path}/val_sum_class_accuracy.csv"
@@ -264,8 +264,15 @@ def run_experiment_one(lazy_split:int, train_h5_path:str, test_h5_path:str, get_
     iterate_and_sum(model_object_list_loaded, 'test', sum_test_path, image_dataset, lable_dataset, -1, h5_test.images_in_classes, base_path, epochs=[x.fit_data[-1][0] for x in model_object_list])
     combine_two_summed_class_accracy(sum_test_path, sum_val_path, base_path)
 
+    save_fitdata(model_object_list, base_path)
 
+def save_fitdata(model_object_list:list, base_path:str)->None:
+    """This is the data used to produce the loss/epoch graht, and is saved in a csv file. as "epoch", "loss", "accuracy"
 
+    Args:
+        model_object_list (list): the list of model objects to save the data from
+        base_path (str): the base path to save the data in
+    """
     for model in model_object_list:
         csv_obj = cvs_object(f"{base_path}/{model.get_csv_name()}_fitdata.csv")
         csv_obj.write(model.fit_data)
@@ -288,22 +295,6 @@ def run_experiment_one(lazy_split:int, train_h5_path:str, test_h5_path:str, get_
                     data[i].append(model_object.fit_data[i][1])
     csv_obj = cvs_object(f"{base_path}/fitdata_combined.csv")
     csv_obj.write(data)
-
-
-def get_best_models_loss(model_object_list):
-    best_models = []
-    
-    for model_object in model_object_list:
-        resolution = model_object.get_size()
-        
-        min_list = [x[1] for x in model_object.fit_data[1:]]
-        min_index = np.argmin(np.array(min_list))
-        best_epoch = model_object.fit_data[min_index][0]
-        best_loss = model_object.fit_data[min_index][1]
-        
-        best_models.append([best_loss, best_epoch, resolution])
-        
-    return best_models
 
 def sum_class_accuracy(model_object_list:list, images_in_classes, extension, base_path)->dict:
     """When training the accuracy for each class for each epoch is recorded. Here the sum of all accuracies for all classes for each epoch is summed together.
@@ -339,7 +330,16 @@ def sum_class_accuracy(model_object_list:list, images_in_classes, extension, bas
 
     return save_path
 
-def convert_dict_to_list(model_class_accuracy:dict, images_in_classes)->list:
+def convert_dict_to_list(model_class_accuracy:dict, images_in_classes:dict)->list:
+    """Iterates through a dictionary of model class accuracies, and sorts them an converts them to a list which is returned
+
+    Args:
+        model_class_accuracy (dict): A dictionary of each class and its accruacy
+        images_in_classes (dict): a dictionary of all classes and how many images it consists of
+
+    Returns:
+        list: the dictionary converted to a list
+    """
     data_list = [['Class', 'Size']]
     for key, value in model_class_accuracy.items():
         for key2, value2 in model_class_accuracy[key].items():
@@ -349,26 +349,45 @@ def convert_dict_to_list(model_class_accuracy:dict, images_in_classes)->list:
 
             for i in range(len(keys)):
                 if len(data_list) == i + 1:
-                    data_list.append([keys[i], images_in_classes[keys[i]]]) #TODO HERE
+                    data_list.append([keys[i], images_in_classes[keys[i]]])
                 data_list[int(i) + 1].append(model_class_accuracy[key][key2][str(keys[i])])
 
     return data_list
 
-def sum_plot(model_object_list:list, extension)->None:
+def sum_plot(model_object_list:list, extension:str)->None:
+    """converts the csv file showing the accuracy for each class, to a csv showing the accuracy for each sub category
+
+    Args:
+        model_object_list (list): a list of model objects which is iterated through
+        extension (str): the extenson to add the the csv, in this case either being 'val' or 'test'
+    """
     csv_object_list =  []
     for model_object in model_object_list:
         obj = cvs_object(model_object.get_csv_path(extension=extension), label=model_object.get_size())
         data = sum_for_model(obj)
         obj.write(data, model_object.get_summed_csv_path(extension=extension), overwrite_path=True)
         csv_object_list.append(obj)
-    # plot(csv_object_list)
 
 def save_plot(model_object_list:list, extension)->None:
+    """Iterates through each model object, and saves the accuracy for each class in a
+
+    Args:
+        model_object_list (list): the list of models to iterate through
+        extension (str): the extension, deciding whether it is 'test' or 'val'
+    """
     for model_object in model_object_list:
         cvs_obj = cvs_object(model_object.get_csv_path(extension=extension))
         cvs_obj.write(model_object.csv_data)
 
-def iniitalize_dict(lable_dataset:list)->dict:
+def initalize_dict(lable_dataset:list)->dict:
+    """Creates a dictionary with a key for each different label, and the value being a tuple of (0, 0) wich represents right and wong guesses
+
+    Args:
+        lable_dataset (list): a list of all lables
+
+    Returns:
+        dict: a dictionary where each key is a label, and the values are tupes
+    """
     label_dict = {}
     for lable in lable_dataset:
             label_dict[lable] = [0,0]
@@ -389,23 +408,23 @@ def iterate_trough_models(model_object_list:list, e:int, image_dataset, lable_da
     
     for i in range(len(model_object_list)):
         if update_epoch and epochs != None:
-            # e = model_object_list[i].fit_data[-1][0]
             e = epochs[i]
             
         if int(e) < 0:
             print(f"\nERROR: when iterating through the models, the epoch is smaller than 0 ({e})\n")
             sys.exit()
         
-        label_dict = iniitalize_dict(lable_dataset)
+        label_dict = initalize_dict(lable_dataset)
 
         image_dataset = auto_reshape_images(model_object_list[i].img_shape, image_dataset)
 
         right, wrong = iterate_trough_imgs(model_object_list[i], image_dataset, lable_dataset,label_dict)
 
         percent = (right / (wrong + right)) * 100
+        
         print(f"\nModel: \"{model_object_list[i].path.split('/')[-1].split('.')[0]}\"\nEpocs: {e} \nResult: \n    Right: {right}\n    wrong: {wrong}\n    percent correct: {percent}\n\n")
 
-        get_model_results(label_dict, model_object_list[i], (e, True))
+        get_model_results(label_dict, model_object_list[i], (e, True), should_print=False)
 
 def iterate_trough_imgs(model_object:object,image_dataset:list,lable_dataset:list,label_dict:dict)->tuple:
     """For each image in the dataset, it is predicted using the input mode, and the result saved in the lable_dict
@@ -433,15 +452,12 @@ def iterate_trough_imgs(model_object:object,image_dataset:list,lable_dataset:lis
         prediction = make_prediction(model_object.model, image_dataset[j].copy(),  model_object.get_size_tuple(3))
         predicted_label = np.argmax(prediction)
 
-
         if int(predicted_label) == int(lable_dataset[j]):
             right += 1
             label_dict[lable_dataset[j]][1] += 1
-            # img.save(f"{path}/right/{i}_{predicted_label}_{int(100*np.max(softmaxed))}_{e}.jpg")
         else:
             wrong += 1
             label_dict[lable_dataset[j]][0] += 1
-            # img.save(f"{path}/wrong/{i}_{lable_dataset[j]}_{predicted_label}_{int(100*np.max(softmaxed))}_{e}.jpg")
     return right,wrong
 
 
@@ -462,8 +478,8 @@ def update_values(key:int,label_dict:dict,prt:bool)->tuple:
     class_size = label_dict[key][0]+label_dict[key][1]
     class_percent = round((label_dict[key][1]/class_size)*100, 2)
 
-    # if prt:
-        # print(f"class: {class_name.zfill(3)} | right: {right_name} | wrong: {wrong_name} | procent: {round(class_percent, 2)}")
+    if prt:
+        print(f"class: {class_name.zfill(3)} | right: {right_name} | wrong: {wrong_name} | procent: {round(class_percent, 2)}")
 
     return class_name, class_percent, class_size
 

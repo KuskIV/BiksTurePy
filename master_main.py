@@ -37,7 +37,7 @@ if __name__ == "__main__":
     #     errors.append(e)
     
     try:
-        ex_one(noise_test_path, noise_train_path, folder_extension="experiment_two_eval_noise", model_paths=noise_paths)
+        # ex_one(noise_test_path, noise_train_path, folder_extension="experiment_two_eval_noise", model_paths=noise_paths)
         ex_two_eval_noise(test_path, 'experiment_two_eval_noise', model_paths=noise_paths)
     except:
         print("ERROR IN EXPERIMENT 'TRAIN ON NOISE' you suck")
