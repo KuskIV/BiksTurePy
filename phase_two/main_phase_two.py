@@ -171,7 +171,7 @@ def evaluate_models_on_noise(filters, model_objs,h5_obj ,base_path):
             filter_names.extend(create_csv_to_plot(model_object.get_csv_name(), base_path, h5_obj.images_in_classes))
     return filter_names
 
-def generate_csv_files_for_phase2(filter_names, h5_obj, base_path): 
+def generate_csv_files_for_phase2(filter_names, h5_obj, base_path, model_object_list): 
     merge_csv_path = f"{base_path}/merged_file.csv"
     merge_csv(list(dict.fromkeys(filter_names)), merge_csv_path, h5_obj.images_in_classes, [x.get_csv_name() for x in model_object_list], base_path)
     sum_phase_2_files(base_path)
@@ -180,7 +180,7 @@ def ex_two_eval_noise(test_path, folder_extension, get_models=get_satina_gains_m
     filters, base_path = initailize_initial_values(folder_extension)
     h5_obj,model_object_list = get_h5_with_models(check_if_valid_path(test_path),training_split=training_split,get_models=get_models, model_paths=model_paths)
     filter_names = evaluate_models_on_noise(filters, model_object_list, h5_obj, check_if_valid_path(base_path))
-    generate_csv_files_for_phase2(filter_names,h5_obj,base_path) #TODO move all csv related function into this method, speceficly the one from 2_1
+    generate_csv_files_for_phase2(filter_names,h5_obj,base_path, model_object_list) #TODO move all csv related function into this method, speceficly the one from 2_1
 
     
     
