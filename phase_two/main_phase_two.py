@@ -18,7 +18,7 @@ from phase_one.find_ideal_model import get_satina_gains_model_object_list
 from general_image_func import auto_reshape_images,changeImageSize,rgba_to_rgb,convert_between_pill_numpy
 from plot.write_csv_file import cvs_object
 from plot.sum_for_model import sum_phase_2_files
-from error_handler import get_file_location
+from error_handler import check_if_valid_path as civp
 
 
 def phase_2_1(model,noise_filter, base_path, original_images, original_labels):
@@ -153,7 +153,7 @@ def initailize_initial_values(folder_extension:str)->tuple:
     return filters, base_path
 
 def get_h5_with_models(h5_path:str, training_split:int=1, get_models:list=get_satina_gains_model_object_list, model_paths:str=None)->tuple:
-    h5_obj = h5_object(h5_path, training_split=training_split)
+    h5_obj = h5_object(civp(h5_path), training_split=training_split)
     model_object_list = get_models(h5_obj.class_in_h5, load_trained_models=True, model_paths=model_paths)
     return h5_obj,model_object_list
 
@@ -166,14 +166,14 @@ def evaluate_models_on_noise(filters:list, model_objs:list,h5_obj:object,base_pa
             filter_names.extend(create_csv_to_plot(model_object.get_csv_name(), base_path, h5_obj.images_in_classes))
     return filter_names
 
-def generate_csv_files_for_phase2(filter_names:list, h5_obj:object, base_path:srt)->None: 
+def generate_csv_files_for_phase2(filter_names:list, h5_obj:object, base_path:str)->None: 
     merge_csv_path = f"{base_path}/merged_file.csv"
     merge_csv(list(dict.fromkeys(filter_names)), merge_csv_path, h5_obj.images_in_classes, [x.get_csv_name() for x in model_object_list], base_path)
     sum_phase_2_files(base_path)
 
 def ex_two_eval_noise(test_path:str, folder_extension:str, get_models:list=get_satina_gains_model_object_list, training_split:int=1, model_paths:str=None)->None:
     filters, base_path = initailize_initial_values(folder_extension)
-    h5_obj, model_object_list = get_h5_with_models(test_path,training_split=training_split,get_models=get_models, model_paths=model_paths)
+    h5_obj, model_object_list = get_h5_with_models(civp(test_path),training_split=training_split,get_models=get_models, model_paths=model_paths)
     filter_names = evaluate_models_on_noise(filters, model_object_list, h5_obj, base_path)
     generate_csv_files_for_phase2(filter_names,h5_obj,base_path) #TODO move all csv related function into this method, speceficly the one from 2_1    
     
