@@ -20,14 +20,14 @@ if __name__ == "__main__":
     
     errors = []
 
-    try:
-        # ex_one(test_path, train_path, folder_extension="experiment_one", data_to_test_on=data_to_test_on)
-        ex_two_eval_noise(test_path, 'experiment_two_eval_baseline', data_to_test_on=data_to_test_on)
-    except:
-        print("ERROR IN EXPERIMENT 'TRAIN ON BASELINE'")
-        e = sys.exc_info()
-        print(e)
-        errors.append(e)
+    # try:
+    #     ex_one(test_path, train_path, folder_extension="experiment_one", data_to_test_on=data_to_test_on)
+    #     ex_two_eval_noise(test_path, 'experiment_two_eval_baseline', data_to_test_on=data_to_test_on)
+    # except:
+    #     print("ERROR IN EXPERIMENT 'TRAIN ON BASELINE'")
+    #     e = sys.exc_info()
+    #     print(e)
+    #     errors.append(e)
 
     # try:
     #     ex_two_eval_norm(test_path, train_path, folder_extension="experiment_two_eval_norm", data_to_test_on=data_to_test_on)

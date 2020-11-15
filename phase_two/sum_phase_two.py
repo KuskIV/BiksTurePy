@@ -7,6 +7,7 @@ sys.path.insert(0, parent_dir)
 
 from plot.sum_for_model import sum_phase_2_cat_file
 from plot.write_csv_file import cvs_object
+from error_handler import check_if_valid_path, custom_error_check
 
 def append_extension_to_header(header, extension):
     return f"{header}_{extension}" if extension not in header else header
@@ -99,6 +100,57 @@ def sum_merged_files_to_one_file(base_path, output_csv_name):
     csv_to_write = cvs_object(save_path)
     csv_to_write.write(data_to_combine)
 
+def verify_cell(cell_data):
+    return len(cell_data) == 4
+
+def dissasemble_cell(cell):
+    cell_data = cell.split('_')
+    custom_error_check(verify_cell(cell_data), f'The cell {cell} is not in the correct syntax. Should contain four underscores')
+    return cell_data[0], f"{cell_data[3]}_{cell_data[2]}"
+
+def data_index_exists(data_to_append):
+    return len(data_to_append) == 2
+
+def second_index_exists(data_to_append, i):
+    return len(data_to_append) >= i
+
+def convert_to_list(data_to_combine):
+    return_list = []
+    for key, item in data_to_combine.items():
+        return_list.append([key])
+        return_list[-1].extend(item)
+    return return_list
+
+def verify_dimensions(data_list):
+    length = 0
+    
+    for row in data_list:
+        if length == 0:
+            length = len(row)
+        elif len(row) != length:
+            return False
+            
+    return True
+
+def merge_combined_files(data_to_combine, base_path, output_csv_name):
+    data_list = convert_to_list(data_to_combine)
+    
+    custom_error_check(verify_dimensions(data_list), 'data_list has the wrong dimensions')
+    
+    data_to_save = []
+    
+    for i in range(len(data_list)):
+        for j in range(len(data_list[0])):
+            if len(data_to_save) <= j:
+                data_to_save.append([])
+            
+            data_to_save[j].append(data_list[i][j])
+            # data_to_save[-1].extend(data_list[j][i])
+    
+    save_path = f"{base_path}/{output_csv_name}"
+    csv_to_write = cvs_object(save_path)
+    csv_to_write.write(data_to_save)
+
 def merge_final_files(base_path, output_csv_name):
     """iterates through all folders in the base path, and combines 
 
@@ -106,35 +158,37 @@ def merge_final_files(base_path, output_csv_name):
         base_path ([type]): [description]
         output_csv_name ([type]): [description]
     """
-    data_to_combine = []
+    data_to_combine = {'filter':[]}
     
     for folder in os.listdir(base_path):
         folder_path = f"{base_path}/{folder}"
         
         csv_path = f"{folder_path}/{output_csv_name}"
-        
         if os.path.exists(csv_path):
             data_to_append = read_csv_file(csv_path)
-            
-            add_row_zero = True if len(data_to_combine) == 0 else False
-            
-            for i in range(len(data_to_append)):
-                if add_row_zero:
-                    data_to_combine.append(data_to_append[i])
-                else:
-                    data_to_combine[i].extend(data_to_append[i][1:])
+            custom_error_check(data_index_exists(data_to_append), f"The list data_to_append should have length 2, but is {len(data_to_append)}.")
+            for i in range(1, len(data_to_append[0])):
+                noise, experiment = dissasemble_cell(data_to_append[0][i])
+                if noise not in data_to_combine['filter']:
+                    data_to_combine['filter'].append(noise)
+                
+                if experiment not in data_to_combine:
+                    data_to_combine[experiment] = []
+                
+                custom_error_check(second_index_exists(data_to_append[1], i), f"Index {i} is being accesed on list data_to_append, but this is out of range")
+                data_to_combine[experiment].append(data_to_append[1][i])
+                
         elif not csv_path.endswith('.csv'):
             print(f"WARNING: The folder \"{folder}\" does not contain the csv file \"{output_csv_name}\". The program will continue.")
-    save_path = f"{base_path}/{output_csv_name}"
-    csv_to_write = cvs_object(save_path)
-    csv_to_write.write(data_to_combine)
+    
+    merge_combined_files(data_to_combine, base_path, output_csv_name)
 
 def sum_merged_files(base_path):
     if not os.path.exists(base_path):
         print(f"The input path does not exists: \"{base_path}\"")
     csv_file_name = "sum_cat.csv"
     
-    output_csv_name = sum_merged_files_to_one_line(base_path, csv_file_name)
+    output_csv_name = "final_sum_sum_sum_summed.csv" #sum_merged_files_to_one_line(base_path, csv_file_name)
     # sum_merged_files_to_one_file(base_path, output_csv_name)
     merge_final_files(base_path, output_csv_name)
 
