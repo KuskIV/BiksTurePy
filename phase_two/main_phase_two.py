@@ -134,7 +134,7 @@ def Generate_newdatapoints(base_path:str, model_name:str ,header:list, groups:di
         classes = group_by_feature(header,groups[group],'class')
         newdatapoint = newdatapoint_creation_from_classes(classes,group,newdatapoint)
         newdatapoint.extend(complete_newdatapoints(newdatapoint, images_in_classes, group))
-        convert_to_csv(f"{base_path}/{group}_{model_name}.csv", newdatapoint)
+        convert_to_csv(f"{base_path}", newdatapoint)
         filter_names.append(group)
         newdatapoint = [('class','filters','error')]
     return filter_names
@@ -166,13 +166,13 @@ def get_h5_with_models(h5_path:str, training_split:int=1, get_models:list=get_sa
 def evaluate_models_on_noise(filters:list, model_objs:list,h5_obj:object,base_path:str)->list:#*DONE
     filter_names = []
     for _filter in filters:
-        original_images, original_labels, _, _ = h5_obj.shuffle_and_lazyload(0, 1)
+        original_images, original_labels, _, _ = h5_obj.shuffle_and_lazyload(0, 100)
         for model_object in model_objs:
             phase_2_1(model_object, _filter, base_path, original_images, original_labels)
             filter_names.extend(create_csv_to_plot(model_object.get_csv_name(), base_path, h5_obj.images_in_classes))
     return filter_names
 
-def generate_csv_files_for_phase2(filter_names:list, h5_obj:object, base_path:str)->None: #*DONE
+def generate_csv_files_for_phase2(filter_names:list, h5_obj:object, base_path:str, model_object_list:list)->None: #*DONE
     merge_csv_path = f"{base_path}/merged_file.csv"
     merge_csv(list(dict.fromkeys(filter_names)), merge_csv_path, h5_obj.images_in_classes, [x.get_csv_name() for x in model_object_list], base_path)
     sum_phase_2_files(base_path)
@@ -181,5 +181,5 @@ def ex_two_eval_noise(test_path:str, folder_extension:str, get_models:list=get_s
     filters, base_path = initailize_initial_values(folder_extension)
     h5_obj, model_object_list = get_h5_with_models(civp(test_path),training_split=training_split,get_models=get_models, model_paths=model_paths)
     filter_names = evaluate_models_on_noise(filters, model_object_list, h5_obj, base_path)
-    generate_csv_files_for_phase2(filter_names,h5_obj,base_path) #TODO move all csv related function into this method, speceficly the one from 2_1    
+    generate_csv_files_for_phase2(filter_names,h5_obj,base_path, model_object_list) #TODO move all csv related function into this method, speceficly the one from 2_1    
     

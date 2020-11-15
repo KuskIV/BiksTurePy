@@ -1,0 +1,1 @@
+[(<class 'NotADirectoryError'>, NotADirectoryError(20, 'Not a directory'), <traceback object at 0x7f731659c500>)]
