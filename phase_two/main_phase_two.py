@@ -77,7 +77,7 @@ def find_feature_colume(headers:list,feature_lable:str)->int: #*DONE
         if headers[i] == feature_lable:
             return i
 
-def group_by_feature(header:list,csv_reader:csv_reader,feature_lable:str)->dict:
+def group_by_feature(header:list,csv_reader:object,feature_lable:str)->dict:
     groups = {}
     colum_num = find_feature_colume(header,feature_lable)
     for row in csv_reader:
