@@ -17,7 +17,7 @@ def list_contains_word(word, list_to_check):
 
 def get_indent(row):
     word = 'images'
-    custom_error_check(not list_contains_word(word, row[0]), f'The input csv file does not contain the following word in the header: {word}')
+    custom_error_check(list_contains_word(word, row[0]), f'The input csv file does not contain the following word in the header: {word}')
     return row[0].index(word) + 1
 
 def get_rows(csv_path, extension):

@@ -26,7 +26,7 @@ from plot.sum_for_model import sum_for_model, sum_for_class_accuracy, sum_summed
 from error_handler import check_if_valid_path, custom_error_check
 
 
-def find_ideal_model(h5_obj:object, model_object_list:list, epochs:int=10, lazy_split:int=10, save_models:bool=False)->None:
+def find_ideal_model(h5_obj:object, model_object_list:list, epochs:int=10, lazy_split:int=10, save_models:bool=False, data_to_test_on=1)->None:
     """Will based on a list of model objects, a h5py file an a max epochs amount, train the models and record the accracy in order to find the
     best model
 
@@ -46,23 +46,22 @@ def find_ideal_model(h5_obj:object, model_object_list:list, epochs:int=10, lazy_
         print(f"    - {model_object.get_csv_name()} ({model_object.path})")
     print(f"-----------------")
 
-    for j in range(lazy_split):
-        train_images, train_labels, test_images, test_labels = h5_obj.shuffle_and_lazyload(j, lazy_split)
+    train_images, train_labels, test_images, test_labels = h5_obj.shuffle_and_lazyload(0, data_to_test_on)
 
-        print(f"Images in train_set: {len(train_images)} ({len(train_images) == len(train_labels)}), Images in val_set: {len(test_images)} ({len(test_images) == len(test_labels)})")
+    print(f"Images in train_set: {len(train_images)} ({len(train_images) == len(train_labels)}), Images in val_set: {len(test_images)} ({len(test_images) == len(test_labels)})")
 
-        for i in range(len(model_object_list)):
-            if model_object_list[i].run_on_epoch(epochs):
-                print(f"\n\nTraining model {i + 1} / {len(model_object_list)} for part in dataset {j + 1} / {lazy_split}")
-                validation_loss, validation_accuracy = train_and_eval_models_for_size(model_object_list[i].img_shape, model_object_list[i].model, train_images, train_labels, test_images, test_labels, epochs)
-                
-                for j in range(len(validation_loss)):
-                    model_object_list[i].fit_data.append([j+1, validation_loss[j], validation_accuracy[j]])
-            else:
-                print(f"\n\nMESSAGE: For epoch {epochs} model {model_object_list[i].get_csv_name()} will not train anymore, as the limit is {model_object_list[i].epoch}")
-        
-        del(train_images)
-        del(test_images)
+    for i in range(len(model_object_list)):
+        if model_object_list[i].run_on_epoch(epochs):
+            print(f"\n\nTraining model {i + 1} / {len(model_object_list)} for part in dataset {1} / {lazy_split}")
+            validation_loss, validation_accuracy = train_and_eval_models_for_size(model_object_list[i].img_shape, model_object_list[i].model, train_images, train_labels, test_images, test_labels, epochs)
+            
+            for j in range(len(validation_loss)):
+                model_object_list[i].fit_data.append([j+1, validation_loss[j], validation_accuracy[j]])
+        else:
+            print(f"\n\nMESSAGE: For epoch {epochs} model {model_object_list[i].get_csv_name()} will not train anymore, as the limit is {model_object_list[i].epoch}")
+    
+    del(train_images)
+    del(test_images)
         
     if save_models:
         for models in model_object_list:
@@ -212,7 +211,7 @@ def iterate_and_sum(model_object_list, extension, sum_path, image_dataset, lable
 def verify_class_amounts(class_in_test, class_int_train):
     return class_in_test == class_int_train
 
-def run_experiment_one(lazy_split:int, train_h5_path:str, test_h5_path:str, get_models, epochs_end:int=10, dataset_split:int=0.7, folder_extension = None, model_paths=None)->None:
+def run_experiment_one(lazy_split:int, train_h5_path:str, test_h5_path:str, get_models, epochs_end:int=10, dataset_split:int=0.7, folder_extension = None, model_paths=None, data_to_test_on=1)->None:
     """This method runs experiment one, and is done in several steps:
             1. For each epoch to train for, the models are trained. After each epoch, the accuracy is saved on the object.
             2. When the training is done, all the data is saved in csv files as (Epochs,Resolution,Class,Class_Acuracy,Total_in_Class)
@@ -241,7 +240,7 @@ def run_experiment_one(lazy_split:int, train_h5_path:str, test_h5_path:str, get_
 
     model_object_list = get_models(h5_train.class_in_h5, model_paths=model_paths)
 
-    find_ideal_model(h5_train, model_object_list, lazy_split=lazy_split, epochs=epochs_end, save_models=True)
+    find_ideal_model(h5_train, model_object_list, lazy_split=lazy_split, epochs=epochs_end, save_models=True, data_to_test_on=data_to_test_on)
 
     print(f"\n------------------------\nTraining done. Now evaluation will be made.\n\n")
 
@@ -251,10 +250,10 @@ def run_experiment_one(lazy_split:int, train_h5_path:str, test_h5_path:str, get_
     model_object_list_loaded = get_models(h5_train.class_in_h5, load_trained_models=True)
     
     #TODO: Fix epoch count in test_val_sum_class_accuracy.csv
-    _, _, image_dataset, lable_dataset = h5_train.shuffle_and_lazyload(0, 1)
+    _, _, image_dataset, lable_dataset = h5_train.shuffle_and_lazyload(0, data_to_test_on)
     iterate_and_sum(model_object_list, 'val', sum_val_path, image_dataset, lable_dataset, epochs_end, h5_train.images_in_classes, base_path)
     
-    image_dataset, lable_dataset, _, _ = h5_test.shuffle_and_lazyload(0, 1)
+    image_dataset, lable_dataset, _, _ = h5_test.shuffle_and_lazyload(0, data_to_test_on)
     iterate_and_sum(model_object_list_loaded, 'test', sum_test_path, image_dataset, lable_dataset, -1, h5_test.images_in_classes, base_path, epochs=[x.fit_data[-1][0] for x in model_object_list])
     combine_two_summed_class_accracy(sum_test_path, sum_val_path, base_path)
 

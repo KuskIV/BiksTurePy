@@ -40,7 +40,13 @@ def phase_2_1(model:object,noise_filter:dict, base_path:str, original_images:lis
     image_tuples = add_noise((convert_between_pill_numpy(original_images * 255,mode='numpy->pil'),original_labels),noise_filter) #tuple(image,class,filter) the method returns the before show tuple where some of the images ahve been applied some noise
     numpy_imgs = convert_between_pill_numpy([changeImageSize(model.img_shape[0],model.img_shape[1],im[0].convert('RGB')) for im in image_tuples],mode='pil->numpy')#?confused about the specefics, but the result seems to be a list of numpy imgs that is returned
     image_tuples = weird_shuffle_of_the_tuple(image_tuples,numpy_imgs) #!still unsure id this is nessesary
-    values = append_pred_to_tuples(image_tuples,model)
+    # values = append_pred_to_tuples(image_tuples,model)
+    values = [("image","filter","class","predicted_class")]#headers for the csv that will be generated
+    for i in range(len(image_tuples)):
+        prediction = make_prediction(model.model, image_tuples[i][0], (model.img_shape[0], model.img_shape[1], 3))
+        predicted_label = np.argmax(prediction) #Get the class with highest liklyhood of the predictions
+        image_tuples[i] = (image_tuples[i]+tuple([predicted_label,'yeet'])) #concatanate two tuples to create new tuple , which replacess the old one
+    values.extend(image_tuples)
     convert_to_csv(f"{base_path}/{model.get_csv_name()}_result.csv",[val[1:4] for val in values]) #tuple(image,class,filter,predicted_class)
 
 def load_filters()->dict: #*DONE
@@ -92,7 +98,8 @@ def merge_csv(filter_names, saved_path, class_size_dict, model_names, base_path)
 
     for name in filter_names:
         for model_name in model_names:
-            with open(f"{base_path}/{name}_{model_name}.csv", 'r') as read_obj:
+            csv_path = f"{base_path}/{name}_{model_name}.csv" 
+            with open(csv_path, 'r') as read_obj:
                 reader = csv.reader(read_obj)
                 data = list(reader)
                 data[0][2] = f"{name}{model_name}"
@@ -134,7 +141,7 @@ def Generate_newdatapoints(base_path:str, model_name:str ,header:list, groups:di
         classes = group_by_feature(header,groups[group],'class')
         newdatapoint = newdatapoint_creation_from_classes(classes,group,newdatapoint)
         newdatapoint.extend(complete_newdatapoints(newdatapoint, images_in_classes, group))
-        convert_to_csv(f"{base_path}", newdatapoint)
+        convert_to_csv(f"{base_path}/{group}_{model_name}.csv", newdatapoint)
         filter_names.append(group)
         newdatapoint = [('class','filters','error')]
     return filter_names
@@ -146,7 +153,7 @@ def create_csv_to_plot(model_name:str, base_path:str, images_in_classes:list)->l
         csv_reader = csv.reader(read_obj)
         header = next(csv_reader)
         groups = group_by_feature(header,csv_reader,'filter')
-        filter_names = Generate_newdatapoints(csv_path, model_name, header, groups, images_in_classes)
+        filter_names = Generate_newdatapoints(base_path, model_name, header, groups, images_in_classes)
     return filter_names
 
 def initailize_initial_values(folder_extension:str)->tuple:#*DONE
@@ -163,10 +170,10 @@ def get_h5_with_models(h5_path:str, training_split:int=1, get_models:list=get_sa
     model_object_list = get_models(h5_obj.class_in_h5, load_trained_models=True, model_paths=model_paths)
     return h5_obj,model_object_list
 
-def evaluate_models_on_noise(filters:list, model_objs:list,h5_obj:object,base_path:str)->list:#*DONE
+def evaluate_models_on_noise(filters:list, model_objs:list,h5_obj:object,base_path:str, data_to_test_on=1)->list:#*DONE
     filter_names = []
     for _filter in filters:
-        original_images, original_labels, _, _ = h5_obj.shuffle_and_lazyload(0, 100)
+        original_images, original_labels, _, _ = h5_obj.shuffle_and_lazyload(0, data_to_test_on)
         for model_object in model_objs:
             phase_2_1(model_object, _filter, base_path, original_images, original_labels)
             filter_names.extend(create_csv_to_plot(model_object.get_csv_name(), base_path, h5_obj.images_in_classes))
@@ -177,9 +184,9 @@ def generate_csv_files_for_phase2(filter_names:list, h5_obj:object, base_path:st
     merge_csv(list(dict.fromkeys(filter_names)), merge_csv_path, h5_obj.images_in_classes, [x.get_csv_name() for x in model_object_list], base_path)
     sum_phase_2_files(base_path)
 
-def ex_two_eval_noise(test_path:str, folder_extension:str, get_models:list=get_satina_gains_model_object_list, training_split:int=1, model_paths:str=None)->None:#*DONE
+def ex_two_eval_noise(test_path:str, folder_extension:str, get_models:list=get_satina_gains_model_object_list, training_split:int=1, model_paths:str=None, data_to_test_on=1)->None:#*DONE
     filters, base_path = initailize_initial_values(folder_extension)
     h5_obj, model_object_list = get_h5_with_models(civp(test_path),training_split=training_split,get_models=get_models, model_paths=model_paths)
-    filter_names = evaluate_models_on_noise(filters, model_object_list, h5_obj, base_path)
+    filter_names = evaluate_models_on_noise(filters, model_object_list, h5_obj, base_path, data_to_test_on=data_to_test_on)
     generate_csv_files_for_phase2(filter_names,h5_obj,base_path, model_object_list) #TODO move all csv related function into this method, speceficly the one from 2_1    
     

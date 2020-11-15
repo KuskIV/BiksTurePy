@@ -40,9 +40,11 @@ def custom_error_check(error_method:bool, msg:str, class_name = None, exit_progr
         print("----------------------BEGIN_ERROR_MESSAGE----------------------")
         print(msg)
         print(f"FILE: The error occurred in {get_file_location()}")
+        
         if not class_name == None:
             print(f"CLASS: The class where the error occurred is {class_name}")            
         print(f"METHOD: The method the errors occurred in is {inspect.stack()[1][3]}")
         print("----------------------END_ERROR_MESSAGE----------------------")
+        
         if exit_program:
             sys.exit()

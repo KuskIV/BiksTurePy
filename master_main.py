@@ -16,20 +16,22 @@ if __name__ == "__main__":
     noise_test_path = get_h5_test_noise()
     noise_train_path = get_h5_train_noise()
     
+    data_to_test_on = 50
+    
     errors = []
 
-    # try:
-    #     ex_one(test_path, train_path, folder_extension="experiment_one")
-    #     ex_two_eval_noise(test_path, 'experiment_two_eval_baseline')
-    # except:
-    #     print("ERROR IN EXPERIMENT 'TRAIN ON BASELINE'")
-    #     e = sys.exc_info()
-    #     print(e)
-    #     errors.append(e)
+    try:
+        # ex_one(test_path, train_path, folder_extension="experiment_one", data_to_test_on=data_to_test_on)
+        ex_two_eval_noise(test_path, 'experiment_two_eval_baseline', data_to_test_on=data_to_test_on)
+    except:
+        print("ERROR IN EXPERIMENT 'TRAIN ON BASELINE'")
+        e = sys.exc_info()
+        print(e)
+        errors.append(e)
 
     # try:
-    #     ex_two_eval_norm(test_path, train_path, folder_extension="experiment_two_eval_norm")
-    #     ex_two_eval_noise(test_path, 'experiment_two_eval_norm', get_models=get_satina_gains_model_norm_object_list)
+    #     ex_two_eval_norm(test_path, train_path, folder_extension="experiment_two_eval_norm", data_to_test_on=data_to_test_on)
+    #     ex_two_eval_noise(test_path, 'experiment_two_eval_norm', get_models=get_satina_gains_model_norm_object_list, data_to_test_on=data_to_test_on)
     # except:
     #     print("ERROR IN EXPERIMENT 'TRAIN ON NORM'")
     #     e = sys.exc_info()
@@ -37,8 +39,8 @@ if __name__ == "__main__":
     #     errors.append(e)
     
     # try:
-    #     ex_one(noise_test_path, noise_train_path, folder_extension="experiment_two_eval_noise", model_paths=noise_paths)
-    #     ex_two_eval_noise(test_path, 'experiment_two_eval_noise', model_paths=noise_paths)
+    #     ex_one(noise_test_path, noise_train_path, folder_extension="experiment_two_eval_noise", model_paths=noise_paths, data_to_test_on=data_to_test_on)
+    #     ex_two_eval_noise(test_path, 'experiment_two_eval_noise', model_paths=noise_paths, data_to_test_on=data_to_test_on)
     # except:
     #     print("ERROR IN EXPERIMENT 'TRAIN ON NOISE'")
     #     e = sys.exc_info()

@@ -1,0 +1,1 @@
+[(<class 'NameError'>, NameError("name 'data_to_test_one' is not defined"), <traceback object at 0x7fa2ba85d480>), (<class 'TypeError'>, TypeError("run_experiment_one() got an unexpected keyword argument 'data_to_test_one'"), <traceback object at 0x7fa2ba882040>), (<class 'NameError'>, NameError("name 'data_to_test_one' is not defined"), <traceback object at 0x7fa2b79a6f40>)]

@@ -71,9 +71,9 @@ class return_model(object):
 
     def get_csv_name(self, extension=None)->str:
         if extension == None:
-            return f"model{return_model.get_size(self)}"
+            return f"model_{return_model.get_size(self)}"
         else:
-            return f"model{return_model.get_size(self)}_{extension}"
+            return f"model_{return_model.get_size(self)}_{extension}"
 
     def get_csv_path(self, extension=None)->str:
         if extension == None:
@@ -83,9 +83,9 @@ class return_model(object):
 
     def get_summed_csv_path(self, extension=None)->str:
         if extension == None:
-            return f"{get_paths('phase_one_csv')}/model{return_model.get_size(self)}_summed.csv"
+            return f"{get_paths('phase_one_csv')}/model_{return_model.get_size(self)}_summed.csv"
         else:
-            return f"{get_paths('phase_one_csv')}/model{return_model.get_size(self)}_{extension}_summed.csv"
+            return f"{get_paths('phase_one_csv')}/model_{return_model.get_size(self)}_{extension}_summed.csv"
 
 def get_2d_image_shape(shape:tuple)->tuple:
     return shape[0], shape[1]
@@ -309,8 +309,11 @@ def verify_model_paths(model_paths):
     else:
         return False
 
+def get_len_if_not_none(model_path):
+    return 'NONE' if model_path == None else len(model_path) 
+
 def get_satina_gains_model_object_list(shape:int, load_trained_models:bool=False, model_paths=None)->list:
-    custom_error_check(verify_model_paths(model_paths), f'The model path length is not correct. It is {len(model_paths)}, but it should be 3')
+    custom_error_check(verify_model_paths(model_paths), f'The model path length is not correct. It is {get_len_if_not_none(model_paths)}, but it should be 3')
     
     median_path = get_satina_model_median_path() if model_paths==None else model_paths[0]
     avg_path = get_satina_model_avg_path() if model_paths==None else model_paths[1]
@@ -323,7 +326,7 @@ def get_satina_gains_model_object_list(shape:int, load_trained_models:bool=False
     return [satina_model_median, satina_model_avg, satina_model_mode]
 
 def get_satina_gains_model_norm_object_list(shape:int, load_trained_models:bool=False, model_paths=None)->list:
-    custom_error_check(verify_model_paths(model_paths), f'The model path length is not correct. It is {len(model_paths)}, but it should be 3')
+    custom_error_check(verify_model_paths(model_paths), f'The model path length is not correct. It is {get_len_if_not_none(model_paths)}, but it should be 3')
     
     median_path = get_satina_model_median_path() if model_paths==None else model_paths[0]
     avg_path = get_satina_model_avg_path() if model_paths==None else model_paths[1]
