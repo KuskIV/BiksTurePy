@@ -9,15 +9,19 @@ sys.path.insert(0, parent_dir)
 
 from plot.write_csv_file import cvs_object
 from global_paths import get_paths
+from error_handler import check_if_valid_path, custom_error_check
 
+
+def list_contains_word(word, list_to_check):
+    return word in list_to_check
 
 def get_indent(row):
-    return row[0].index('images') + 1
+    word = 'images'
+    custom_error_check(not list_contains_word(word, row[0]), f'The input csv file does not contain the following word in the header: {word}')
+    return row[0].index(word) + 1
 
 def get_rows(csv_path, extension):
-    if not path.exists(csv_path):
-        print(f"\nThe following path does not exist: {csv_path}\nCode: plot.write_csv_file.py")
-        sys.exit()
+    check_if_valid_path(csv_path)
     
     with open(csv_path, 'r') as csvfile:
             plots = csv.reader(csvfile, delimiter=',')
@@ -29,7 +33,6 @@ def get_rows(csv_path, extension):
         rows[0][i] = f"{rows[0][i]}_{extension}"
     
     return rows
-    
 
 def combine_rows(test_rows, val_rows):
     indent = get_indent(test_rows)

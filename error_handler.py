@@ -28,7 +28,7 @@ def check_if_valid_path(self, path:str, class_name = None):
         sys.exit()
     return path
 
-def custom_error_check(self,error_method:bool, msg:str, class_name = None):
+def custom_error_check(self,error_method:bool, msg:str, class_name = None, exit_program=True):
     """checks if some error method returns true the message will be printet torgeter with some aditional information
 
     Args:
@@ -44,3 +44,5 @@ def custom_error_check(self,error_method:bool, msg:str, class_name = None):
             print(f"CLASS: The class where the error occurred is {self.class_name}")            
         print(f"METHOD: The method the errors occurred in is {inspect.stack()[1][3]}")
         print("----------------------END_ERROR_MESSAGE----------------------")
+        if exit_program:
+            sys.exit()

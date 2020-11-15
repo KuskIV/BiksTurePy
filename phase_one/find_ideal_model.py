@@ -18,6 +18,7 @@ current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentfra
 parent_dir = os.path.dirname(current_dir)
 sys.path.insert(0, parent_dir)
 
+from error_handler import check_if_valid_path, custom_error_check
 from general_image_func import get_class_names, display_numpy_image                        # Not an error
 from Models.create_model import flatten_and_dense          # Not an error
 from global_paths import get_paths, get_satina_model_avg_path, get_satina_model_median_path, get_satina_model_mode_path, get_satina_model_avg_path_norm, get_satina_model_median_path_norm, get_satina_model_mode_path_norm
@@ -35,11 +36,8 @@ class return_model(object):
         self.epoch = -1
 
         if load_trained_models:
-            if path.exists(self.path):
-                self.model = tf.keras.models.load_model(self.path)
-            else:
-                print(f"The path for the model does not exists ({self.path}, and the program will now exit.)")
-                sys.exit()
+            check_if_valid_path(self.path, class_name='return_model')
+            self.model = tf.keras.models.load_model(self.path)
 
         self.csv_data = [['Epochs', 'Resolution', 'Class', 'Class_Acuracy', 'Total_in_Class']]
 
@@ -48,13 +46,28 @@ class return_model(object):
         
 
     def run_on_epoch(self, current_epoch:int)->bool:
-        return True if int(self.epoch) >= int(current_epoch) or int(self.epoch) == -1 else False
+        try:
+            return_bool = True if int(self.epoch) >= int(current_epoch) or int(self.epoch) == -1 else False
+        except ValueError:
+            custom_error_check(False, f'Could not convert to integer on {self.epoch}')
+        
+        return return_bool
 
     def get_size_tuple(self, last_size:int)->tuple:
-        return (self.img_shape[0], self.img_shape[1], last_size)
+        try:
+            return_tuple = (self.img_shape[0], self.img_shape[1], last_size) 
+        except IndexError:
+            custom_error_check(False, f'You are trying to access index one of a list of length {len(self.img_shape)}')
+        
+        return return_tuple
 
     def get_size(self)->int:
-        return self.img_shape[0]
+        try:
+            return_value = self.img_shape[0]
+        except IndexError:
+            custom_error_check(False, f'You are trying to access index one of a list of length {len(self.img_shape)}')
+        
+        return return_value
 
     def get_csv_name(self, extension=None)->str:
         if extension == None:
@@ -171,7 +184,10 @@ def reshape_numpy_array_of_images(images:np.array, size:tuple)->np.array:
         progress.set_description(f"Reshaping image {i} / {progress}")
         progress.refresh()
 
-        reshaped_images.append(tf.keras.preprocessing.image.smart_resize(images[i], size))
+        try:
+            reshaped_images.append(tf.keras.preprocessing.image.smart_resize(images[i], size))
+        except:
+            custom_error_check(False, f'Could not reshape image {i}/{done} to size {size}')
 
     return np.array(reshaped_images)
 
@@ -279,37 +295,35 @@ def train_and_eval_models_for_size(
 
     validation_loss, validation_accuracy = train_model(model, reshaped_train_images, train_labels, reshaped_test_images, test_labels, epochs)
 
+    print("\n---------------------")
+    print("The test for this model is now done")
+    print("---------------------\n")
     
     return validation_loss, validation_accuracy
-    # evaluate each model
-    # print("Evaluation for model")
 
-    # print(model.evaluate(reshaped_test_images, test_labels))
+def verify_model_paths(model_paths):
+    if model_paths == None:
+        return True
+    elif len(model_paths) == 3:
+        return True
+    else:
+        return False
 
 def get_satina_gains_model_object_list(shape:int, load_trained_models:bool=False, model_paths=None)->list:
-    if model_paths != None:
-        if len(model_paths) != 3:
-            print("ERROR: model path length is not correct witn getting models (satina gains models)")
-            sys.exit()
-    
+    custom_error_check(verify_model_paths(model_paths), f'The model path length is not correct. It is {len(model_paths)}, but it should be 3')
     
     median_path = get_satina_model_median_path() if model_paths==None else model_paths[0]
     avg_path = get_satina_model_avg_path() if model_paths==None else model_paths[1]
     small_path = get_satina_model_mode_path() if model_paths==None else model_paths[2]
     
-    
     satina_model_avg = return_model(get_satina_avg_model(), median_path, shape, load_trained_models)
     satina_model_median = return_model(get_satina_median_model(), avg_path, shape, load_trained_models)
     satina_model_mode = return_model(get_satina_mode_model(), small_path, shape, load_trained_models)
 
-    # return [satina_model_mode]
     return [satina_model_median, satina_model_avg, satina_model_mode]
 
 def get_satina_gains_model_norm_object_list(shape:int, load_trained_models:bool=False, model_paths=None)->list:
-    if model_paths != None:
-        if len(model_paths) != 3:
-            print("ERROR: model path length is not correct witn getting models (satina gains normalized models)")
-            sys.exit()
+    custom_error_check(verify_model_paths(model_paths), f'The model path length is not correct. It is {len(model_paths)}, but it should be 3')
     
     median_path = get_satina_model_median_path() if model_paths==None else model_paths[0]
     avg_path = get_satina_model_avg_path() if model_paths==None else model_paths[1]
@@ -320,6 +334,4 @@ def get_satina_gains_model_norm_object_list(shape:int, load_trained_models:bool=
     satina_model_median = return_model(get_satina_median_model_norm(), avg_path, shape, load_trained_models)
     satina_model_mode = return_model(get_satina_mode_model_norm(), small_path, shape, load_trained_models)
 
-    # return [satina_model_mode]
     return [satina_model_median, satina_model_avg, satina_model_mode]
-
