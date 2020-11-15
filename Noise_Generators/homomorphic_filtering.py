@@ -5,34 +5,39 @@ import cv2
 
 class homomorphic():
 
+    a = 0.2
+    b = 1
+    cut_off = 1
+    # fil_order = 2
+
+    def __init__(self,config):
+        Keys=['a','b','cutoff']
+        if Keys[0] in config:
+            self.a = config.get(Keys[0])
+        if config.get(Keys[1]) != None:
+            self.b = config.get(Keys[1])
+        if config.get(Keys[2]) != None:
+            self.cut_off = config.get(Keys[2])
+        # if config.get(Keys[3]) != None:
+        #     self.fil_order = config.get(Keys[3])
+
     # Convert image to a grayscaled image.
     def grayscale_image(self, img_path):
         img = Image.open(img_path).convert('LA')
         img.save('output/grayscaled.png')
 
     # Convert image to YCRCB color space 
-    def convert_image_YCC(self, img_path): 
-        imgog = Image.open(img_path)
+    def convert_image_YCC(self, imgog): 
+        # imgog = Image.open(img_path)
         imgYCC = imgog.convert('YCbCr')
         bands = imgYCC.getbands()
         ycc_list = list(imgYCC.getdata())
-        # print('ycc list' , ycc_list[0])
         ycc_list = np.reshape(imgYCC, (imgog.size[1], imgog.size[0], 3))
         ycc_list.astype(np.uint8)
 
-        # print(self.y.shape)
-        # print(self.cb.dtype)
-        # print(self.cb.shape)
-        # print(self.cr.dtype)
-        # print(self.cr.shape)
         self.y = Image.fromarray(ycc_list[:,:,0], "L")
         self.cb = Image.fromarray(ycc_list[:,:,1], "L")
         self.cr = Image.fromarray(ycc_list[:,:,2], "L")
-
-        # Image.fromarray(ycc_list[:,:,0], "L").save('output/Y.png')
-        # Image.fromarray(ycc_list[:,:,1], "L").save('output/cb.png')
-        # Image.fromarray(ycc_list[:,:,2], "L").save('output/cr.png')
-        # imgres = cv2.cvtColor(np.float32(imgYCC), cv2.COLOR_BGR2YCR_CB)
 
     def gaussian_filter(self):
         P = self.y.shape[0]/2
@@ -40,8 +45,7 @@ class homomorphic():
         H = np.zeros(self.y.shape)
         U, V = np.meshgrid(range(self.y.shape[0]), range(self.y.shape[1]), sparse=False, indexing='ij')
         Duv = (((U-P)**2+(V-Q)**2)).astype(float)
-        H = np.exp((-Duv/(2*800**2)))
-        print(H)
+        H = np.exp((-Duv/(2*self.cut_off**2)))
         return (1 - H)
 
     # Apply homophorbic filtering
@@ -58,44 +62,30 @@ class homomorphic():
         self.y = np.exp(np.real(self.y))-1
 
     def apply_highpass_filter(self, filter):
-        self.y = (1.3 + 3*filter)*self.y
+        self.y = (self.a + self.b*filter)*self.y
 
     def merge_image(self): 
-        # temp = [arr1,arr2[1],arr2[2]]
-        # for i in range(len(temp)):
-        #     im = Image.fromarray(np.uint8(temp[i]))
-        #     temp[i] = im.convert('L')
-        # print(temp[0])
         self.y = Image.fromarray(self.y)
-        # print(type(self.y))
-        # print(type(self.cb), self.cb.size)
-        # print(type(self.cr))
         y = self.y.convert('L')
         cb = self.cb.convert('L')
         cr = self.cr.convert('L')
-        # y = y.convert('RGB')
-        # cb = cb.convert('RGB')
-        # cr = cr.convert('RGB')
-        # y_arr = np.asarray(y)
-        # cb_arr = np.asarray(cb)
-        # cr_arr = np.asarray(cr)
-        # print(y_arr.dtype,cb_arr.dtype,cr_arr.dtype)
         return Image.merge('YCbCr',(y, cb, cr)).convert('RGB')
 
+    def homofy(self,img):
+        conv_img = self.convert_image_YCC(img)
+        freq_dom = self.transform_into_freqdomain()
+        ft = self.fourier_transfor()
+        gaus_filter = self.gaussian_filter()
+        filtered = self.apply_highpass_filter(gaus_filter)
+        invers = self.inverse_fourier_transfor()
+        exp = self.exponential_func()
+        return self.merge_image()
+
 if __name__=='__main__':
-    homo = homomorphic()
-    path = 'C:/Users/roni/Desktop/Project/homomorphic/src/output/Y.png'
-    conv_img = homo.convert_image_YCC(path)
-    freq_dom = homo.transform_into_freqdomain()
-    ft = homo.fourier_transfor()
-    gaus_filter = homo.gaussian_filter()
-    filtered = homo.apply_highpass_filter(gaus_filter)
-    invers = homo.inverse_fourier_transfor()
-    exp = homo.exponential_func()
-    # img = homo.merge_image()
-    a = homo.merge_image()
-    a.save('output/res.png')
-    # b.show()
-    # c.show()
-    
-    # print(homo.cr.shape)
+    config = {'a':1,'b':0.5,'cutoff':3}
+    homo = homomorphic(config)
+    path = 'C:/Users/jeppe/Desktop/Homomorphic/2.png'
+    img = Image.open(path)
+    homo.homofy(img).save('C:/Users/jeppe/Desktop/Coroni_wrong/res.png')
+
+

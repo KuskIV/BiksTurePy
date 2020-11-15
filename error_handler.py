@@ -7,7 +7,7 @@ def get_file_location():
     filename = module.__file__
     return filename
 
-def check_if_valid_path(self, path:str, class_name = None):
+def check_if_valid_path(path:str, class_name = None):
     """checks if a path exsists in the system, returns an unaltered path if True, exits if false
 
     Args:
@@ -17,18 +17,18 @@ def check_if_valid_path(self, path:str, class_name = None):
     Returns:
         str: returns a unalterd path
     """
-    if not os.path.exists(path, class_name = None):
+    if not os.path.exists(path):
         print("----------------------BEGIN_ERROR_MESSAGE----------------------")
         print(f"The path:{path} dosen't seem to exsist")
         print(f"FILE: The error occurred in {get_file_location()}")
         if not class_name == None:
-            print(f"CLASS: The class where the error occurred is {self.class_name}")
+            print(f"CLASS: The class where the error occurred is {class_name}")
         print(f"METHOD: The method the errors occurred in is {inspect.stack()[1][3]}")
         print("----------------------END_ERROR_MESSAGE----------------------")
         sys.exit()
     return path
 
-def custom_error_check(self,error_method:bool, msg:str, class_name = None, exit_program=True):
+def custom_error_check(error_method:bool, msg:str, class_name = None, exit_program=True):
     """checks if some error method returns true the message will be printet torgeter with some aditional information
 
     Args:
@@ -41,7 +41,7 @@ def custom_error_check(self,error_method:bool, msg:str, class_name = None, exit_
         print(msg)
         print(f"FILE: The error occurred in {get_file_location()}")
         if not class_name == None:
-            print(f"CLASS: The class where the error occurred is {self.class_name}")            
+            print(f"CLASS: The class where the error occurred is {class_name}")            
         print(f"METHOD: The method the errors occurred in is {inspect.stack()[1][3]}")
         print("----------------------END_ERROR_MESSAGE----------------------")
         if exit_program:
