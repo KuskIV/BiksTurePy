@@ -12,7 +12,7 @@ from general_image_func import changeImageSize
 from Noise_Generators.weather_gen import weather
 from Noise_Generators.perlin_noise import perlin
 from Noise_Generators.brightness import brightness
-from Noise_Generators.homo_noise import homo_noise
+from Noise_Generators.homomorphic_filtering import homomorphic
 
 class Filter: #TODO create homophobic filter
     """The filter class is a combination the three noises fog, 
@@ -72,7 +72,7 @@ class Filter: #TODO create homophobic filter
             img = bn.DayAdjustment(img)
 
         if(self.homo_set != None):
-            hom = homo_noise(self.homo_set)
+            hom = homomorphic(self.homo_set)
             img = hom.homofy(img)
 
         img = changeImageSize(old_size[1],old_size[0],img)
@@ -271,7 +271,7 @@ def premade_single_filter(str:str)->Filter:
         config = {'factor':0.15}
         result = Filter({'day_set':config})
     if str == 'std_homo':
-        config = {'a':0.5,'b':1.5,'cutoff':30,'filorder':2,'mode':'butterworth'}
+        config = {'a':0.5,'b':0.9,'cutoff':3}
         result = Filter({'homo_set':config})
     return result
 
@@ -283,10 +283,12 @@ def QuickDebugL():
     S = premade_single_filter('snow')
     D = premade_single_filter('day')
     N = premade_single_filter('night')
+    homo = premade_single_filter('std_homo')
     dict = {'fog':F,'rain':R,'snow':S,'day':D,'night':N}
-    res = apply_multiple_filters(imgs,filters=dict, mode='linear', KeepOriginal=False)
+    homom = {'homo':homo}
+    res = apply_multiple_filters(imgs,filters=homom, mode='linear', KeepOriginal=False)
     for i in range(len(res)):
-        res[i][0].save(f'/home/biks/Desktop/jeppeisdumb/{i}.png')
+        res[i][0].save(f'C:/Users/jeppe/Desktop/Coroni_wrong/{i}.png')
         
 
 def QuickDebug():
@@ -313,7 +315,7 @@ def QuickDebug():
     #newImage[1].show()
 
 if __name__ == '__main__':
-    QuickDebug()
+    QuickDebugL()
 #fog_set=(1)
 #day_set=(0.5)
 #wh_set = (70,7,2,(2,2),(130,130,130))
