@@ -18,6 +18,7 @@ from phase_one.find_ideal_model import get_satina_gains_model_object_list
 from general_image_func import auto_reshape_images,changeImageSize,rgba_to_rgb,convert_between_pill_numpy
 from plot.write_csv_file import cvs_object
 from plot.sum_for_model import sum_phase_2_files
+from error_handler import get_file_location
 
 
 def phase_2_1(model,noise_filter, base_path, original_images, original_labels):
@@ -142,13 +143,7 @@ def create_csv_to_plot(model_name, base_path, images_in_classes):
             newdatapoint = [('class','filters','error')]
     return filter_names
 
-def check_if_valid_path(path):
-    if not os.path.exists(path):
-        print(f"The path:{path} dosen't seem to exsist")
-        sys.exit()
-    return path
-
-def initailize_initial_values(folder_extension):
+def initailize_initial_values(folder_extension:str)->tuple:
     filters = load_filters()
     filter_names = []
     base_path = get_paths('phase_two_csv') if folder_extension == None else f"{get_paths('phase_two_csv')}/{folder_extension}"
@@ -157,12 +152,12 @@ def initailize_initial_values(folder_extension):
 
     return filters, base_path
 
-def get_h5_with_models(h5_path, training_split=1, get_models=get_satina_gains_model_object_list, model_paths=None):
+def get_h5_with_models(h5_path:str, training_split:int=1, get_models:list=get_satina_gains_model_object_list, model_paths:str=None)->tuple:
     h5_obj = h5_object(h5_path, training_split=training_split)
     model_object_list = get_models(h5_obj.class_in_h5, load_trained_models=True, model_paths=model_paths)
     return h5_obj,model_object_list
 
-def evaluate_models_on_noise(filters, model_objs,h5_obj ,base_path):
+def evaluate_models_on_noise(filters:list, model_objs:list,h5_obj:object,base_path:str)->None:
     filter_names = []
     for filter in filters:
         original_images, original_labels, _, _ = h5_obj.shuffle_and_lazyload(0, 1)
@@ -171,16 +166,14 @@ def evaluate_models_on_noise(filters, model_objs,h5_obj ,base_path):
             filter_names.extend(create_csv_to_plot(model_object.get_csv_name(), base_path, h5_obj.images_in_classes))
     return filter_names
 
-def generate_csv_files_for_phase2(filter_names, h5_obj, base_path): 
+def generate_csv_files_for_phase2(filter_names:list, h5_obj:object, base_path:srt)->None: 
     merge_csv_path = f"{base_path}/merged_file.csv"
     merge_csv(list(dict.fromkeys(filter_names)), merge_csv_path, h5_obj.images_in_classes, [x.get_csv_name() for x in model_object_list], base_path)
     sum_phase_2_files(base_path)
 
-def ex_two_eval_noise(test_path, folder_extension, get_models=get_satina_gains_model_object_list, training_split=1, model_paths=None):
+def ex_two_eval_noise(test_path:str, folder_extension:str, get_models:list=get_satina_gains_model_object_list, training_split:int=1, model_paths:str=None)->None:
     filters, base_path = initailize_initial_values(folder_extension)
-    h5_obj,model_object_list = get_h5_with_models(check_if_valid_path(test_path),training_split=training_split,get_models=get_models, model_paths=model_paths)
-    filter_names = evaluate_models_on_noise(filters, model_object_list, h5_obj, check_if_valid_path(base_path))
-    generate_csv_files_for_phase2(filter_names,h5_obj,base_path) #TODO move all csv related function into this method, speceficly the one from 2_1
-
-    
+    h5_obj, model_object_list = get_h5_with_models(test_path,training_split=training_split,get_models=get_models, model_paths=model_paths)
+    filter_names = evaluate_models_on_noise(filters, model_object_list, h5_obj, base_path)
+    generate_csv_files_for_phase2(filter_names,h5_obj,base_path) #TODO move all csv related function into this method, speceficly the one from 2_1    
     
