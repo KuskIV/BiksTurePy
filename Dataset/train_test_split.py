@@ -122,7 +122,7 @@ def run_split_dataset(path, testing_percentage):
   save_csv_file(path, find_and_edit(path))
   rename_folders(path)
 
-path = r'C:\Users\bbalt\Desktop\satina_gains_images'
+path = r'ETSD_Adjusted'
 
 run_split_dataset(path, 0.3)
 
