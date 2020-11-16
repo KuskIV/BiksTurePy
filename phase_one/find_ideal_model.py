@@ -74,6 +74,12 @@ class return_model(object):
             return f"model_{return_model.get_size(self)}"
         else:
             return f"model_{return_model.get_size(self)}_{extension}"
+        
+    def get_summed_csv_name(self, extension=None)->str:
+        if extension == None:
+            return f"model_{return_model.get_size(self)}_summed"
+        else:
+            return f"model_{return_model.get_size(self)}_{extension}_summed"
 
     def get_csv_path(self, extension=None)->str:
         if extension == None:
@@ -83,9 +89,9 @@ class return_model(object):
 
     def get_summed_csv_path(self, extension=None)->str:
         if extension == None:
-            return f"{get_paths('phase_one_csv')}/model_{return_model.get_size(self)}_summed.csv"
+            return f"{get_paths('phase_one_csv')}/{return_model.get_summed_csv_name(self)}.csv"
         else:
-            return f"{get_paths('phase_one_csv')}/model_{return_model.get_size(self)}_{extension}_summed.csv"
+            return f"{get_paths('phase_one_csv')}/{return_model.get_summed_csv_name(self, extension=extension)}.csv"
 
 def get_2d_image_shape(shape:tuple)->tuple:
     return shape[0], shape[1]

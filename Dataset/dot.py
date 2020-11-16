@@ -2,7 +2,6 @@ import os
 import re
 import csv
 
-total_classes = 164
 test_sub_path = 'Testing'
 training_sub_path = 'Training'
 initial_path = 'ETSD/'
@@ -35,7 +34,7 @@ def read_class_descrip(path):
     category = list()
     subcategory = list()
     class_label = list()
-
+    
     with open(path) as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:

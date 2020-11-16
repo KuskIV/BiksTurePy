@@ -154,13 +154,14 @@ def sum_summed_plots(model_object_list:list, extension, base_path)->None:
     raw_data = []
     
     for model_object in model_object_list:
-        check_if_valid_path(model_object.get_summed_csv_path(extension=extension))
+        csv_path = f"{base_path}/{model_object.get_summed_csv_name(extension=extension)}.csv"
+        check_if_valid_path(csv_path)
 
-        with open(model_object.get_summed_csv_path(extension=extension), 'r') as csv_obj:
+        with open(csv_path, 'r') as csv_obj:
             rows = csv.reader(csv_obj, delimiter=',')
             rows = list(rows)
             
-            custom_error_check(not verify_list_lenght(rows), f"the file \"{model_object.get_summed_csv_path(extension=extension)}\" only has {len(rows)} items, should be {model_object.output_layer_size}")
+            custom_error_check(not verify_list_lenght(rows), f"the file \"{csv_path}\" only has {len(rows)} items, should be {model_object.output_layer_size}")
 
             try:
                 rows[0][1] = model_object.get_csv_name(extension=extension)
@@ -198,8 +199,8 @@ def output_best_model_names(model_object_list):
 def iterate_and_sum(model_object_list, extension, sum_path, image_dataset, lable_dataset, epochs_end, images_in_classes, base_path, epochs=None):
     iterate_trough_models(model_object_list, epochs_end, image_dataset, lable_dataset, epochs=epochs)
 
-    save_plot(model_object_list, extension)
-    sum_plot(model_object_list, extension)
+    save_plot(model_object_list, extension, base_path)
+    sum_plot(model_object_list, extension, base_path)
     sum_summed_plots(model_object_list, extension, base_path)
     path = sum_class_accuracy(model_object_list, images_in_classes, extension, base_path)
     data_class_acc_val = sum_for_class_accuracy(cvs_object(path))
@@ -348,7 +349,7 @@ def convert_dict_to_list(model_class_accuracy:dict, images_in_classes:dict)->lis
 
     return data_list
 
-def sum_plot(model_object_list:list, extension:str)->None:
+def sum_plot(model_object_list:list, extension:str, base_path)->None:
     """converts the csv file showing the accuracy for each class, to a csv showing the accuracy for each sub category
 
     Args:
@@ -357,12 +358,12 @@ def sum_plot(model_object_list:list, extension:str)->None:
     """
     csv_object_list =  []
     for model_object in model_object_list:
-        obj = cvs_object(model_object.get_csv_path(extension=extension), label=model_object.get_size())
+        obj = cvs_object(f"{base_path}/{model_object.get_csv_name(extension=extension)}.csv", label=model_object.get_size())
         data = sum_for_model(obj)
-        obj.write(data, model_object.get_summed_csv_path(extension=extension), overwrite_path=True)
+        obj.write(data, f"{base_path}/{model_object.get_summed_csv_name(extension=extension)}.csv", overwrite_path=True)
         csv_object_list.append(obj)
 
-def save_plot(model_object_list:list, extension)->None:
+def save_plot(model_object_list:list, extension, base_path)->None:
     """Iterates through each model object, and saves the accuracy for each class in a
 
     Args:
@@ -370,7 +371,7 @@ def save_plot(model_object_list:list, extension)->None:
         extension (str): the extension, deciding whether it is 'test' or 'val'
     """
     for model_object in model_object_list:
-        cvs_obj = cvs_object(model_object.get_csv_path(extension=extension))
+        cvs_obj = cvs_object(f"{base_path}/{model_object.get_csv_name(extension=extension)}.csv")
         cvs_obj.write(model_object.csv_data)
 
 def initalize_dict(lable_dataset:list)->dict:

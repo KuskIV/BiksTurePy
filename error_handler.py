@@ -2,10 +2,13 @@ import os,sys,inspect
 
 
 def get_file_location():
-    frame = inspect.stack()[7]
-    module = inspect.getmodule(frame[0])
-    filename = module.__file__
-    return filename
+    try:
+        frame = inspect.stack()[7]
+        module = inspect.getmodule(frame[0])
+        filename = module.__file__
+        return filename
+    except:
+        return "????"
 
 def check_if_valid_path(path:str, class_name = None):
     """checks if a path exsists in the system, returns an unaltered path if True, exits if false

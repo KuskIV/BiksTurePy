@@ -188,7 +188,7 @@ def sum_merged_files(base_path):
         print(f"The input path does not exists: \"{base_path}\"")
     csv_file_name = "sum_cat.csv"
     
-    output_csv_name = "final_sum_sum_sum_summed.csv" #sum_merged_files_to_one_line(base_path, csv_file_name)
+    output_csv_name = sum_merged_files_to_one_line(base_path, csv_file_name)
     # sum_merged_files_to_one_file(base_path, output_csv_name)
     merge_final_files(base_path, output_csv_name)
 

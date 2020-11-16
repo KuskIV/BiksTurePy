@@ -15,10 +15,10 @@ subcategories.append(categories[0])
 subcategories.append(categories[-1])
 
 def get_sub_category(class_name):
-    return get_category_from_class(subcategories, int(class_name) + 1)
+    return get_category_from_class(subcategories, int(class_name))
 
 def get_category(class_name):
-    return get_category_from_class(categories, int(class_name) + 1)
+    return get_category_from_class(categories, int(class_name))
 
 def get_class_accuracy(current_class_accuracy, current_total_in_class):
     total = 0

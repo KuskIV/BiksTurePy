@@ -1,0 +1,1 @@
+[(<class 'ValueError'>, ValueError("invalid literal for int() with base 10: 'x'"), <traceback object at 0x7fd32d346a00>), (<class 'ValueError'>, ValueError("invalid literal for int() with base 10: 'x'"), <traceback object at 0x7fd2dfd18640>), (<class 'ValueError'>, ValueError("invalid literal for int() with base 10: 'x'"), <traceback object at 0x7fd2147a87c0>)]

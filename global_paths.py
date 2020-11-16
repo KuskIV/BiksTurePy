@@ -25,6 +25,7 @@ paths = {
     'satina_avg_noise':'Models/saved_models/satina_avg_noise.h5',
     'satina_median_noise':'Models/saved_models/satina_median_noise.h5',
     'satina_mode_noise':'Models/saved_models/satina_mode_noise.h5',
+    # 'category_csv':'Dataset/test.csv',
     'category_csv':'Dataset/class_descrip.csv',
     'txt_file': 'labels.txt'
 }

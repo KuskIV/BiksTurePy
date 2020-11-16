@@ -43,8 +43,15 @@ def combine_rows(test_rows, val_rows):
         result.append(test_rows[i][:indent])
     
     for i in range(len(test_rows)):
-        result[i].extend(test_rows[i][indent:])#TODO one at a time pls
-        result[i].extend(val_rows[i][indent:])
+        try:
+            result[i].extend(test_rows[i][indent:])#TODO one at a time pls
+        except:
+            print("ERROR somewhere, good luck")
+            
+        try:
+            result[i].extend(val_rows[i][indent:])
+        except:
+            print("ERROR somewhere, good luck")
     return result
 
 def combine_two_summed_class_accracy(sum_test_path, sum_val_path, base_path):

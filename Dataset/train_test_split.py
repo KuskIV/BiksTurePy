@@ -25,17 +25,29 @@ def move_files(files, path, c, tFile):
 
 # Delete if below a certain amount of samples
 def remove_folder(path, c):
-  try:
+  test_path = path + "/" + 'Testing' + "/" + c
+  if os.path.exists(test_path):
     shutil.rmtree(path + "/" + 'Testing' + "/" + c)
+  
+  train_path = path + "/" + 'Training' + "/" + c
+  if os.path.exists(train_path):
     shutil.rmtree(path + "/" + 'Training' + "/" + c)
-  except:
-    pass
+
+  # try:
+  #   shutil.rmtree(path + "/" + 'Testing' + "/" + c)
+  #   shutil.rmtree(path + "/" + 'Training' + "/" + c)
+  # except:
+  #   print("ERROR")
 
 def add_folder(path, tdir, c):
-  try:
+  save_path = path + "/" + tdir + "/" + c
+  if not os.path.exists(save_path):
     os.makedirs(path + "/" + tdir + "/" + c)
-  except:
-    pass
+
+  # try:
+  #   os.makedirs(path + "/" + tdir + "/" + c)
+  # except:
+  #   print("ERROR")
 
 # Method to make temporary folder
 def make_temporary_folder(path, name):
@@ -47,7 +59,7 @@ def randomize_and_split_list(slist, path, c, testing_percentage):
   random.shuffle(slist)
   slist = numpy.array(slist)
   x_train, x_test = train_test_split(slist, test_size=testing_percentage)
-  
+
   move_files(x_train, path, c, 'Training')
   move_files(x_test, path, c, 'Testing')
 
@@ -59,15 +71,17 @@ def get_classes_from_folders(path):
   for i in rootList:
    if(os.path.isdir(path + "/" + i)):
     cList = os.listdir(path + "/" + i)
-    cList = [int(i) for i in cList] 
+    cList = [int(i) for i in cList]
     cList.sort()
-    print(cList)
+    cList = [str(i).zfill(3) for i in cList]
+    # print(cList)
     for h in cList:
-      if(os.path.isdir(path + "/" + i + "/" + str(h))):
+      path_from_list = path + "/" + i + "/" + str(h)
+      if(os.path.isdir(path_from_list)):
         if h in classes:
-          classes[h].append(path + "/" + i + "/" + str(h))
+          classes[h].append(path_from_list)
         else:
-          classes[h] = [path + "/" + i + "/" + str(h)]
+          classes[h] = [path_from_list]
   return classes
 
 def get_samples_from_folders(classes, testing_percentage):
@@ -77,7 +91,7 @@ def get_samples_from_folders(classes, testing_percentage):
       tList = [j + "/" + s for s in fnmatch.filter(os.listdir(j), '*.ppm')]
       for i in tList:
        split.append(i)
-    
+
     if len(split) < 10:
       remove_folder(path, c)
     else:
@@ -92,11 +106,12 @@ def trim_classes(classes):
         sList.append(str(key).lstrip('0'))
     else:
         sList.append('0')
-  sList =  [int(i) for i in sList] 
+  sList =  [int(i) for i in sList]
   return sList
 
 def find_and_edit(path):
   classes = trim_classes(get_classes_from_folders(path))
+  classes = [str(i) for i in classes]
   lines = list()
   count = 0
 
@@ -104,7 +119,7 @@ def find_and_edit(path):
     reader = csv.reader(readFile)
     for row in reader:
       if row[4] in classes:
-        row[4] = count        
+        row[4] = count
         count += 1
       else:
         if row[4] != 'European class':
@@ -119,7 +134,7 @@ def save_csv_file(path, lines):
 
 def rename_folders(path):
   clist = get_classes_from_folders(path)
-  print(clist)
+  # print(clist)
   count = 0
   for c in clist:
         rename_folder(path,c,count)
@@ -127,11 +142,11 @@ def rename_folders(path):
 
 def run_split_dataset(path, testing_percentage):
   clist = get_classes_from_folders(path)
-  get_samples_from_folders(clist, testing_percentage) 
+  get_samples_from_folders(clist, testing_percentage)
   save_csv_file(path, find_and_edit(path))
   rename_folders(path)
 
-path = r'ETSD_Adjusted'
+path = r'Dataset/ETSD_Adjusted'
 
 run_split_dataset(path, 0.3)
 
@@ -160,7 +175,7 @@ run_split_dataset(path, 0.3)
 #    tList = [j + "/" + s for s in fnmatch.filter(os.listdir(j), '*.ppm')]
 #    for i in tList:
 #      split.append(i)
-  
+
 #  if len(split) < 10:
 #    remove_folder(path, c)
 #  else:
