@@ -102,7 +102,7 @@ def merge_csv(filter_names, saved_path, class_size_dict, model_names, base_path)
             with open(csv_path, 'r') as read_obj:
                 reader = csv.reader(read_obj)
                 data = list(reader)
-                data[0][2] = f"{name}{model_name}"
+                data[0][2] = f"{name}_{model_name}"
                 for row in data:
                     if not row[0] in class_dict:
                         class_dict[row[0]] = [row[0]]
