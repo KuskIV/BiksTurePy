@@ -19,6 +19,9 @@ Models/saved_models
 Dataset/belgian_images/
 phase_one/csv_data/
 phase_two/csv_output/
+Dataset/ETSD_Adjusted/
+Dataset/ETSD_GTSRB_N_GTSDB/
+Dataset/milad_gains_images/
 # Distribution / packaging
 .Python
 build/

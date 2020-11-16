@@ -230,8 +230,8 @@ class AdjustETSD:
         print("Dataset ready in -> " + self.new_ds_path)
 
 if __name__ == '__main__':
-    full_path_to_original_ETSD = 'ETSD/' # must be changed to match full path to original
-    a = AdjustETSD(split=0.7, k=3) # split for training / test | k = highest res duplicates
+    full_path_to_original_ETSD = 'milad_gains_images/' # must be changed to match full path to original
+    a = AdjustETSD(split=0.7, k=3, path_extensions = ['Training/', 'Testing/']) # split for training / test | k = highest res duplicates
     # Create copy for security and redundancy
     # will be here --> ETSD_Adjusted
     if not os.path.exists(a.new_ds_path):
