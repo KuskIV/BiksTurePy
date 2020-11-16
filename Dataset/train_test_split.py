@@ -10,10 +10,10 @@ import numpy
 
 def rename_folder(path, c, rn):
   try:
-    os.rename(path + "/" + 'Testing' + "/" + c, path + "/" + "Testing" + "/" + str(rn))
-    os.rename(path + "/" + "Training" + "/" + c, path + "/" + "Training" + "/" + str(rn))
+      os.rename(path + "/" + 'Testing' + "/" + str(c), path + "/" + "Testing" + "/" + str(rn))
+      os.rename(path + "/" + "Training" + "/" + str(c), path + "/" + "Training" + "/" + str(rn))
   except:
-    pass
+      pass
 
 # Move files
 def move_files(files, path, c, tFile):
@@ -58,12 +58,16 @@ def get_classes_from_folders(path):
   classes = {}
   for i in rootList:
    if(os.path.isdir(path + "/" + i)):
-      for h in os.listdir(path + "/" + i):
-        if(os.path.isdir(path + "/" + i + "/" + h)):
-          if h in classes:
-            classes[h].append(path + "/" + i + "/" + h)
-          else:
-            classes[h] = [path + "/" + i + "/" + h]
+    cList = os.listdir(path + "/" + i)
+    cList = [int(i) for i in cList] 
+    cList.sort()
+    print(cList)
+    for h in cList:
+      if(os.path.isdir(path + "/" + i + "/" + str(h))):
+        if h in classes:
+          classes[h].append(path + "/" + i + "/" + str(h))
+        else:
+          classes[h] = [path + "/" + i + "/" + str(h)]
   return classes
 
 def get_samples_from_folders(classes, testing_percentage):
@@ -84,7 +88,11 @@ def get_samples_from_folders(classes, testing_percentage):
 def trim_classes(classes):
   sList = list()
   for key in classes:
-    sList.append(key.lstrip('0'))
+    if str(key).lstrip('0') != '':
+        sList.append(str(key).lstrip('0'))
+    else:
+        sList.append('0')
+  sList =  [int(i) for i in sList] 
   return sList
 
 def find_and_edit(path):
@@ -95,12 +103,12 @@ def find_and_edit(path):
   with open(path + '/Classes_Description.csv', 'r') as readFile:
     reader = csv.reader(readFile)
     for row in reader:
-      if row[5] in classes:
-        row[5] = count        
+      if row[4] in classes:
+        row[4] = count        
         count += 1
       else:
-        if row[5] != 'European class':
-          row[5] = 'x'
+        if row[4] != 'European class':
+          row[4] = 'x'
       lines.append(row)
   return lines
 
@@ -111,10 +119,11 @@ def save_csv_file(path, lines):
 
 def rename_folders(path):
   clist = get_classes_from_folders(path)
+  print(clist)
   count = 0
-  for i in clist:
-    rename_folder(path,i,count)
-    count += 1
+  for c in clist:
+        rename_folder(path,c,count)
+        count += 1
 
 def run_split_dataset(path, testing_percentage):
   clist = get_classes_from_folders(path)
