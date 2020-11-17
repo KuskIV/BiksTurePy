@@ -43,22 +43,22 @@ class return_model(object):
 
     def set_epoch(self, epoch:int):
         self.epoch = epoch
-        
+
 
     def run_on_epoch(self, current_epoch:int)->bool:
         try:
             return_bool = True if int(self.epoch) >= int(current_epoch) or int(self.epoch) == -1 else False
         except ValueError:
             custom_error_check(False, f'Could not convert to integer on {self.epoch}')
-        
+
         return return_bool
 
     def get_size_tuple(self, last_size:int)->tuple:
         try:
-            return_tuple = (self.img_shape[0], self.img_shape[1], last_size) 
+            return_tuple = (self.img_shape[0], self.img_shape[1], last_size)
         except IndexError:
             custom_error_check(False, f'You are trying to access index one of a list of length {len(self.img_shape)}')
-        
+
         return return_tuple
 
     def get_size(self)->int:
@@ -66,7 +66,7 @@ class return_model(object):
             return_value = self.img_shape[0]
         except IndexError:
             custom_error_check(False, f'You are trying to access index one of a list of length {len(self.img_shape)}')
-        
+
         return return_value
 
     def get_csv_name(self, extension=None)->str:
@@ -74,7 +74,7 @@ class return_model(object):
             return f"model_{return_model.get_size(self)}"
         else:
             return f"model_{return_model.get_size(self)}_{extension}"
-        
+
     def get_summed_csv_name(self, extension=None)->str:
         if extension == None:
             return f"model_{return_model.get_size(self)}_summed"
@@ -145,6 +145,7 @@ def get_satina_median_model_norm()->object:
     model.add(layers.LayerNormalization(axis=1, center=True, scale=True))
     return model, img_shape[:2]
 
+
 def get_satina_mode_model_norm()->object:
     img_shape = (24, 24, 3)
     model = models.Sequential()
@@ -156,6 +157,45 @@ def get_satina_mode_model_norm()->object:
     model.add(layers.MaxPooling2D((2, 2)))
     model.add(layers.Conv2D(64, (3, 3), activation='relu', padding='same'))
     model.add(layers.LayerNormalization(axis=1, center=True, scale=True))
+    return model, img_shape[:2]
+
+def get_satina_median_model_adjusted()->object:
+    img_shape = (42, 42, 3)
+    model = models.Sequential()
+    model.add(layers.Conv2D(32, (3, 3), activation='relu', padding='same', input_shape=img_shape))
+    model.add(layers.Conv2D(32, (3, 3), activation='relu', padding='same'))
+    model.add(layers.MaxPooling2D((2, 2)))
+    model.add(layers.Conv2D(64, (3, 3), activation='relu', padding='same'))
+    model.add(layers.Conv2D(32, (3, 3), activation='relu', padding='same'))
+    model.add(layers.MaxPooling2D((2, 2)))
+    model.add(layers.Conv2D(64, (3, 3), activation='relu', padding='same'))
+    model.add(layers.Conv2D(32, (3, 3), activation='relu', padding='same'))
+    return model, img_shape[:2]
+
+def get_satina_mode_model_adjusted()->object:
+    img_shape = (49, 49, 3)
+    model = models.Sequential()
+    model.add(layers.Conv2D(32, (3, 3), activation='relu', padding='same', input_shape=img_shape))
+    model.add(layers.Conv2D(32, (3, 3), activation='relu', padding='same'))
+    model.add(layers.MaxPooling2D((2, 2)))
+    model.add(layers.Conv2D(64, (3, 3), activation='relu', padding='same'))
+    model.add(layers.Conv2D(32, (3, 3), activation='relu', padding='same'))
+    model.add(layers.MaxPooling2D((2, 2)))
+    model.add(layers.Conv2D(64, (3, 3), activation='relu', padding='same'))
+    model.add(layers.Conv2D(32, (3, 3), activation='relu', padding='same'))
+    return model, img_shape[:2]
+
+def get_satina_mean_model_adjusted()->object:
+    img_shape = (52, 52, 3)
+    model = models.Sequential()
+    model.add(layers.Conv2D(32, (5, 5), activation='relu', padding='same', input_shape=img_shape))
+    model.add(layers.Conv2D(32, (3, 3), activation='relu', padding='same'))
+    model.add(layers.MaxPooling2D((2, 2)))
+    model.add(layers.Conv2D(64, (5, 5), activation='relu', padding='same'))
+    model.add(layers.Conv2D(32, (3, 3), activation='relu', padding='same'))
+    model.add(layers.MaxPooling2D((2, 2)))
+    model.add(layers.Conv2D(64, (5, 5), activation='relu', padding='same'))
+    model.add(layers.Conv2D(32, (3, 3), activation='relu', padding='same'))
     return model, img_shape[:2]
 
 def get_satina_avg_model_norm()->object:
@@ -229,23 +269,23 @@ def train_model(model:tf.python.keras.engine.sequential.Sequential,
         print(f"    - validation images : {len(val_images)} - {len(val_labels)} : validation lables")
         sys.exit()
 
-    initial_learning_rate = 0.001 
+    initial_learning_rate = 0.001
 
     opt = tf.keras.optimizers.Adam(
         learning_rate=initial_learning_rate, beta_1=0.9, beta_2=0.999, epsilon=1e-07, amsgrad=False, name='Adam'
     )
-    
+
     earlystop = tf.keras.callbacks.EarlyStopping(
         monitor='val_loss', min_delta=0.01, patience=20, verbose=0, mode='auto', baseline=None, restore_best_weights=False
     )
-    
+
     model.compile(optimizer=opt,
                 loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
                 metrics=['sparse_categorical_accuracy'])
 
     # test_images = test_images
     # train_images = train_images
-    
+
     def lr_exp_decay(epoch, lr):
         k = 0.1
         return initial_learning_rate * math.exp(-k*epoch)
@@ -253,13 +293,13 @@ def train_model(model:tf.python.keras.engine.sequential.Sequential,
     history = model.fit(train_images, train_labels, epochs=epochs,
             validation_data=(val_images, val_labels),
             callbacks=[tf.keras.callbacks.LearningRateScheduler(lr_exp_decay, verbose=1),earlystop])
-    
+
     validation_loss = history.history['val_loss']
     validation_accuracy = history.history['val_sparse_categorical_accuracy']
-    learning_rate = K.eval(model.optimizer.lr) 
-    
+    learning_rate = K.eval(model.optimizer.lr)
+
     print(f"The initial learning rate is: {initial_learning_rate}, and the final learning rate is: {learning_rate}")
-    
+
     return validation_loss, validation_accuracy
 
 
@@ -304,7 +344,7 @@ def train_and_eval_models_for_size(
     print("\n---------------------")
     print("The test for this model is now done")
     print("---------------------\n")
-    
+
     return validation_loss, validation_accuracy
 
 def verify_model_paths(model_paths):
@@ -316,15 +356,15 @@ def verify_model_paths(model_paths):
         return False
 
 def get_len_if_not_none(model_path):
-    return 'NONE' if model_path == None else len(model_path) 
+    return 'NONE' if model_path == None else len(model_path)
 
 def get_satina_gains_model_object_list(shape:int, load_trained_models:bool=False, model_paths=None)->list:
     custom_error_check(verify_model_paths(model_paths), f'The model path length is not correct. It is {get_len_if_not_none(model_paths)}, but it should be 3')
-    
+
     median_path = get_satina_model_median_path() if model_paths==None else model_paths[0]
     avg_path = get_satina_model_avg_path() if model_paths==None else model_paths[1]
     small_path = get_satina_model_mode_path() if model_paths==None else model_paths[2]
-    
+
     satina_model_avg = return_model(get_satina_avg_model(), median_path, shape, load_trained_models)
     satina_model_median = return_model(get_satina_median_model(), avg_path, shape, load_trained_models)
     satina_model_mode = return_model(get_satina_mode_model(), small_path, shape, load_trained_models)
@@ -333,12 +373,12 @@ def get_satina_gains_model_object_list(shape:int, load_trained_models:bool=False
 
 def get_satina_gains_model_norm_object_list(shape:int, load_trained_models:bool=False, model_paths=None)->list:
     custom_error_check(verify_model_paths(model_paths), f'The model path length is not correct. It is {get_len_if_not_none(model_paths)}, but it should be 3')
-    
+
     median_path = get_satina_model_median_path() if model_paths==None else model_paths[0]
     avg_path = get_satina_model_avg_path() if model_paths==None else model_paths[1]
     small_path = get_satina_model_mode_path() if model_paths==None else model_paths[2]
-    
-    
+
+
     satina_model_avg = return_model(get_satina_avg_model_norm(), median_path, shape, load_trained_models)
     satina_model_median = return_model(get_satina_median_model_norm(), avg_path, shape, load_trained_models)
     satina_model_mode = return_model(get_satina_mode_model_norm(), small_path, shape, load_trained_models)
