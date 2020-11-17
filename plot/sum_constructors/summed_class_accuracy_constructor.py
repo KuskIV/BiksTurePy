@@ -8,7 +8,7 @@ from sum_constructors.sum_constructor_object import sum_constructor
 def get_object(get_category, get_class_accuracy):
     def get_headers(headers):
         return_list =[['category']]
-        return_list[0].extend(headers[2:]) 
+        return_list[0].extend(headers[3:]) 
         return return_list
 
     def get_current_data(row):

@@ -260,17 +260,7 @@ def run_experiment_one(lazy_split:int, train_h5_path:str, test_h5_path:str, get_
 
     save_fitdata(model_object_list, base_path)
 
-def save_fitdata(model_object_list:list, base_path:str)->None:
-    """This is the data used to produce the loss/epoch graht, and is saved in a csv file. as "epoch", "loss", "accuracy"
-
-    Args:
-        model_object_list (list): the list of model objects to save the data from
-        base_path (str): the base path to save the data in
-    """
-    for model in model_object_list:
-        csv_obj = cvs_object(f"{base_path}/{model.get_csv_name()}_fitdata.csv")
-        csv_obj.write(model.fit_data)
-
+def combine_fitdata(model_object_list, base_path):
     data = [['epoch']]
     
     max_len = max([len(x.fit_data) for x in model_object_list])
@@ -287,8 +277,24 @@ def save_fitdata(model_object_list:list, base_path:str)->None:
                     data[i].append(' ')
                 else:
                     data[i].append(model_object.fit_data[i][1])
-    csv_obj = cvs_object(f"{base_path}/fitdata_combined.csv")
+    
+    fitdata_path = f"{base_path}/fitdata_combined.csv"
+    csv_obj = cvs_object(fitdata_path)
     csv_obj.write(data)
+
+def save_fitdata(model_object_list:list, base_path:str)->None:
+    """This is the data used to produce the loss/epoch graht, and is saved in a csv file. as "epoch", "loss", "accuracy"
+
+    Args:
+        model_object_list (list): the list of model objects to save the data from
+        base_path (str): the base path to save the data in
+    """
+    for model in model_object_list:
+        fitdata_path = f"{base_path}/{model.get_csv_name()}_fitdata.csv"
+        csv_obj = cvs_object(fitdata_path)
+        csv_obj.write(model.fit_data)
+    
+    combine_fitdata(model_object_list, base_path)
 
 def sum_class_accuracy(model_object_list:list, images_in_classes, extension, base_path)->dict:
     """When training the accuracy for each class for each epoch is recorded. Here the sum of all accuracies for all classes for each epoch is summed together.
