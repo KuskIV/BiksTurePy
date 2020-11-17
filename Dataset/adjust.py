@@ -96,7 +96,7 @@ class AdjustETSD:
 
     def re_add_german_to_adjusted_ds(self):
         # Delete orginally placed german images from ETSD_Adjusted
-        a.delete_sub_ds()
+        self.delete_sub_ds()
         # Start re-sprinkling
         print("Re-adding the german now with only k duplicates into folder: " + self.new_ds_path)
         print("This can take a while, check folder for live progress. Will notify once done.")

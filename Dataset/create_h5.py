@@ -8,6 +8,7 @@ from os import path
 from tqdm import tqdm
 from tqdm import trange
 
+
 def generate_h5(h5Path:str, dataset_path:str)->None:
     """This method generates a H5PY file from the data in the dataset_path, and a
     saves it in the h5Path

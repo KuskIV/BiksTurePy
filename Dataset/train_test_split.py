@@ -56,7 +56,7 @@ def make_temporary_folder(path, name):
 
 # Split the list of classes
 def randomize_and_split_list(slist, path, c, testing_percentage):
-  random.shuffle(slist)
+  #random.shuffle(slist)
   slist = numpy.array(slist)
   x_train, x_test = train_test_split(slist, test_size=testing_percentage)
 
@@ -84,7 +84,7 @@ def get_classes_from_folders(path):
           classes[h] = [path_from_list]
   return classes
 
-def get_samples_from_folders(classes, testing_percentage):
+def get_samples_from_folders(classes, testing_percentage, path):
   for c in classes:
     split = []
     for j in classes[c]:
@@ -123,7 +123,7 @@ def find_and_edit(path):
         count += 1
       else:
         if row[4] != 'European class':
-          row[4] = 'x'
+          row.remove
       lines.append(row)
   return lines
 
@@ -142,14 +142,9 @@ def rename_folders(path):
 
 def run_split_dataset(path, testing_percentage):
   clist = get_classes_from_folders(path)
-  get_samples_from_folders(clist, testing_percentage)
+  get_samples_from_folders(clist, testing_percentage, path)
   save_csv_file(path, find_and_edit(path))
   rename_folders(path)
-
-path = r'Dataset/ETSD_Adjusted'
-
-run_split_dataset(path, 0.3)
-
 
 #path = r"C:/Users\bbalt/Desktop/European Traffic Sign Dataset"
 

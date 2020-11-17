@@ -126,5 +126,5 @@ def qucik_debug():#TODO insert params, these should idealy lead to a already gen
         generat_dataset=False
 
 if __name__ == "__main__":
-    qucik_debug()
+    qucik_debug() 
     
