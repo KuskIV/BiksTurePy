@@ -1,0 +1,1 @@
+[(<class 'TypeError'>, TypeError("'NoneType' object is not subscriptable"), <traceback object at 0x7f09b05b1440>)]

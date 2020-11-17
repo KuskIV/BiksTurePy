@@ -304,10 +304,10 @@ def sum_class_accuracy(model_object_list:list, images_in_classes, extension, bas
 
     for model_object in model_object_list:
         model_class_accuracy[model_object.get_csv_name()] = {}
+        open_path = f"{base_path}/{model_object.get_csv_name(extension=extension)}.csv"
+        check_if_valid_path(open_path)
 
-        check_if_valid_path(model_object.get_csv_path(extension=extension))
-
-        with open(model_object.get_csv_path(extension=extension), 'r') as csvfile:
+        with open(open_path, 'r') as csvfile:
                 plots = csv.reader(csvfile, delimiter=',')
 
                 next(plots)
@@ -415,7 +415,12 @@ def iterate_trough_models(model_object_list:list, e:int, image_dataset, lable_da
 
         right, wrong = iterate_trough_imgs(model_object_list[i], image_dataset, lable_dataset,label_dict)
 
-        percent = (right / (wrong + right)) * 100
+        try:
+            percent = (right / (wrong + right)) * 100
+        except ZeroDivisionError:
+            percent = 0
+            print(f"WARNING: right = {right}, wrong = {wrong}, model = {model_object_list[i].get_csv_name()}")
+        
         
         print(f"\nModel: \"{model_object_list[i].path.split('/')[-1].split('.')[0]}\"\nEpocs: {e} \nResult: \n    Right: {right}\n    wrong: {wrong}\n    percent correct: {percent}\n\n")
 
