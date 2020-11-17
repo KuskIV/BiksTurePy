@@ -9,7 +9,7 @@ from PIL import Image
 #Add GTSD to adjusted ETSD in a split way
 
 class AdjustETSD:
-    def __init__(self, new_ds_path='ETSD_Adjusted/', german_extraction_path='ETSD_GTSRB_N_GTSDB/', path_extensions = ['Training/', 'Testing/'], split=0.7, k=3):
+    def __init__(self, new_ds_path='Dataset/ETSD_Adjusted/', german_extraction_path='Dataset/ETSD_GTSRB_N_GTSDB/', path_extensions = ['Training/', 'Testing/'], split=0.7, k=3):
         self.german_extraction_path = german_extraction_path
         self.new_ds_path = new_ds_path
         self.path_extensions = path_extensions
@@ -176,6 +176,7 @@ class AdjustETSD:
         self.folder_exists_or_create(path_extension, class_name)
 
         for x in range(start, end):
+            
             img_id = index_to_keys[x]
             num_of_dups = GTSRB_train_d[img_id]
 
@@ -229,7 +230,7 @@ class AdjustETSD:
         print("Dataset trimmed by: " + str(num_of_deleted_images) + " as reqeusted through received predicate.")
         print("Dataset ready in -> " + self.new_ds_path)
 
-if __name__ == '__main__':
+def run_milad():
     full_path_to_original_ETSD = 'Dataset/milad_gains_images/' # must be changed to match full path to original
     a = AdjustETSD(split=0.7, k=3, path_extensions = ['Training/', 'Testing/']) # split for training / test | k = highest res duplicates
     # Create copy for security and redundancy
@@ -247,3 +248,6 @@ if __name__ == '__main__':
     width_threshold = 10
     height_threshold = 10
     a.trim_imgs_according_to_predicate(lambda pil_image: pil_image.width < width_threshold or pil_image.height < height_threshold)
+
+if __name__ == "__main__":
+    run_milad()

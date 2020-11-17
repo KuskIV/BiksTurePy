@@ -35,7 +35,7 @@ def read_class_descrip(path):
     subcategory = list()
     class_label = list()
     
-    with open(path) as csvfile:
+    with open(path, mode='r', encoding='utf-8-sig') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
             class_label.append(row['Descriptive name'])
