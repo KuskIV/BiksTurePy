@@ -84,14 +84,20 @@ def find_feature_colume(headers:list,feature_lable:str)->int: #*DONE
             return i
 
 def group_by_feature(header:list,csv_reader:object,feature_lable:str)->dict:
-    groups = {}
-    colum_num = find_feature_colume(header,feature_lable)
-    for row in csv_reader:
-        if row[colum_num] in groups.keys():
-            groups[row[colum_num]].append(row)
-        else:
-            groups[row[colum_num]] = [row]
-    return groups
+    try:
+        groups = {}
+        colum_num = find_feature_colume(header,feature_lable)
+        for row in csv_reader:
+            if row[colum_num] in groups.keys():
+                groups[row[colum_num]].append(row)
+            else:
+                groups[row[colum_num]] = [row]
+        return groups
+    except TypeError:
+        raise TypeError
+        print('Invalid lable provided, as grouping feature.')
+        print(f'Lable: {feature_lable} does not exsist in the provided csv file')
+        sys.exit()
 
 def merge_csv(filter_names, saved_path, class_size_dict, model_names, base_path):
     class_dict = {}
