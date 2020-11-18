@@ -48,24 +48,27 @@ class return_model(object):
     def run_on_epoch(self, current_epoch:int)->bool:
         try:
             return_bool = True if int(self.epoch) >= int(current_epoch) or int(self.epoch) == -1 else False
-        except ValueError:
-            custom_error_check(False, f'Could not convert to integer on {self.epoch}')
+        except ValueError as e:
+            print(f"ERROR: {e}")
+            raise ValueError
 
         return return_bool
 
     def get_size_tuple(self, last_size:int)->tuple:
         try:
             return_tuple = (self.img_shape[0], self.img_shape[1], last_size)
-        except IndexError:
-            custom_error_check(False, f'You are trying to access index one of a list of length {len(self.img_shape)}')
+        except IndexError as e:
+            print(f"ERROR: as e")
+            raise ValueError
 
         return return_tuple
 
     def get_size(self)->int:
         try:
             return_value = self.img_shape[0]
-        except IndexError:
-            custom_error_check(False, f'You are trying to access index one of a list of length {len(self.img_shape)}')
+        except IndexError as e:
+            print(f"ERROR: {e}")
+            raise ValueError
 
         return return_value
 
@@ -409,26 +412,39 @@ def get_len_if_not_none(model_path):
 def get_satina_gains_model_object_list(shape:int, load_trained_models:bool=False, model_paths=None)->list:
     custom_error_check(verify_model_paths(model_paths), f'The model path length is not correct. It is {get_len_if_not_none(model_paths)}, but it should be 3')
 
-    median_path = get_satina_model_median_path() if model_paths==None else model_paths[0]
-    avg_path = get_satina_model_avg_path() if model_paths==None else model_paths[1]
-    small_path = get_satina_model_mode_path() if model_paths==None else model_paths[2]
+    try:
+        median_path = get_satina_model_median_path() if model_paths==None else model_paths[0]
+        avg_path = get_satina_model_avg_path() if model_paths==None else model_paths[1]
+        small_path = get_satina_model_mode_path() if model_paths==None else model_paths[2]
 
-    satina_model_avg = return_model(get_satina_avg_model_adjusted(), median_path, shape, load_trained_models)
-    satina_model_median = return_model(get_satina_median_model_adjusted(), avg_path, shape, load_trained_models)
-    satina_model_mode = return_model(get_satina_mode_model_adjusted(), small_path, shape, load_trained_models)
+        satina_model_avg = return_model(get_satina_avg_model_adjusted(), median_path, shape, load_trained_models)
+        satina_model_median = return_model(get_satina_median_model_adjusted(), avg_path, shape, load_trained_models)
+        satina_model_mode = return_model(get_satina_mode_model_adjusted(), small_path, shape, load_trained_models)
+    except IndexError as e:
+        print(f"ERROR: {e}")
+        raise IndexError
+    except Exception as e:
+        print(f"ERROR: {e}")
+        raise Exception
 
     return [satina_model_avg, satina_model_mode, satina_model_median]
 
 def get_satina_gains_model_norm_object_list(shape:int, load_trained_models:bool=False, model_paths=None)->list:
     custom_error_check(verify_model_paths(model_paths), f'The model path length is not correct. It is {get_len_if_not_none(model_paths)}, but it should be 3')
 
-    median_path = get_satina_model_median_path() if model_paths==None else model_paths[0]
-    avg_path = get_satina_model_avg_path() if model_paths==None else model_paths[1]
-    small_path = get_satina_model_mode_path() if model_paths==None else model_paths[2]
+    try:
+        median_path = get_satina_model_median_path() if model_paths==None else model_paths[0]
+        avg_path = get_satina_model_avg_path() if model_paths==None else model_paths[1]
+        small_path = get_satina_model_mode_path() if model_paths==None else model_paths[2]
 
-
-    satina_model_avg = return_model(get_satina_avg_model_adjusted_norm(), median_path, shape, load_trained_models)
-    satina_model_median = return_model(get_satina_median_model_adjusted_norm(), avg_path, shape, load_trained_models)
-    satina_model_mode = return_model(get_satina_mode_model_adjusted_norm(), small_path, shape, load_trained_models)
+        satina_model_avg = return_model(get_satina_avg_model_adjusted_norm(), median_path, shape, load_trained_models)
+        satina_model_median = return_model(get_satina_median_model_adjusted_norm(), avg_path, shape, load_trained_models)
+        satina_model_mode = return_model(get_satina_mode_model_adjusted_norm(), small_path, shape, load_trained_models)
+    except IndexError as e:
+        print(f"ERROR: {e}")
+        raise IndexError
+    except Exception as e:
+        print(f"ERROR: {e}")
+        raise Exception
 
     return [satina_model_avg, satina_model_mode, satina_model_median]
