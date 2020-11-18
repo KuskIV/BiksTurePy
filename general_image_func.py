@@ -31,32 +31,56 @@ def changeImageSize(maxWidth: int,
     return image.resize((maxHeight, maxWidth))
 
 def rgba_to_rgb(arr:np.array):
-    w, h = arr.size
-    if arr.getdata().mode == 'RGBA':
-        arr = arr.convert('RGB')
-    nparray = np.array(arr.getdata())
-    reshaped = nparray.reshape((w, h, 3))
-    return reshaped.astype(np.uint8)
+    
+    try:
+        w, h = arr.size
+        if arr.getdata().mode == 'RGBA':
+            arr = arr.convert('RGB')
+        nparray = np.array(arr.getdata())
+        reshaped = nparray.reshape((w, h, 3))
+        reshaped = reshaped.astype(np.uint8)
+    except Exception as e:
+        print(f"ERROR: {e}")
+        raise Exception
+    
+    return reshaped
 
 def load_images(folder, lable):
     loaded_img = []
     lable_names = []
+    
     with os.scandir(folder) as imgs:
         for ppm_path in imgs:
             if ppm_path.name.endswith(".jpg") or ppm_path.name.endswith('.jpeg') or ppm_path.name.endswith('.ppm'):
-                lable_names.append(lable)
-                loaded_img.append(np.asanyarray(Image.open(ppm_path.path)) / 255.0)
+                try:
+                    lable_names.append(lable)
+                    loaded_img.append(np.asanyarray(Image.open(ppm_path.path)) / 255.0)
+                except Exception as e:
+                    print(f"ERROR: {e}")
+                    raise Exception
+    
     return lable_names, loaded_img   
 
 def load_images_from_folders(path):
-    subfolders = [ f.path for f in os.scandir(path) if f.is_dir() ]
+    try:
+        subfolders = [ f.path for f in os.scandir(path) if f.is_dir() ]
+    except Exception as a:
+        print(f"ERROR: {e}")
+        raise Exception
+    
     newImgs = []
     lable_names = []
+    
     for folder in subfolders:
-        lable = folder.split('/')[-1]
-        returned_lables, imgs = load_images(folder, lable)
-        newImgs.extend(imgs)
-        lable_names.extend(returned_lables)
+        try:
+            lable = folder.split('/')[-1]
+            returned_lables, imgs = load_images(folder, lable)
+            newImgs.extend(imgs)
+            lable_names.extend(returned_lables)
+        except Exception as e:
+            print(f"ERROR: {e}")
+            raise Exception
+    
     return newImgs, lable_names
 
 def EnsureUniformImageShape(img1: Image.Image,img2: Image.Image, shape=None)->tuple:#TODO single instance of this method failing to ensure uniformity, have not been able to re-create error
@@ -75,13 +99,23 @@ def EnsureUniformImageShape(img1: Image.Image,img2: Image.Image, shape=None)->tu
     size2 = img2.size
 
     if(shape != None):
-        img1 = changeImageSize(shape[0], shape[1], img1)
-        img2 = changeImageSize(shape[0], shape[1], img2)
+        try:
+            img1 = changeImageSize(shape[0], shape[1], img1)
+            img2 = changeImageSize(shape[0], shape[1], img2)
+        except Exception as e:
+            print(f"ERROR: {e}")
+            raise Exception
+        
         return img1,img2
     elif(size2 == size1):
         return img1,img2
     else:
-        img2 = changeImageSize(size1[0],size1[1],img2)
+        try:
+            img2 = changeImageSize(size1[0],size1[1],img2)
+        except Exception as e:
+            print(f"ERROR: {e}")
+            raise Exception
+        
         return img1,img2
 
 def merge_two_images(img1: Image.Image
@@ -136,7 +170,6 @@ def get_class_names()->list:#TODO den her skal nok være et andet sted?
     labels_regex = re.compile('(?<== )(.)*')
 
     with open('labels.txt', 'r') as fp:
-        i = 0
         for line in fp:
             match = labels_regex.search(line).group(0)
             class_names.append(match)
@@ -241,6 +274,18 @@ def normalize_and_convert(img:np.array):
 
 def convert_between_pill_numpy(imgs,mode):
     if mode == 'pil->numpy':
-        return [np.asarray(im) for im in imgs]
+        try:
+            return_list = [np.asarray(im) for im in imgs]
+        except Exception as e:
+            print(f"ERROR: {e}")
+            raise Exception
+        
+        return return_list 
     if mode == 'numpy->pil':
-        return [normalize_and_convert(im) for im in imgs]
+        try:
+            return_list = [normalize_and_convert(im) for im in imgs]
+        except Exception as e:
+            print(f"ERROR: {e}")
+            raise Exception
+        
+        return return_list
