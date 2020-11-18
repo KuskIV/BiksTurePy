@@ -29,7 +29,7 @@ class AdjustETSD:
 
     def delete_sub_ds(self, beginsswith='G_'):
         """Deletes a subdataset by assuming that all of the images starts with a
-           specific substring like the GTSDB is assumed to start with G_
+            specific substring like the GTSDB is assumed to start with G_
         """
 
         for sub_path in self.path_extensions:
@@ -39,7 +39,7 @@ class AdjustETSD:
                 if dir.is_dir():
                     for file in os.listdir(dir.path):
                         if file.startswith(beginsswith):
-                         os.remove(dir.path+'/'+file)
+                            os.remove(dir.path+'/'+file)
                 else:
                     print("is not a dir - error in data")
         print("Finished deleting german data")
@@ -276,7 +276,7 @@ class AdjustETSD:
 
     def handle_GTSRB_train_imgs(self, class_name, path_to_dir, GTSRB_imgs, k=3, split=0.7):
         """Place GTSRB_train images in training and testing set, choose to keep k highest res
-           duplicates per unique sign. Split into training and testing by split."""
+            duplicates per unique sign. Split into training and testing by split."""
         unique_image_count, GTSRB_train_d = self.count_unique_images(GTSRB_imgs)
         training_amount = self.compute_split(unique_image_count)
         print(GTSRB_train_d)
@@ -322,19 +322,19 @@ class AdjustETSD:
 
     def folder_exists_or_create(self, path_extension, class_name):
         """Check if folder exists if not, then create folder, as the resampling of german ds, might
-           create a new folder in the dataset which previously had no examples"""
+            create a new folder in the dataset which previously had no examples"""
         folder_placement = self.new_ds_path + path_extension + class_name
         if not os.path.exists(folder_placement):
             os.makedirs(folder_placement, exist_ok=False)
 
     def compute_placement_location(self, class_name, extension, img_file_name , identifier='G_'):
         """Compute the path for where to place a specific image depending on its class and
-           whether it is training or testing"""
+            whether it is training or testing"""
         return self.new_ds_path + extension + class_name + '/' + identifier+img_file_name
 
     def trim_imgs_according_to_predicate(self, predicate, path=None, subpath_extensions=None, file_extension='.ppm'):
         """Runs through the dataset training and test, opens the image as pil objects,
-           and removes all files, which obeys the predicate"""
+            and removes all files, which obeys the predicate"""
         # Alow to specify other paths than default
         path = path or self.new_ds_path
         subpath_extensions = subpath_extensions or self.path_extensions
