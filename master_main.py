@@ -7,6 +7,8 @@ from phase_two.sum_phase_two import sum_merged_files
 import sys
 import time
 
+def get_noise_paths():
+    return [get_satina_model_median_path_noise(), get_satina_model_avg_path_noise(), get_satina_model_mode_path_noise()]
 
 def introduce_experiment(folder_name):
     try:
@@ -24,7 +26,7 @@ if __name__ == "__main__":
     noise_test_path = get_h5_test_noise()
     noise_train_path = get_h5_train_noise()
     
-    noise_paths = [get_satina_model_median_path_noise(), get_satina_model_avg_path_noise(), get_satina_model_mode_path_noise()]
+    noise_paths = get_noise_paths()
     
     data_to_test_on = 1
     

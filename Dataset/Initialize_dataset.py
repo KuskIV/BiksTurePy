@@ -42,8 +42,8 @@ if __name__ == '__main__':
     
     generate_h5(get_paths('h5_train'), train_image_path)
     generate_h5(get_paths('h5_test'), test_image_path)
-    #generate_h5(get_paths('h5_train_noise'), dest_path)
-    #generate_h5(get_paths('h5_test_noise'), dest_path)
+    generate_h5(get_paths('h5_train_noise'), dest_path)
+    generate_h5(get_paths('h5_test_noise'), dest_path)
     
     qucik_debug()
     
