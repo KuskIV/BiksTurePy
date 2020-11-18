@@ -28,7 +28,7 @@ if __name__ == "__main__":
     
     noise_paths = get_noise_paths()
     
-    data_to_test_on = 1
+    data_to_test_on = 100
     
     errors = []
 

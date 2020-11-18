@@ -184,7 +184,7 @@ class AdjustETSD:
                 img_only_name = folder_n_img[1]
                 dst = self.compute_placement_location(class_name, path_extension, img_only_name, identifier='')
                 dst_s = dst.split('/')
-                dir_path = os.path.join(dst_s[0], dst_s[1], dst_s[2], dst_s[3])
+                dir_path = os.path.join(dst_s[0], dst_s[1], dst_s[2], dst_s [3])
                 if not os.path.exists(dir_path):
                     os.makedirs(dir_path)
                 shutil.copy(src, dst)

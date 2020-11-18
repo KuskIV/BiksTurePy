@@ -51,11 +51,6 @@ def add_folder(bjarke_dumb, tdir, c):
   # except:
   #   print("ERROR")
 
-# Method to make temporary folder
-def make_temporary_folder(bjarke_dumb, name):
-  if not os.path.isdir(bjarke_dumb + "/temp/" + name):
-    os.makedirs(bjarke_dumb + "/temp/" + name)
-
 # Split the list of classes
 def randomize_and_split_list(slist, bjarke_dumb, c, testing_percentage):
   #random.shuffle(slist)

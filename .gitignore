@@ -22,6 +22,7 @@ phase_two/csv_output/
 Dataset/ETSD_Adjusted/
 Dataset/ETSD_GTSRB_N_GTSDB/
 Dataset/miladgainsimage/
+Dataset/roni_bot/
 error_messages/
 # Distribution / packaging
 .Python
