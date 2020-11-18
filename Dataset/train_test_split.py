@@ -127,10 +127,11 @@ def find_and_edit(old, bjarke_dumb):
         count += 1
         lines.append(row)
       else:
-        if row[4] != 'European class':
-          if row[2] != '':
-            tmp_cell = row[2]
-          # row.remove()
+        if row[4] == 'European class':
+          lines.append(row)
+        if row[2] != '' and row[4] != 'European class':
+          tmp_cell = row[2]
+        # row.remove()
   return lines
 
 def save_csv_file(bjarke_dumb, lines):
