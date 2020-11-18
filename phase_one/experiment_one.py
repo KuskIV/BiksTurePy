@@ -260,17 +260,7 @@ def run_experiment_one(lazy_split:int, train_h5_path:str, test_h5_path:str, get_
 
     save_fitdata(model_object_list, base_path)
 
-def save_fitdata(model_object_list:list, base_path:str)->None:
-    """This is the data used to produce the loss/epoch graht, and is saved in a csv file. as "epoch", "loss", "accuracy"
-
-    Args:
-        model_object_list (list): the list of model objects to save the data from
-        base_path (str): the base path to save the data in
-    """
-    for model in model_object_list:
-        csv_obj = cvs_object(f"{base_path}/{model.get_csv_name()}_fitdata.csv")
-        csv_obj.write(model.fit_data)
-
+def combine_fitdata(model_object_list, base_path):
     data = [['epoch']]
     
     max_len = max([len(x.fit_data) for x in model_object_list])
@@ -287,8 +277,24 @@ def save_fitdata(model_object_list:list, base_path:str)->None:
                     data[i].append(' ')
                 else:
                     data[i].append(model_object.fit_data[i][1])
-    csv_obj = cvs_object(f"{base_path}/fitdata_combined.csv")
+    
+    fitdata_path = f"{base_path}/fitdata_combined.csv"
+    csv_obj = cvs_object(fitdata_path)
     csv_obj.write(data)
+
+def save_fitdata(model_object_list:list, base_path:str)->None:
+    """This is the data used to produce the loss/epoch graht, and is saved in a csv file. as "epoch", "loss", "accuracy"
+
+    Args:
+        model_object_list (list): the list of model objects to save the data from
+        base_path (str): the base path to save the data in
+    """
+    for model in model_object_list:
+        fitdata_path = f"{base_path}/{model.get_csv_name()}_fitdata.csv"
+        csv_obj = cvs_object(fitdata_path)
+        csv_obj.write(model.fit_data)
+    
+    combine_fitdata(model_object_list, base_path)
 
 def sum_class_accuracy(model_object_list:list, images_in_classes, extension, base_path)->dict:
     """When training the accuracy for each class for each epoch is recorded. Here the sum of all accuracies for all classes for each epoch is summed together.
@@ -304,10 +310,10 @@ def sum_class_accuracy(model_object_list:list, images_in_classes, extension, bas
 
     for model_object in model_object_list:
         model_class_accuracy[model_object.get_csv_name()] = {}
+        open_path = f"{base_path}/{model_object.get_csv_name(extension=extension)}.csv"
+        check_if_valid_path(open_path)
 
-        check_if_valid_path(model_object.get_csv_path(extension=extension))
-
-        with open(model_object.get_csv_path(extension=extension), 'r') as csvfile:
+        with open(open_path, 'r') as csvfile:
                 plots = csv.reader(csvfile, delimiter=',')
 
                 next(plots)
@@ -415,7 +421,12 @@ def iterate_trough_models(model_object_list:list, e:int, image_dataset, lable_da
 
         right, wrong = iterate_trough_imgs(model_object_list[i], image_dataset, lable_dataset,label_dict)
 
-        percent = (right / (wrong + right)) * 100
+        try:
+            percent = (right / (wrong + right)) * 100
+        except ZeroDivisionError:
+            percent = 0
+            print(f"WARNING: right = {right}, wrong = {wrong}, model = {model_object_list[i].get_csv_name()}")
+        
         
         print(f"\nModel: \"{model_object_list[i].path.split('/')[-1].split('.')[0]}\"\nEpocs: {e} \nResult: \n    Right: {right}\n    wrong: {wrong}\n    percent correct: {percent}\n\n")
 

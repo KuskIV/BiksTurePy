@@ -185,7 +185,7 @@ def get_satina_mode_model_adjusted()->object:
     model.add(layers.Conv2D(32, (3, 3), activation='relu', padding='same'))
     return model, img_shape[:2]
 
-def get_satina_mean_model_adjusted()->object:
+def get_satina_avg_model_adjusted()->object:
     img_shape = (52, 52, 3)
     model = models.Sequential()
     model.add(layers.Conv2D(32, (5, 5), activation='relu', padding='same', input_shape=img_shape))
@@ -196,6 +196,54 @@ def get_satina_mean_model_adjusted()->object:
     model.add(layers.MaxPooling2D((2, 2)))
     model.add(layers.Conv2D(64, (5, 5), activation='relu', padding='same'))
     model.add(layers.Conv2D(32, (3, 3), activation='relu', padding='same'))
+    return model, img_shape[:2]
+
+def get_satina_median_model_adjusted_norm()->object:
+    img_shape = (42, 42, 3)
+    model = models.Sequential()
+    model.add(layers.Conv2D(32, (3, 3), activation='relu', padding='same', input_shape=img_shape))
+    model.add(layers.Conv2D(32, (3, 3), activation='relu', padding='same'))
+    model.add(layers.LayerNormalization(axis=1, center=True, scale=True))
+    model.add(layers.MaxPooling2D((2, 2)))
+    model.add(layers.Conv2D(64, (3, 3), activation='relu', padding='same'))
+    model.add(layers.Conv2D(32, (3, 3), activation='relu', padding='same'))
+    model.add(layers.LayerNormalization(axis=1, center=True, scale=True))
+    model.add(layers.MaxPooling2D((2, 2)))
+    model.add(layers.Conv2D(64, (3, 3), activation='relu', padding='same'))
+    model.add(layers.Conv2D(32, (3, 3), activation='relu', padding='same'))
+    model.add(layers.LayerNormalization(axis=1, center=True, scale=True))
+    return model, img_shape[:2]
+
+def get_satina_mode_model_adjusted_norm()->object:
+    img_shape = (49, 49, 3)
+    model = models.Sequential()
+    model.add(layers.Conv2D(32, (3, 3), activation='relu', padding='same', input_shape=img_shape))
+    model.add(layers.Conv2D(32, (3, 3), activation='relu', padding='same'))
+    model.add(layers.LayerNormalization(axis=1, center=True, scale=True))
+    model.add(layers.MaxPooling2D((2, 2)))
+    model.add(layers.Conv2D(64, (3, 3), activation='relu', padding='same'))
+    model.add(layers.Conv2D(32, (3, 3), activation='relu', padding='same'))
+    model.add(layers.LayerNormalization(axis=1, center=True, scale=True))
+    model.add(layers.MaxPooling2D((2, 2)))
+    model.add(layers.Conv2D(64, (3, 3), activation='relu', padding='same'))
+    model.add(layers.Conv2D(32, (3, 3), activation='relu', padding='same'))
+    model.add(layers.LayerNormalization(axis=1, center=True, scale=True))
+    return model, img_shape[:2]
+
+def get_satina_avg_model_adjusted_norm()->object:
+    img_shape = (52, 52, 3)
+    model = models.Sequential()
+    model.add(layers.Conv2D(32, (5, 5), activation='relu', padding='same', input_shape=img_shape))
+    model.add(layers.Conv2D(32, (3, 3), activation='relu', padding='same'))
+    model.add(layers.LayerNormalization(axis=1, center=True, scale=True))
+    model.add(layers.MaxPooling2D((2, 2)))
+    model.add(layers.Conv2D(64, (5, 5), activation='relu', padding='same'))
+    model.add(layers.Conv2D(32, (3, 3), activation='relu', padding='same'))
+    model.add(layers.LayerNormalization(axis=1, center=True, scale=True))
+    model.add(layers.MaxPooling2D((2, 2)))
+    model.add(layers.Conv2D(64, (5, 5), activation='relu', padding='same'))
+    model.add(layers.Conv2D(32, (3, 3), activation='relu', padding='same'))
+    model.add(layers.LayerNormalization(axis=1, center=True, scale=True))
     return model, img_shape[:2]
 
 def get_satina_avg_model_norm()->object:
@@ -365,11 +413,11 @@ def get_satina_gains_model_object_list(shape:int, load_trained_models:bool=False
     avg_path = get_satina_model_avg_path() if model_paths==None else model_paths[1]
     small_path = get_satina_model_mode_path() if model_paths==None else model_paths[2]
 
-    satina_model_avg = return_model(get_satina_avg_model(), median_path, shape, load_trained_models)
-    satina_model_median = return_model(get_satina_median_model(), avg_path, shape, load_trained_models)
-    satina_model_mode = return_model(get_satina_mode_model(), small_path, shape, load_trained_models)
+    satina_model_avg = return_model(get_satina_avg_model_adjusted(), median_path, shape, load_trained_models)
+    satina_model_median = return_model(get_satina_median_model_adjusted(), avg_path, shape, load_trained_models)
+    satina_model_mode = return_model(get_satina_mode_model_adjusted(), small_path, shape, load_trained_models)
 
-    return [satina_model_median, satina_model_avg, satina_model_mode]
+    return [satina_model_avg, satina_model_mode, satina_model_median]
 
 def get_satina_gains_model_norm_object_list(shape:int, load_trained_models:bool=False, model_paths=None)->list:
     custom_error_check(verify_model_paths(model_paths), f'The model path length is not correct. It is {get_len_if_not_none(model_paths)}, but it should be 3')
@@ -379,8 +427,8 @@ def get_satina_gains_model_norm_object_list(shape:int, load_trained_models:bool=
     small_path = get_satina_model_mode_path() if model_paths==None else model_paths[2]
 
 
-    satina_model_avg = return_model(get_satina_avg_model_norm(), median_path, shape, load_trained_models)
-    satina_model_median = return_model(get_satina_median_model_norm(), avg_path, shape, load_trained_models)
-    satina_model_mode = return_model(get_satina_mode_model_norm(), small_path, shape, load_trained_models)
+    satina_model_avg = return_model(get_satina_avg_model_adjusted_norm(), median_path, shape, load_trained_models)
+    satina_model_median = return_model(get_satina_median_model_adjusted_norm(), avg_path, shape, load_trained_models)
+    satina_model_mode = return_model(get_satina_mode_model_adjusted_norm(), small_path, shape, load_trained_models)
 
-    return [satina_model_median, satina_model_avg, satina_model_mode]
+    return [satina_model_avg, satina_model_mode, satina_model_median]
