@@ -12,8 +12,10 @@ def rename_folder(bjarke_dumb, c, rn):
   try:
       os.rename(bjarke_dumb + "/" + 'Testing' + "/" + str(c), bjarke_dumb + "/" + "Testing" + "/" + str(rn))
       os.rename(bjarke_dumb + "/" + "Training" + "/" + str(c), bjarke_dumb + "/" + "Training" + "/" + str(rn))
-  except:
-      print('Error in rename.')
+  except Exception as e:
+      print(bjarke_dumb + "/" + 'Testing' + "/" + str(c))
+      print(bjarke_dumb + "/" + "Testing" + "/" + str(rn))
+      print('Error in rename.', {e})
 
 # Move files
 def move_files(files, bjarke_dumb, c, tFile):
@@ -97,7 +99,7 @@ def get_samples_from_folders(classes, testing_percentage, bjarke_dumb):
     else:
       add_folder(bjarke_dumb, 'Training', c)
       add_folder(bjarke_dumb, 'Testing', c)
-      randomize_and_split_list(split, bjarke_dumb, c, testing_percentage)
+      #randomize_and_split_list(split, bjarke_dumb, c, testing_percentage)
 
 def trim_classes(classes):
   sList = list()

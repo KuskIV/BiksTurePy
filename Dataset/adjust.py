@@ -150,11 +150,11 @@ class AdjustETSD:
     def place_simple_imgs_subset(self, imgs_l, class_name, path_extension):
         for img in imgs_l:
             src = img
-            folder_n_img = src.split('\\')
+            folder_n_img = src.split('/')[-2:]
             img_only_name = folder_n_img[1]
             dst = self.compute_placement_location(class_name, path_extension, img_only_name, identifier='')
             dst_s = dst.split('/')
-            dir_path = os.path.join(dst_s[0], dst_s[1], dst_s[2])
+            dir_path = os.path.join(dst_s[0], dst_s[1], dst_s[2], dst_s[3])
             if not os.path.exists(dir_path):
                 os.makedirs(dir_path)
             shutil.copy(src, dst)
@@ -177,11 +177,11 @@ class AdjustETSD:
             tmp_k = num_of_dups if k > num_of_dups else k  #choose k or  whatever amount below k, which is available
             for img_id in range(num_of_dups-tmp_k, num_of_dups):
                 src = imgs[img_id]
-                folder_n_img = src.split('\\')
+                folder_n_img = src.split('/')[-2:]
                 img_only_name = folder_n_img[1]
                 dst = self.compute_placement_location(class_name, path_extension, img_only_name, identifier='')
                 dst_s = dst.split('/')
-                dir_path = os.path.join(dst_s[0], dst_s[1], dst_s[2])
+                dir_path = os.path.join(dst_s[0], dst_s[1], dst_s[2], dst_s[3])
                 if not os.path.exists(dir_path):
                     os.makedirs(dir_path)
                 shutil.copy(src, dst)
@@ -377,7 +377,7 @@ def run_milad():
     a.trim_imgs_according_to_predicate(lambda pil_image: pil_image.width < width_threshold or pil_image.height < height_threshold)
 
 def complex_runner(path_to_original='ETSD/'):
-    a = AdjustETSD(split=0.7, k=3, path_extensions=['Training/', 'Testing/'], new_ds_path='ETSD_Adjusted/', risky_shuffle=False)
+    a = AdjustETSD(split=0.7, k=3, path_extensions=['Training/', 'Testing/'], new_ds_path='Dataset/ETSD_Adjusted/', risky_shuffle=False)
     print("Deleting if old Adjustment exists. - Be patient...")
     if os.path.exists(a.new_ds_path):
         shutil.rmtree(a.new_ds_path)

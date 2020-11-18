@@ -33,7 +33,7 @@ if __name__ == "__main__":
     errors = []
 
     try:
-        baseline_folder = "experiment_one"
+        baseline_folder = "experiment_baseline"
         introduce_experiment(baseline_folder)
         ex_one(test_path, train_path, folder_extension=baseline_folder, data_to_test_on=data_to_test_on)
         ex_two_eval_noise(test_path, baseline_folder, data_to_test_on=data_to_test_on)

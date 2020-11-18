@@ -1,6 +1,6 @@
 import os
 from create_h5 import generate_h5
-from adjust import AdjustETSD, run_milad
+from adjust import AdjustETSD, complex_runner
 import shutil
 import os,sys,inspect
 current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
@@ -29,12 +29,12 @@ def delete_dest(dest_path):
     
 
 if __name__ == '__main__':
-    path = r'Dataset/milad_gains_images'
+    path = r'Dataset/miladgainsimage'
     dest_path = r'Dataset/ETSD_Adjusted'
 
     delete_dest(dest_path)
     
-    run_milad()
+    complex_runner(path_to_original=path)
     run_split_dataset(dest_path, 0.3, path)
 
     train_image_path = f"{dest_path}/Training"
@@ -42,8 +42,8 @@ if __name__ == '__main__':
     
     generate_h5(get_paths('h5_train'), train_image_path)
     generate_h5(get_paths('h5_test'), test_image_path)
-    generate_h5(get_paths('h5_train_noise'), dest_path)
-    generate_h5(get_paths('h5_test_noise'), dest_path)
+    # generate_h5(get_paths('h5_train_noise'), dest_path)
+    # generate_h5(get_paths('h5_test_noise'), dest_path)
     
     qucik_debug()
     

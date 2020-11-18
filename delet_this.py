@@ -1,3 +1,6 @@
+import logging, sys
+import traceback
+
 i = ['1']
 ii = (1,1,1)
 iii = [[1, 1, [1, 1, 1]], [1, 1, 1]]
@@ -5,8 +8,9 @@ iii = [[1, 1, [1, 1, 1]], [1, 1, 1]]
 def stuff():
     try:
         round('a', 2)
-    except Exception:
-        raise Exception
+    except Exception as e:
+        print(f"ERROR: {e}")
+        raise Exception('this is shocking')
 
 
 def a():
@@ -31,6 +35,10 @@ try:
     b()
     # print(0/0)
 except Exception:
-    raise Exception
+    print("a")
+else:
+    print("else bois")
+finally:
+    print("done bois")
 
 print("stuff")
