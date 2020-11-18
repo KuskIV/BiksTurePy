@@ -233,7 +233,14 @@ def run_experiment_one(lazy_split:int, train_h5_path:str, test_h5_path:str, get_
     base_path = get_paths('phase_one_csv') if folder_extension == None else f"{get_paths('phase_one_csv')}/{folder_extension}"
     if not folder_extension == None and not os.path.exists(base_path):
         os.mkdir(base_path)
-        
+    
+    print("---------------------")
+    print(f"The output data for the following experiment will be saved in the following folder:")
+    print(f"{base_path}")
+    print("---------------------")
+    
+    check_if_valid_path(base_path)
+    
     h5_train = h5_object(train_h5_path, training_split=dataset_split)
     h5_test = h5_object(test_h5_path, training_split=1)
 
@@ -248,12 +255,11 @@ def run_experiment_one(lazy_split:int, train_h5_path:str, test_h5_path:str, get_
     sum_test_path = f"{base_path}/test_sum_class_accuracy.csv"
     sum_val_path = f"{base_path}/val_sum_class_accuracy.csv"
 
-    model_object_list_loaded = get_models(h5_train.class_in_h5, load_trained_models=True)
-    
     #TODO: Fix epoch count in test_val_sum_class_accuracy.csv
     _, _, image_dataset, lable_dataset = h5_train.shuffle_and_lazyload(0, data_to_test_on)
     iterate_and_sum(model_object_list, 'val', sum_val_path, image_dataset, lable_dataset, epochs_end, h5_train.images_in_classes, base_path)
     
+    model_object_list_loaded = get_models(h5_train.class_in_h5, load_trained_models=True)
     image_dataset, lable_dataset, _, _ = h5_test.shuffle_and_lazyload(0, data_to_test_on)
     iterate_and_sum(model_object_list_loaded, 'test', sum_test_path, image_dataset, lable_dataset, -1, h5_test.images_in_classes, base_path, epochs=[x.fit_data[-1][0] for x in model_object_list])
     combine_two_summed_class_accracy(sum_test_path, sum_val_path, base_path)
@@ -428,7 +434,7 @@ def iterate_trough_models(model_object_list:list, e:int, image_dataset, lable_da
             print(f"WARNING: right = {right}, wrong = {wrong}, model = {model_object_list[i].get_csv_name()}")
         
         
-        print(f"\nModel: \"{model_object_list[i].path.split('/')[-1].split('.')[0]}\"\nEpocs: {e} \nResult: \n    Right: {right}\n    wrong: {wrong}\n    percent correct: {percent}\n\n")
+        print(f"\nModel: \"{model_object_list[i].path.split('/')[-1].split('.')[0]}\"\nResolution: {model_object_list[i].img_shape}\nEpocs: {e} \nResult: \n    Right: {right}\n    wrong: {wrong}\n    percent correct: {percent}\n\n")
 
         get_model_results(label_dict, model_object_list[i], (e, True), should_print=False)
 
