@@ -166,6 +166,9 @@ class AdjustETSD:
                 accumulation += value
                 accumulating_end_pivot.append(accumulation)
 
+            # sort GTSRB_imgs to ensure that highest k images can be chosen
+            GTSRB_imgs.sort()
+
             # Add to training
             self.GTSRB_train_place_sub_range(0, training_amount, class_name, path_to_dir, index_to_keys, accumulating_end_pivot, GTSRB_imgs, GTSRB_train_d, k, self.path_extensions[0])
             # Add to testing
