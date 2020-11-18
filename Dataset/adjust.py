@@ -144,8 +144,11 @@ class AdjustETSD:
             self.place_simple_imgs_subset(train_l[:train_count], class_name, self.path_extensions[0])
             self.place_simple_imgs_subset(train_l[train_count:], class_name, self.path_extensions[1])
         else:
-            self.place_simple_imgs_subset(train_l, class_name, self.path_extensions[0])
-            self.place_simple_imgs_subset(test_l, class_name, self.path_extensions[1])
+            train_l.extend(test_l)
+            unique_image_count = len(train_l)
+            train_count = self.compute_split(unique_image_count, split=self.split)
+            self.place_simple_imgs_subset(train_l[:train_count], class_name, self.path_extensions[0])
+            self.place_simple_imgs_subset(train_l[train_count:], class_name, self.path_extensions[1])
 
     def place_simple_imgs_subset(self, imgs_l, class_name, path_extension):
         for img in imgs_l:
