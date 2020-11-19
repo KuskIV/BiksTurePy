@@ -125,28 +125,28 @@ class homomorphic():
         # rms = stat.rms[0]
         # avg = stat.average[0]
         scalar = self.calc_scalar(mean_av, max_pix)
-        if max_pix > 240 and mean_av < 127 and mean_av <= 180:
-            self.a = 1
-            self.b = 0.5
-        # elif max_pix > 240 and mean_av < 127 and mean_av <= 220: 
+        # if max_pix > 240 and mean_av < 127 and mean_av <= 180:
+        #     self.a = 1
+        #     self.b = 0.5
+        # # elif max_pix > 240 and mean_av < 127 and mean_av <= 220: 
+        # #     self.a = 1.5
+        # #     self.b = 0.5
+        # elif mean_av < 127 :
         #     self.a = 1.5
         #     self.b = 0.5
-        elif mean_av < 127 :
-            self.a = 1.5
-            self.b = 0.5
-        elif max_pix > 240 and mean_av > 180 :
-            self.a = 0.9
-            self.b = 0.4
-        else :
-            print ("fuck")
+        # elif max_pix > 240 and mean_av > 180 :
+        #     self.a = 0.9
+        #     self.b = 0.4
+        # else :
+        #     print ("fuck")
         return mean_av, max_pix
         
     def calc_scalar(self, lumunosisty, intensity): 
         scalar = np.abs(lumunosisty - intensity)
-        print ('Scalar', scalar)
-        print ('Lumus', lumunosisty)
+        # print ('Scalar', scalar)
+        # print ('Lumus', lumunosisty)
         norm = 1/(1 - np.exp(-scalar))
-        print ("norm", norm)
+        # print ("norm", norm)
         return norm
     
 

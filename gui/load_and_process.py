@@ -3,6 +3,7 @@ import os
 from PIL import Image
 import imageio
 
+
 def verify_img_names(img_names, img_extension):
     for img in img_names:
         if not img.endswith(img_extension):
@@ -19,7 +20,7 @@ def parse_and_verify_img_names(img_names, img_extension):
 def get_parameters(img_path):
     max_vals = 0
     min_vals = 0
-    img_sizes = 0
+    img_sizes = (0, 0)
     mean_vals = 0
     valid_output = False
     try:
@@ -63,7 +64,14 @@ def load_images_and_labels(folder_path):
     return a_vals, b_vals, mean_vals, max_vals, min_vals, img_sizes
 
 def get_data_from_image(img_path):
-    return get_parameters(img_path)
+    max_vals, min_vals, img_sizes, mean_vals, valid_output = get_parameters(img_path)
+    try:
+        h = img_sizes[0]
+        w = img_sizes[1]
+    except Exception as e:
+        print(f"ERROR: {e}, {img_sizes}")
+        raise Exception
+    return [mean_vals, max_vals, min_vals, h, w], valid_output
 
 def get_data(folder_path):
     return load_images_and_labels(folder_path)
