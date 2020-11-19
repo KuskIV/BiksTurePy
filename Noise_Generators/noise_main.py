@@ -58,7 +58,7 @@ class Filter: #TODO create homophobic filter
             Image.Image: Image with filters on it
         """
         old_size = img.size
-        img = changeImageSize(200,200,img)
+        # img = changeImageSize(200,200,img)
         if(self.wh_set != None):
             wn =  weather(self.wh_set)
             img = wn.add_weather(img)
@@ -198,23 +198,28 @@ def apply_multiple_filters(Imgs:list,mode = 'rand', KeepOriginal:bool=True, filt
         
 def loadImags(folder):
     loaded_img = []
+    imgName = []
     with os.scandir(folder) as imgs:
         for ppm_path in imgs:
             if ppm_path.name.endswith(".ppm"):
                 loaded_img.append(Image.open(ppm_path.path))
-    return loaded_img  
+                imgName.append(ppm_path.name.split(".")[0])
+    return loaded_img, imgName
 
 def load_X_images(path):
     subfolders = [ f.path for f in os.scandir(path) if f.is_dir() ]
+    imgName = []
     newImgs = []
     newLables = []
     for folder in subfolders:
-        imgs = loadImags(folder)
+        imgs, nwimgName = loadImags(folder)
+        imgName.extend(nwimgName)
         imgs = [img for img in imgs]
         lables = [os.path.basename(os.path.normpath(folder)) for img in imgs]
         newImgs.extend(imgs)
         newLables.extend(lables)
-    return (newImgs,newLables)
+
+    return (newImgs,newLables,imgName)
 
 
 def premade_single_filter(str:str)->Filter:
@@ -271,24 +276,27 @@ def premade_single_filter(str:str)->Filter:
         config = {'factor':0.15}
         result = Filter({'day_set':config})
     if str == 'std_homo':
-        config = {'a':0.5,'b':0.9,'cutoff':3}
+        config = {'a':1,'b':0.5,'cutoff':800}
         result = Filter({'homo_set':config})
     return result
 
 def QuickDebugL():
     #imgs = Image.open("C:\\Users\\jeppe\\Desktop\\GTSRB_Final_Training_Images\\GTSRB\\Final_Training\\Images\\00000\\00002_00029.ppm")
-    imgs = load_X_images('C:/Users/jeppe/Desktop/FullIJCNN2013')
+    imgs = load_X_images('C:/Users/roni/Desktop/Project/BiksTurePy/Dataset/homotest')
+
+    
     F = premade_single_filter('fog')
     R = premade_single_filter('rain')
     S = premade_single_filter('snow')
     D = premade_single_filter('day')
     N = premade_single_filter('night')
     homo = premade_single_filter('std_homo')
-    dict = {'fog':F,'rain':R,'snow':S,'day':D,'night':N}
+    dict = {'fog':F,'rain':R,'snow':S,'day':D,'night':N}    
     homom = {'homo':homo}
     res = apply_multiple_filters(imgs,filters=homom, mode='linear', KeepOriginal=False)
     for i in range(len(res)):
-        res[i][0].save(f'C:/Users/jeppe/Desktop/Coroni_wrong/{i}.png')
+        res[i][0].save(f'C:/Users/roni/Desktop/Jeppe_Wrong/{imgs[2][i]}.png')
+
         
 
 def QuickDebug():
@@ -326,3 +334,4 @@ if __name__ == '__main__':
 #Noise(img, wh_set = (500,7,1,(2,2),(130,130,150))).save("C:/Users/jeppe/Desktop/Example_images/pic4.png")
 #Noise(img,wh_set = (200,2,2,(5,5),(200,200,200))).save("C:/Users/jeppe/Desktop/Example_images/pic5.png")
 #Noise(img,fog_set=(1), wh_set = (500,7,1,(2,2),(130,130,150))).save("C:/Users/jeppe/Desktop/Example_images/pic4.png")
+    

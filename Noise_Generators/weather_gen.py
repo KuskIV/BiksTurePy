@@ -146,10 +146,10 @@ class weather:
             print(f'{self.mode} is not a valid specefication')
 
 def QuickDebug()-> None:
-    img = Image.open('C:/Users/jeppe/Desktop/FullIJCNN2013/00/00000.ppm')
+    img = Image.open('C:/Users/roni/Desktop/Project/BiksTurePy/Dataset/images/00000/00004_00010.ppm')
     config = {'density':(0.03,0.14),'density_uniformity':(0.8,1.0),'drop_size':(0.3,0.4),'drop_size_uniformity':(0.1,0.5),'angle':(-15,15),'speed':(0.1,0.2),'blur':(0.001,0.001)}
     w = weather(config)
     w.add_weather(img).show()
 
 
-#QuickDebug()
+QuickDebug()
