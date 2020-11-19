@@ -388,12 +388,13 @@ def complex_runner(path_to_original='ETSD/'):
     print("Recursive analysis finished.")
     print("Preparing structured filter write of new ds.")
     shutil.copytree(path_to_original, a.new_ds_path, copy_function=lambda src, dst: shutil.copy2(src,dst) if os.path.isdir(src) else None)
-    a.complex_reshuffle(class_amount=164, path_to_original=path_to_original)
+    a.complex_reshuffle(class_amount=126, path_to_original=path_to_original)
     print("Writing completed.")
     print("Preparing trim thresholds for dynamic post filtering. - Stay patient")
     width_threshold = 10
     height_threshold = 10
-    a.trim_imgs_according_to_predicate(lambda pil_image: pil_image.width < width_threshold or pil_image.height < height_threshold)
+    ratio_threshold = 3. 
+    a.trim_imgs_according_to_predicate(lambda pil_image: pil_image.width < width_threshold or pil_image.height < height_threshold or pil_image.width/pil_image.height > ratio_threshold or pil_image.height/pil_image.width > ratio_threshold)
 
 if __name__ == "__main__":
     # run_milad()

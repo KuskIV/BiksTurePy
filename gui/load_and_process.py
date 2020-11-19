@@ -3,6 +3,7 @@ import os
 from PIL import Image
 import imageio
 
+
 def verify_img_names(img_names, img_extension):
     for img in img_names:
         if not img.endswith(img_extension):
@@ -16,6 +17,26 @@ def parse_and_verify_img_names(img_names, img_extension):
     b_vals = [float(x.split('_')[4].replace(img_extension, '')) for x in img_names]
     return a_vals, b_vals
 
+def get_parameters(img_path):
+    max_vals = 0
+    min_vals = 0
+    img_sizes = (0, 0)
+    mean_vals = 0
+    valid_output = False
+    try:
+        img_loaded = imageio.imread(img_path)
+    except FileNotFoundError as e:
+        print(f"ERROR: {e}")
+    else:
+        max_vals = img_loaded.max()
+        min_vals = img_loaded.min()
+        img_sizes = img_loaded.shape
+        mean_vals = np.average(img_loaded)
+        valid_output = True
+    finally:
+        return max_vals, min_vals, img_sizes, mean_vals, valid_output
+
+
 def analyze_images(folder_path, img_names):
     mean_vals = []
     max_vals = []
@@ -23,16 +44,14 @@ def analyze_images(folder_path, img_names):
     img_sizes = []
     
     for img in img_names:
-        try:
-            img_path = f"{folder_path}/{img}"
-            img_loaded = imageio.imread(img_path)
-        except FileNotFoundError as e:
-            print(f"ERROR: {e}")
-        else:
-            max_vals.append(img_loaded.max())
-            min_vals.append(img_loaded.min())
-            img_sizes.append(img_loaded.shape)
-            mean_vals.append(np.average(img_loaded))
+        img_path = f"{folder_path}/{img}"
+        max_val, min_val, img_size, mean_val, valid_output = get_parameters(img_path)
+        
+        if valid_output:
+            mean_vals.append(mean_val)
+            max_vals.append(max_val)
+            min_vals.append(min_val)
+            img_sizes.append(img_size)
 
     return mean_vals, max_vals, min_vals, img_sizes
 
@@ -43,6 +62,19 @@ def load_images_and_labels(folder_path):
     mean_vals, max_vals, min_vals, img_sizes = analyze_images(folder_path, img_names)
     
     return a_vals, b_vals, mean_vals, max_vals, min_vals, img_sizes
+
+def get_data_from_image(img_path):
+    max_vals, min_vals, img_sizes, mean_vals, valid_output = get_parameters(img_path)
+    try:
+        h = img_sizes[0]
+        w = img_sizes[1]
+    except Exception as e:
+        print(f"ERROR: {e}, {img_sizes}")
+        raise Exception
+    return [mean_vals, max_vals, min_vals, h, w], valid_output
+
+def get_data(folder_path):
+    return load_images_and_labels(folder_path)
 
 if __name__ == "__main__":
     roni_bot_path = "Dataset/roni_bot"
