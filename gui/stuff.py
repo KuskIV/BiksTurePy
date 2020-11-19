@@ -47,22 +47,24 @@ def next():
     img_index += 1
     try:
         return img_list[img_index]
-    except Exception:
+    except Exception as e:
+        print(f"ERROR: {e}")
         raise Exception
 
 def current():
     global img_index, img_list
     try:
         return img_list[img_index]
-    except Exception:
+    except Exception as e:
+        print(f"ERROR: {e}")
         raise Exception
-
 def previous():
     global img_index, img_list
     img_index = img_index - 1 if img_index > 0 else 0
     try:
         return img_list[img_index]
-    except Exception:
+    except Exception as e:
+        print(f"ERROR: {e}")
         raise Exception
 
 img_size = (200, 200)

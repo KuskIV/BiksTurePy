@@ -28,42 +28,42 @@ if __name__ == "__main__":
     
     noise_paths = get_noise_paths()
     
-    data_to_test_on = 100
+    data_to_test_on = 1
     
     errors = []
 
-    try:
-        baseline_folder = "experiment_baseline"
-        introduce_experiment(baseline_folder)
-        ex_one(test_path, train_path, folder_extension=baseline_folder, data_to_test_on=data_to_test_on)
-        ex_two_eval_noise(test_path, baseline_folder, data_to_test_on=data_to_test_on)
-    except:
-        print("ERROR IN EXPERIMENT 'TRAIN ON BASELINE'")
-        e = sys.exc_info()
-        print(e)
-        errors.append(e)
+    # try:
+    #     baseline_folder = "experiment_baseline"
+    #     introduce_experiment(baseline_folder)
+    #     ex_one(test_path, train_path, folder_extension=baseline_folder, data_to_test_on=data_to_test_on)
+    #     ex_two_eval_noise(test_path, baseline_folder, data_to_test_on=data_to_test_on)
+    # except:
+    #     print("ERROR IN EXPERIMENT 'TRAIN ON BASELINE'")
+    #     e = sys.exc_info()
+    #     print(e)
+    #     errors.append(e)
 
-    try:
-        norm_folder = "experiment_two_eval_norm"
-        introduce_experiment(norm_folder)
-        ex_two_eval_norm(test_path, train_path, folder_extension=norm_folder, data_to_test_on=data_to_test_on)
-        ex_two_eval_noise(test_path, norm_folder, get_models=get_satina_gains_model_norm_object_list, data_to_test_on=data_to_test_on)
-    except:
-        print("ERROR IN EXPERIMENT 'TRAIN ON NORM'")
-        e = sys.exc_info()
-        print(e)
-        errors.append(e)
+    # try:
+    #     norm_folder = "experiment_two_eval_norm"
+    #     introduce_experiment(norm_folder)
+    #     ex_two_eval_norm(test_path, train_path, folder_extension=norm_folder, data_to_test_on=data_to_test_on)
+    #     ex_two_eval_noise(test_path, norm_folder, get_models=get_satina_gains_model_norm_object_list, data_to_test_on=data_to_test_on)
+    # except:
+    #     print("ERROR IN EXPERIMENT 'TRAIN ON NORM'")
+    #     e = sys.exc_info()
+    #     print(e)
+    #     errors.append(e)
     
-    try:
-        noise_folder = "experiment_two_eval_noise"
-        introduce_experiment(noise_folder)
-        ex_one(noise_test_path, noise_train_path, folder_extension=noise_folder, model_paths=noise_paths, data_to_test_on=data_to_test_on)
-        ex_two_eval_noise(test_path, noise_folder, model_paths=noise_paths, data_to_test_on=data_to_test_on)
-    except:
-        print("ERROR IN EXPERIMENT 'TRAIN ON NOISE'")
-        e = sys.exc_info()
-        print(e)
-        errors.append(e)
+    # try:
+    #     noise_folder = "experiment_two_eval_noise"
+    #     introduce_experiment(noise_folder)
+    #     ex_one(noise_test_path, noise_train_path, folder_extension=noise_folder, model_paths=noise_paths, data_to_test_on=data_to_test_on)
+    #     ex_two_eval_noise(test_path, noise_folder, model_paths=noise_paths, data_to_test_on=data_to_test_on)
+    # except:
+    #     print("ERROR IN EXPERIMENT 'TRAIN ON NOISE'")
+    #     e = sys.exc_info()
+    #     print(e)
+    #     errors.append(e)
 
     sum_merged_files('phase_two/csv_output')
 
