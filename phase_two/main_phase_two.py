@@ -21,6 +21,15 @@ from plot.sum_for_model import sum_phase_2_files
 from error_handler import check_if_valid_path as civp
 
 def append_pred_to_tuples(image_tuples:list, model:object)->list:
+    """Function that uses the model and the iamges from the dataset
+
+    Args:
+        image_tuples (list): [list og image tuples with thier original lable, and a name of the filter used]
+        model (object): [description]
+
+    Returns:
+        list: [description]
+    """
     values = [("image","filter","class","predicted_class")]#headers for the csv that will be generated
     for i in range(len(image_tuples)):
         prediction = make_prediction(model.model, image_tuples[i][0], (model.img_shape[0], model.img_shape[1], 3))
@@ -94,10 +103,10 @@ def group_by_feature(header:list,csv_reader:object,feature_lable:str)->dict:
                 groups[row[colum_num]] = [row]
         return groups
     except TypeError:
-        raise TypeError
         print('Invalid lable provided, as grouping feature.')
         print(f'Lable: {feature_lable} does not exsist in the provided csv file')
-        sys.exit()
+    except Exception:
+        raise Exception 
 
 def merge_csv(filter_names, saved_path, class_size_dict, model_names, base_path):
     class_dict = {}
@@ -152,7 +161,17 @@ def Generate_newdatapoints(base_path:str, model_name:str ,header:list, groups:di
         newdatapoint = [('class','filters','error')]
     return filter_names
 
-def create_csv_to_plot(model_name:str, base_path:str, images_in_classes:list)->list: #*DONE
+def create_csv_to_plot(model_name:str, base_path:str, images_in_classes:list)->list:
+    """Creates the csv file 
+
+    Args:
+        model_name (str): [The name of the model used]
+        base_path (str): [The base path for the placement og the file]
+        images_in_classes (list): [The images, and the predictions made]
+
+    Returns:
+        list: [returns a list of the filters names]
+    """
     csv_path = f"{base_path}/{model_name}_result.csv"
     
     with open(civp(csv_path), 'r') as read_obj:
@@ -162,7 +181,15 @@ def create_csv_to_plot(model_name:str, base_path:str, images_in_classes:list)->l
         filter_names = Generate_newdatapoints(base_path, model_name, header, groups, images_in_classes)
     return filter_names
 
-def initailize_initial_values(folder_extension:str)->tuple:#*DONE
+def initailize_initial_values(folder_extension:str)->tuple:
+    """Function for instantiating some values
+
+    Args:
+        folder_extension (str): [UNKNOWN USE]
+
+    Returns:
+        tuple: [retunes a tuple of the filters and the basepath]
+    """
     filters = load_filters()
     filter_names = []
     base_path = get_paths('phase_two_csv') if folder_extension == None else f"{get_paths('phase_two_csv')}/{folder_extension}"
@@ -171,12 +198,35 @@ def initailize_initial_values(folder_extension:str)->tuple:#*DONE
 
     return filters, base_path
 
-def get_h5_with_models(h5_path:str, training_split:int=1, get_models:list=get_satina_gains_model_object_list, model_paths:str=None)->tuple:#*DONE
+def get_h5_with_models(h5_path:str, training_split:int=1, get_models:list=get_satina_gains_model_object_list, model_paths:str=None)->tuple:
+    """Gets the h5 object from a path, and the ml models
+
+    Args:
+        h5_path (str): [The path to the h5 object]
+        training_split (int, optional): [The split that should be done on the images]. Defaults to 1.
+        get_models (list, optional): [Get the models]. Defaults to get_satina_gains_model_object_list.
+        model_paths (str, optional): [Path the models]. Defaults to None.
+
+    Returns:
+        tuple: [A tuple of the loaded h5 object, and the models]
+    """
     h5_obj = h5_object(civp(h5_path), training_split=training_split)
     model_object_list = get_models(h5_obj.class_in_h5, load_trained_models=True, model_paths=model_paths)
     return h5_obj,model_object_list
 
-def evaluate_models_on_noise(filters:list, model_objs:list,h5_obj:object,base_path:str, data_to_test_on=1)->list:#*DONE
+def evaluate_models_on_noise(filters:list, model_objs:list,h5_obj:object,base_path:str, data_to_test_on=1)->list:
+    """This function loads the test images and runs the evaluation of the model on each filter and model given. 
+       The result will be a list the filter names, and the creation of the csv files containing the stats of the model
+    Args:
+        filters (list): [A list of all the filter that should be tested on]
+        model_objs (list): [A list of  the models]
+        h5_obj (object): [The h5 object containing the image to test on]
+        base_path (str): [The path used to generate the output csv files]
+        data_to_test_on (int, optional): [UNKNOWN USE]. Defaults to 1.
+
+    Returns:
+        list: [The filternames in a list of the filters]
+    """
     filter_names = []
     for _filter in filters:
         original_images, original_labels, _, _ = h5_obj.shuffle_and_lazyload(0, data_to_test_on)
@@ -185,14 +235,32 @@ def evaluate_models_on_noise(filters:list, model_objs:list,h5_obj:object,base_pa
             filter_names.extend(create_csv_to_plot(model_object.get_csv_name(), base_path, h5_obj.images_in_classes))
     return filter_names
 
-def generate_csv_files_for_phase2(filter_names:list, h5_obj:object, base_path:str, model_object_list:list)->None: #*DONE
+def generate_csv_files_for_phase2(filter_names:list, h5_obj:object, base_path:str, model_object_list:list)->None:
+    """Generates the varies csv files, used for model evaluation
+
+    Args:
+        filter_names (list): [A list with the names of the filters used]
+        h5_obj (object): [The h5 object containing the original images]
+        base_path (str): [The base path used for the file placement]
+        model_object_list (list): [A list of the models used in the evaluation]
+    """
     merge_csv_path = f"{base_path}/merged_file.csv"
     merge_csv(list(dict.fromkeys(filter_names)), merge_csv_path, h5_obj.images_in_classes, [x.get_csv_name() for x in model_object_list], base_path)
     sum_phase_2_files(base_path)
 
-def ex_two_eval_noise(test_path:str, folder_extension:str, get_models:list=get_satina_gains_model_object_list, training_split:int=1, model_paths:str=None, data_to_test_on=1)->None:#*DONE
-    filters, base_path = initailize_initial_values(folder_extension)
+def ex_two_eval_noise(test_path:str, folder_extension:str, get_models:list=get_satina_gains_model_object_list, training_split:int=1, model_paths:str=None, data_to_test_on=1)->None:
+    """This function enables the evalutation of a tensor flow models using some filters and images from teh models training set.
+
+    Args:
+        test_path (str): [The path to the test images]
+        folder_extension (str): [UNKNOWN USE]
+        get_models (list, optional): [A list of the models that should be evaluated]. Defaults to get_satina_gains_model_object_list.
+        training_split (int, optional): [The split for the test images]. Defaults to 1.
+        model_paths (str, optional): [The path to retrieve the saved models]. Defaults to None.
+        data_to_test_on (int, optional): [UNKNOWN USE]. Defaults to 1.
+    """
+    filters, base_path = initailize_initial_values(folder_extension) #TODO seems folder_exstension is never used for anything, remove or identify use
     h5_obj, model_object_list = get_h5_with_models(civp(test_path),training_split=training_split,get_models=get_models, model_paths=model_paths)
-    filter_names = evaluate_models_on_noise(filters, model_object_list, h5_obj, base_path, data_to_test_on=data_to_test_on)
+    filter_names = evaluate_models_on_noise(filters, model_object_list, h5_obj, base_path, data_to_test_on=data_to_test_on) #TODO seems data_to_test_on is never used remove or identify use
     generate_csv_files_for_phase2(filter_names,h5_obj,base_path, model_object_list) #TODO move all csv related function into this method, speceficly the one from 2_1    
     
