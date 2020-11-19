@@ -12,8 +12,10 @@ def rename_folder(bjarke_dumb, c, rn):
   try:
       os.rename(bjarke_dumb + "/" + 'Testing' + "/" + str(c), bjarke_dumb + "/" + "Testing" + "/" + str(rn))
       os.rename(bjarke_dumb + "/" + "Training" + "/" + str(c), bjarke_dumb + "/" + "Training" + "/" + str(rn))
-  except:
-      print('Error in rename.')
+  except Exception as e:
+      print(bjarke_dumb + "/" + 'Testing' + "/" + str(c))
+      print(bjarke_dumb + "/" + "Testing" + "/" + str(rn))
+      print('Error in rename.', {e})
 
 # Move files
 def move_files(files, bjarke_dumb, c, tFile):
@@ -48,11 +50,6 @@ def add_folder(bjarke_dumb, tdir, c):
   #   os.makedirs(path + "/" + tdir + "/" + c)
   # except:
   #   print("ERROR")
-
-# Method to make temporary folder
-def make_temporary_folder(bjarke_dumb, name):
-  if not os.path.isdir(bjarke_dumb + "/temp/" + name):
-    os.makedirs(bjarke_dumb + "/temp/" + name)
 
 # Split the list of classes
 def randomize_and_split_list(slist, bjarke_dumb, c, testing_percentage):
@@ -97,7 +94,7 @@ def get_samples_from_folders(classes, testing_percentage, bjarke_dumb):
     else:
       add_folder(bjarke_dumb, 'Training', c)
       add_folder(bjarke_dumb, 'Testing', c)
-      randomize_and_split_list(split, bjarke_dumb, c, testing_percentage)
+      #randomize_and_split_list(split, bjarke_dumb, c, testing_percentage)
 
 def trim_classes(classes):
   sList = list()
@@ -127,10 +124,11 @@ def find_and_edit(old, bjarke_dumb):
         count += 1
         lines.append(row)
       else:
-        if row[4] != 'European class':
-          if row[2] != '':
-            tmp_cell = row[2]
-          # row.remove()
+        if row[4] == 'European class':
+          lines.append(row)
+        if row[2] != '' and row[4] != 'European class':
+          tmp_cell = row[2]
+        # row.remove()
   return lines
 
 def save_csv_file(bjarke_dumb, lines):

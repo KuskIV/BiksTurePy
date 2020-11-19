@@ -46,8 +46,7 @@ def get_paths(key: str) -> str:
     if key in paths:
         return paths.get(key)
     else:
-        print(f"ERROR: The key for path {key} is not defined.")
-        return -1
+        raise KeyError(f"The key {key} does not exist in global path dictionary")
 
 
 def get_h5_path() -> str:

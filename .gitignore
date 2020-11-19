@@ -17,11 +17,13 @@ Dataset/satina_gains_images/
 Dataset/h5Dataset/
 Models/saved_models
 Dataset/belgian_images/
+Dataset/homotest/
 phase_one/csv_data/
 phase_two/csv_output/
 Dataset/ETSD_Adjusted/
 Dataset/ETSD_GTSRB_N_GTSDB/
-Dataset/milad_gains_images/
+Dataset/miladgainsimage/
+Dataset/roni_bot/
 error_messages/
 # Distribution / packaging
 .Python

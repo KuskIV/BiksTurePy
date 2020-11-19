@@ -56,7 +56,14 @@ def find_ideal_model(h5_obj:object, model_object_list:list, epochs:int=10, lazy_
             validation_loss, validation_accuracy = train_and_eval_models_for_size(model_object_list[i].img_shape, model_object_list[i].model, train_images, train_labels, test_images, test_labels, epochs)
             
             for j in range(len(validation_loss)):
-                model_object_list[i].fit_data.append([j+1, validation_loss[j], validation_accuracy[j]])
+                try:
+                    add_val = validation_loss[j]
+                    add_acc = validation_accuracy[j]
+                except IndexError as e:
+                    print(f"ERROR: {e}")
+                    raise IndexError(f'Index {j} could not be accessed in either list val_loss (len: {len(validation_loss)} or val_acc (len: {len(validation_accuracy)})')
+                
+                model_object_list[i].fit_data.append([j+1, add_val, add_acc])
         else:
             print(f"\n\nMESSAGE: For epoch {epochs} model {model_object_list[i].get_csv_name()} will not train anymore, as the limit is {model_object_list[i].epoch}")
     
@@ -98,10 +105,12 @@ def get_best_models(model_object_list:list)->list:
                         highest_accuracy = float(row[1])
                         best_epoch = row[0]
                         resolution = row[2]
-                except ValueError:
-                    custom_error_check(False, f'{row[1]} cannot be converted to a float')
-                except IndexError:
-                    custom_error_check(False, f'Index two is being accesed in an array of lengt {len(row)}')
+                except ValueError as e:
+                    print(f"ERROR: {e}")
+                    raise ValueError(f'{row[1]} cannot be converted to a float')
+                except IndexError as e:
+                    print(f"ERROR: {e}")
+                    raise IndexError(f'Index two is being accesed in an array of lengt {len(row)}')
 
         best_models.append((highest_accuracy, best_epoch, resolution))
 
@@ -109,10 +118,13 @@ def get_best_models(model_object_list:list)->list:
     for bm in best_models:
         try:
             print(f"    - model{bm[2]}_{bm[1]}, accuracy: {round(bm[0], 2)}")
-        except TypeError:
-            custom_error_check(False, f"{bm[0]} cannot be rounded, as it is the wrong type")
-        except IndexError:
-            custom_error_check(False, f"index two is being accessed in an array of lenght {len(bm)}")
+        except TypeError as e:
+            print(f"ERROR: {e}")
+            raise TypeError(f"{bm[0]} cannot be rounded, as it is the wrong type")
+        except IndexError as e:
+            print(f"ERROR: {e}")
+            raise IndexError(f"index two is being accessed in an array of lenght {len(bm)}")
+    
     print("\n")
 
     return best_models
@@ -126,10 +138,12 @@ def get_largest_index(best_model_names:list)->int:
             if best_model_names[i][0] > best_acc:
                 best_acc = best_model_names[i][0]
                 best_index = i
-        except TypeError:
-            custom_error_check(False, f"{best_model_names[i][0]} cannot be comapted to a number using '>'.")
-        except IndexError:
-            custom_error_check(False, f"index zero is being accessed in an array of lenght {len(best_model_names[i])}")
+        except TypeError as e:
+            print(f"ERROR: {e}")
+            raise TypeError(f"{best_model_names[i][0]} cannot be comapted to a number using '>'.")
+        except IndexError as e:
+            print(f"ERROR: {e}")
+            raise IndexError
 
     return best_index
 
@@ -139,10 +153,13 @@ def max_epoch_from_list(epoch_list):
     for i in range(1, len(epoch_list)):
         try:
             best_epoch = int(epoch_list[i][1]) if int(epoch_list[i][1]) > best_epoch else best_epoch
-        except TypeError:
-            custom_error_check(False, f"{epoch_list[i][1]} cannot be casted into a integer and compared to an int using '>'")
-        except IndexError:
-            custom_error_check(False, f"index one is being accessed in an array of lenght {len(epoch_list[i])}")
+        except TypeError as e:
+            print(f"ERROR {e}")
+            raise TypeError
+        except IndexError as e:
+            print(f"ERROR: {e}")
+            raise IndexError
+            
     
     return best_epoch
 
@@ -165,22 +182,25 @@ def sum_summed_plots(model_object_list:list, extension, base_path)->None:
 
             try:
                 rows[0][1] = model_object.get_csv_name(extension=extension)
-            except IndexError:
-                custom_error_check(False, f"Cound not access index [0][1] of a list of lenght {len(rows)}")
+            except IndexError as e:
+                print(f"ERROR: {e}")
+                raise IndexError
             
             raw_data.append(rows)
     
     try:
         csv_data = [x[0:1] for x in raw_data[0]]
-    except IndexError:
-        custom_error_check(False, f"Cound not access index [0][0] of a list of lenght {len(raw_data)}")
+    except IndexError as e:
+        print(f"ERROR {e}")
+        raise IndexError
     
     for i in range(len(raw_data)):
         for j in range(len(csv_data)):
             try:
                 csv_data[j].append(raw_data[i][j][1])
-            except IndexError:
-                custom_error_check(False, f"Cound not access index raw_data[i][j][1]")
+            except IndexError as e:
+                print(f"ERROR: {e}")
+                raise IndexError
         
     csv_obj = cvs_object(f"{base_path}/{extension}_sum_summed.csv")
     csv_obj.write(csv_data)
@@ -191,8 +211,9 @@ def output_best_model_names(model_object_list):
     for model_object in model_object_list:
         try:
             output_names.append([model_object.fit_data[-1][1], model_object.fit_data[-1][0], model_object.get_size()])
-        except IndexError:
-            custom_error_check(False, f"Cound not access index model_object.fit_data[-1][1]")
+        except IndexError as e:
+            print(f"ERROR: {e}")
+            raise IndexError
         
     return output_names
 
@@ -233,7 +254,14 @@ def run_experiment_one(lazy_split:int, train_h5_path:str, test_h5_path:str, get_
     base_path = get_paths('phase_one_csv') if folder_extension == None else f"{get_paths('phase_one_csv')}/{folder_extension}"
     if not folder_extension == None and not os.path.exists(base_path):
         os.mkdir(base_path)
-        
+    
+    print("---------------------")
+    print(f"The output data for the following experiment will be saved in the following folder:")
+    print(f"{base_path}")
+    print("---------------------")
+    
+    check_if_valid_path(base_path)
+    
     h5_train = h5_object(train_h5_path, training_split=dataset_split)
     h5_test = h5_object(test_h5_path, training_split=1)
 
@@ -248,12 +276,11 @@ def run_experiment_one(lazy_split:int, train_h5_path:str, test_h5_path:str, get_
     sum_test_path = f"{base_path}/test_sum_class_accuracy.csv"
     sum_val_path = f"{base_path}/val_sum_class_accuracy.csv"
 
-    model_object_list_loaded = get_models(h5_train.class_in_h5, load_trained_models=True)
-    
     #TODO: Fix epoch count in test_val_sum_class_accuracy.csv
     _, _, image_dataset, lable_dataset = h5_train.shuffle_and_lazyload(0, data_to_test_on)
     iterate_and_sum(model_object_list, 'val', sum_val_path, image_dataset, lable_dataset, epochs_end, h5_train.images_in_classes, base_path)
     
+    model_object_list_loaded = get_models(h5_train.class_in_h5, load_trained_models=True)
     image_dataset, lable_dataset, _, _ = h5_test.shuffle_and_lazyload(0, data_to_test_on)
     iterate_and_sum(model_object_list_loaded, 'test', sum_test_path, image_dataset, lable_dataset, -1, h5_test.images_in_classes, base_path, epochs=[x.fit_data[-1][0] for x in model_object_list])
     combine_two_summed_class_accracy(sum_test_path, sum_val_path, base_path)
@@ -267,16 +294,26 @@ def combine_fitdata(model_object_list, base_path):
     
     for model_object in model_object_list:
         for i in range(max_len):
-            if i+1 > len(data):
-                data.append([i])
-            
-            if i == 0:
-                data[i].append(model_object.get_csv_name())
-            else:
-                if i >= len(model_object.fit_data):
-                    data[i].append(' ')
+            try:
+                if i+1 > len(data):
+                    data.append([i])
+                
+                if i == 0:
+                    data[i].append(model_object.get_csv_name())
                 else:
-                    data[i].append(model_object.fit_data[i][1])
+                    if i >= len(model_object.fit_data):
+                        data[i].append(' ')
+                    else:
+                        data[i].append(model_object.fit_data[i][1])
+            except IndexError as e:
+                print(f"ERROR {e}")
+                raise IndexError
+            except TypeError as e:
+                print(f"ERROR: {e}")
+                raise TypeError
+            except Exception as e:
+                print(f"ERROR: {e}")
+                raise Exception
     
     fitdata_path = f"{base_path}/fitdata_combined.csv"
     csv_obj = cvs_object(fitdata_path)
@@ -322,8 +359,12 @@ def sum_class_accuracy(model_object_list:list, images_in_classes, extension, bas
                         if not row[0] in model_class_accuracy[model_object.get_csv_name()]:
                             model_class_accuracy[model_object.get_csv_name()][row[0]] = {}
                         model_class_accuracy[model_object.get_csv_name()][row[0]][row[2]] = row[3]
-                    except IndexError:
-                        custom_error_check(False, f"Cannot access index three of row with a length of {len(row)}")
+                    except IndexError as e:
+                        print(f"ERROR: {e}")
+                        raise IndexError
+                    except Exception as e:
+                        print(f"ERROR: {e}")
+                        raise Exception
 
     data_list = convert_dict_to_list(model_class_accuracy, images_in_classes)
     save_data_obj = cvs_object(save_path)
@@ -344,14 +385,25 @@ def convert_dict_to_list(model_class_accuracy:dict, images_in_classes:dict)->lis
     data_list = [['Class', 'Size']]
     for key, value in model_class_accuracy.items():
         for key2, value2 in model_class_accuracy[key].items():
-            data_list[0].append(f"{key}_{key2}")
-            keys = list(value2.keys())
-            keys.sort(key=int)
+            try:
+                data_list[0].append(f"{key}_{key2}")
+                keys = list(value2.keys())
+                keys.sort(key=int)
+            except Exception as e:
+                print(f"ERROR: {e}")
+                raise Exception
 
             for i in range(len(keys)):
-                if len(data_list) == i + 1:
-                    data_list.append([keys[i], images_in_classes[keys[i]]])
-                data_list[int(i) + 1].append(model_class_accuracy[key][key2][str(keys[i])])
+                try:
+                    if len(data_list) == i + 1:
+                        data_list.append([keys[i], images_in_classes[keys[i]]])
+                    data_list[int(i) + 1].append(model_class_accuracy[key][key2][str(keys[i])])
+                except IndexError as e:
+                    print(f"ERROR: {e}")
+                    raise IndexError
+                except Exception as e:
+                    print(f"ERROR: {e}")
+                    raise Exception
 
     return data_list
 
@@ -409,7 +461,14 @@ def iterate_trough_models(model_object_list:list, e:int, image_dataset, lable_da
     
     for i in range(len(model_object_list)):
         if update_epoch and epochs != None:
-            e = epochs[i]
+            try:
+                e = epochs[i]
+            except IndexError as e:
+                print(f"ERROR: {e}")
+                raise IndexError
+            except Exception as e:
+                print(f"ERROR: {e}")
+                raise Exception
             
         if int(e) < 0:
             print(f"\nERROR: when iterating through the models, the epoch is smaller than 0 ({e})\n")
@@ -423,12 +482,15 @@ def iterate_trough_models(model_object_list:list, e:int, image_dataset, lable_da
 
         try:
             percent = (right / (wrong + right)) * 100
-        except ZeroDivisionError:
-            percent = 0
-            print(f"WARNING: right = {right}, wrong = {wrong}, model = {model_object_list[i].get_csv_name()}")
+        except ZeroDivisionError as e:
+            print(f"ERROR: {e}")
+            raise ZeroDivisionError
+        except Exception as e:
+            print(f"ERROR: {e}")
+            raise Exception
         
         
-        print(f"\nModel: \"{model_object_list[i].path.split('/')[-1].split('.')[0]}\"\nEpocs: {e} \nResult: \n    Right: {right}\n    wrong: {wrong}\n    percent correct: {percent}\n\n")
+        print(f"\nModel: \"{model_object_list[i].path.split('/')[-1].split('.')[0]}\"\nResolution: {model_object_list[i].img_shape}\nEpocs: {e} \nResult: \n    Right: {right}\n    wrong: {wrong}\n    percent correct: {percent}\n\n")
 
         get_model_results(label_dict, model_object_list[i], (e, True), should_print=False)
 
@@ -458,12 +520,20 @@ def iterate_trough_imgs(model_object:object,image_dataset:list,lable_dataset:lis
         prediction = make_prediction(model_object.model, image_dataset[j].copy(),  model_object.get_size_tuple(3))
         predicted_label = np.argmax(prediction)
 
-        if int(predicted_label) == int(lable_dataset[j]):
-            right += 1
-            label_dict[lable_dataset[j]][1] += 1
-        else:
-            wrong += 1
-            label_dict[lable_dataset[j]][0] += 1
+        try:
+            if int(predicted_label) == int(lable_dataset[j]):
+                right += 1
+                label_dict[lable_dataset[j]][1] += 1
+            else:
+                wrong += 1
+                label_dict[lable_dataset[j]][0] += 1
+        except IndexError as e:
+            print(f"ERROR: {e}")
+            raise IndexError
+        except Exception as e:
+            print(f"ERROR: {e}")
+            raise Exception
+
     return right,wrong
 
 
@@ -478,11 +548,19 @@ def update_values(key:int,label_dict:dict,prt:bool)->tuple:
     Returns:
         tuple: a typle containing the class name, accuracy and size, to be added to the class dict
     """
-    class_name = str(key)
-    right_name = str(label_dict[key][1]).rjust(4, ' ')
-    wrong_name = str(label_dict[key][0]).rjust(4, ' ')
-    class_size = label_dict[key][0]+label_dict[key][1]
-    class_percent = round((label_dict[key][1]/class_size)*100, 2)
+    
+    try:
+        class_name = str(key)
+        right_name = str(label_dict[key][1]).rjust(4, ' ')
+        wrong_name = str(label_dict[key][0]).rjust(4, ' ')
+        class_size = label_dict[key][0]+label_dict[key][1]
+        class_percent = round((label_dict[key][1]/class_size)*100, 2)
+    except IndexError as e:
+        print(f"ERROR: {e}")
+        raise IndexError
+    except TypeError as e:
+        print(f"ERROR: {e}")
+        raise TypeError
 
     if prt:
         print(f"class: {class_name.zfill(3)} | right: {right_name} | wrong: {wrong_name} | procent: {round(class_percent, 2)}")
@@ -503,8 +581,15 @@ def get_model_results(lable_dict:dict, model_object:object ,settings:tuple,shoul
         print(f"----------------\n\nDetails regarding each class accuracy is as follows:\n")
 
     for key in lable_dict.keys():
-        class_name, class_percent, class_size = update_values(key, lable_dict,should_print)
-        model_object.csv_data.append([model_object.fit_data[-1][0], model_object.get_size(), class_name, class_percent, class_size])
+        try:
+            class_name, class_percent, class_size = update_values(key, lable_dict,should_print)
+            model_object.csv_data.append([model_object.fit_data[-1][0], model_object.get_size(), class_name, class_percent, class_size])
+        except IndexError as e:
+            print(f"ERROR: {e}")
+            raise IndexError
+        except Exception as e:
+            print(f"ERROR: {e}")
+            raise Exception
 
     if should_print:
         print("----------------")
