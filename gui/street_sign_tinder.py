@@ -87,6 +87,8 @@ def show_image_with_parameters(parameters, img_path):
     img = img.resize((200, 200))
     img.show()
 
+
+
 if __name__ == "__main__":
     roni_bot_path = "Dataset/roni_bot"
     a_vals, b_vals, mean_vals, max_vals, min_vals, img_sizes = get_data(roni_bot_path)
@@ -114,5 +116,12 @@ if __name__ == "__main__":
     
     show_image_with_parameters(yhat[0], test_img_path)
     print(test_parameters)
+    importance = model.coef_[0]
+    # summarize feature importance
+    for i,v in enumerate(importance):
+        print('Feature: %0d, Score: %.5f' % (i,v))
+    # plot feature importance
+    pyplot.bar([x for x in range(len(importance))], importance)
+    pyplot.show()
     
     
