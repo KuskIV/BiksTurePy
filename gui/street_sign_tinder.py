@@ -14,6 +14,8 @@ sys.path.insert(0, parent_dir)
 
 from Noise_Generators.homomorphic_filtering import homomorphic
 
+
+
 # get the dataset
 def get_dataset(n_samples, n_features):
 	data, lables = make_regression(n_samples=n_samples, n_features=n_features, n_informative=5, n_targets=2, random_state=2)
@@ -27,21 +29,8 @@ def get_model(n_inputs, n_outputs):
 	model.compile(loss='mae', optimizer='adam')
 	return model
 
-def generate_label_set(a_vals, b_vals):
-    data_set = np.zeros(len(a_vals))
-    label_set = []
-    for i in range(len(a_vals)):
-        try:
-            # data_to_append = np.array([a_vals[i], b_vals[i]]) 
-            # data_set[i] = data_to_append
-            label_set.append([a_vals[i], b_vals[i]])
-        except Exception as e:
-            print(f"ERROR: {e}")
-            raise Exception
-    return [label_set]
-
-def generate_label_set_numpy(a_vals, b_vals):
-    label_set = np.empty((len(a_vals), 2), dtype=float, order='C')
+def generate_label_set_numpy(a_vals, b_vals, l_count):
+    label_set = np.empty((len(a_vals), l_count), dtype=float, order='C')
     for i in range(len(a_vals)):
         try:
             # data_to_append = np.array([a_vals[i], b_vals[i]]) 
@@ -55,46 +44,45 @@ def generate_label_set_numpy(a_vals, b_vals):
             raise Exception
     return label_set
 
-def generate_data_set(mean_vals, max_vals, min_vals, img_sizes):
-    data_set = []
-    for i in range(len(mean_vals)):
+def generate_data_set_numpy(parameters, f_count):
+    data_set = np.empty((len(parameters), f_count), dtype=float, order='C')
+    
+    for i in range(len(parameters)):
         try:
-            data_set.append([mean_vals[i], max_vals[i], min_vals[i], img_sizes[i][0], img_sizes[i][1], img_sizes[i][2]])
-        except Exception as e:
-            print(f"ERROR: {e}")
-            raise Exception
-    return [data_set]
-
-def generate_data_set_numpy(mean_vals, max_vals, min_vals, img_sizes):
-    data_set = np.empty((len(mean_vals), 5), dtype=float, order='C')
-    for i in range(len(mean_vals)):
-        try:
-            data_set[i][0] = mean_vals[i]
-            data_set[i][1] = max_vals[i]
-            data_set[i][2] = min_vals[i]
-            data_set[i][3] = img_sizes[i][0]
-            data_set[i][4] = img_sizes[i][1]
-            # data_set.append([mean_vals[i], max_vals[i], min_vals[i], img_sizes[i][0], img_sizes[i][1], img_sizes[i][2]])
+            for j in range(len(parameters[0])):
+                data_set[i][j] = parameters[i][j]
         except Exception as e:
             print(f"ERROR: {e}")
             raise Exception
     return data_set
 
-def show_image_with_parameters(parameters, img_path):
+def show_image_with_parameters(parameters, img_path, save_path):
     config = {'a':parameters[0],'b':parameters[1],'cutoff':3}
     homo = homomorphic(config)
     img = homo.homofy(Image.open(img_path))
     img = img.resize((200, 200))
-    img.show()
+    img.save(save_path)
 
-
+def new_name(yhat, id, img_extension):
+    id = id.split('_')[0]
+    return f"{id}_a_{round(float(yhat[0]),3)}_b_{round(float(yhat[1]),3)}{img_extension}"
 
 if __name__ == "__main__":
     roni_bot_path = "Dataset/roni_bot"
-    a_vals, b_vals, mean_vals, max_vals, min_vals, img_sizes = get_data(roni_bot_path)
+    roni_output = "Dataset/roni_output"
+    test_img_name = "1_a_1.0_b_0.0.ppm"
+    dark_img = "0_a_1.209_b_0.209.ppm"
     
-    lable_set = generate_label_set_numpy(a_vals, b_vals)
-    data_set = generate_data_set_numpy(mean_vals, max_vals, min_vals, img_sizes)
+    input_path = f"{roni_bot_path}/{test_img_name}"
+    output_path = f"{roni_output}/{test_img_name}"
+    
+    f_count = 4
+    l_count = 2
+    
+    parameters, a_vals, b_vals = get_data(roni_bot_path)
+    
+    lable_set = generate_label_set_numpy(a_vals, b_vals, l_count)
+    data_set = generate_data_set_numpy(parameters, len(parameters[0]))
     
     n_samples = len(a_vals)
 
@@ -104,24 +92,33 @@ if __name__ == "__main__":
     # fit the model on all data
     model.fit(data_set, lable_set, verbose=0, epochs=100)
     
-    test_img_path = "Dataset/roni_bot/1_a_1.0_b_0.0.ppm"
-    test_parameters, valid_parameter = get_data_from_image(test_img_path)
     
-    if not valid_parameter:
-        raise Exception('test_img_path not valid')
+    for img in os.listdir(roni_bot_path):
+        input_path = f"{roni_bot_path}/{img}"
+        
+        
+        test_parameters = get_data_from_image(input_path)
+        
+        newX = asarray([test_parameters])
+        yhat = model.predict(newX)
+        print('Predicted: %s' % yhat[0])
+        
+        output_name = new_name(yhat[0], img, '.ppm')
+        output_path = f"{roni_output}/{output_name}"
+        
+        try:
+            show_image_with_parameters(yhat[0], input_path, output_path)
+        except Exception as e:
+            print(f"ERROR: {e}")
     
-    newX = asarray([test_parameters])
-    yhat = model.predict(newX)
-    print('Predicted: %s' % yhat[0])
     
-    show_image_with_parameters(yhat[0], test_img_path)
     print(test_parameters)
-    importance = model.coef_[0]
-    # summarize feature importance
-    for i,v in enumerate(importance):
-        print('Feature: %0d, Score: %.5f' % (i,v))
-    # plot feature importance
-    pyplot.bar([x for x in range(len(importance))], importance)
-    pyplot.show()
+    # importance = model.importance_mean
+    # # summarize feature importance
+    # for i,v in enumerate(importance):
+    #     print('Feature: %0d, Score: %.5f' % (i,v))
+    # # plot feature importance
+    # pyplot.bar([x for x in range(len(importance))], importance)
+    # pyplot.show()
     
     

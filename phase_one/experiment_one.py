@@ -7,6 +7,7 @@ import csv
 import os.path
 from os import path
 from matplotlib import pyplot as plt
+from PIL import Image
 
 import os,sys,inspect
 current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
@@ -217,8 +218,20 @@ def output_best_model_names(model_object_list):
         
     return output_names
 
-def iterate_and_sum(model_object_list, extension, sum_path, image_dataset, lable_dataset, epochs_end, images_in_classes, base_path, epochs=None):
-    iterate_trough_models(model_object_list, epochs_end, image_dataset, lable_dataset, epochs=epochs)
+def iterate_and_sum(model_object_list, extension, sum_path, image_dataset, lable_dataset, epochs_end, images_in_classes, base_path, folder_extension, epochs=None):
+    
+    try:
+        save_folder = f"/home/biks/Desktop/{folder_extension}"
+        if not os.path.exists(save_folder):
+            os.mkdir(save_folder)
+
+        save_folder = f"/home/biks/Desktop/{folder_extension}/{extension}"
+        if not os.path.exists(save_folder):
+            os.mkdir(save_folder)
+    except Exception as e:
+        print(f"ERROR: {e}, iterate and sum")
+    
+    iterate_trough_models(model_object_list, epochs_end, image_dataset, lable_dataset, save_folder, epochs=epochs)
 
     save_plot(model_object_list, extension, base_path)
     sum_plot(model_object_list, extension, base_path)
@@ -278,11 +291,11 @@ def run_experiment_one(lazy_split:int, train_h5_path:str, test_h5_path:str, get_
 
     #TODO: Fix epoch count in test_val_sum_class_accuracy.csv
     _, _, image_dataset, lable_dataset = h5_train.shuffle_and_lazyload(0, data_to_test_on)
-    iterate_and_sum(model_object_list, 'val', sum_val_path, image_dataset, lable_dataset, epochs_end, h5_train.images_in_classes, base_path)
+    iterate_and_sum(model_object_list, 'val', sum_val_path, image_dataset, lable_dataset, epochs_end, h5_train.images_in_classes, base_path, folder_extension)
     
     model_object_list_loaded = get_models(h5_train.class_in_h5, load_trained_models=True)
     image_dataset, lable_dataset, _, _ = h5_test.shuffle_and_lazyload(0, data_to_test_on)
-    iterate_and_sum(model_object_list_loaded, 'test', sum_test_path, image_dataset, lable_dataset, -1, h5_test.images_in_classes, base_path, epochs=[x.fit_data[-1][0] for x in model_object_list])
+    iterate_and_sum(model_object_list_loaded, 'test', sum_test_path, image_dataset, lable_dataset, -1, h5_test.images_in_classes, base_path, folder_extension, epochs=[x.fit_data[-1][0] for x in model_object_list])
     combine_two_summed_class_accracy(sum_test_path, sum_val_path, base_path)
 
     save_fitdata(model_object_list, base_path)
@@ -447,7 +460,7 @@ def initalize_dict(lable_dataset:list)->dict:
     return label_dict
 
 
-def iterate_trough_models(model_object_list:list, e:int, image_dataset, lable_dataset, epochs=None)->None:
+def iterate_trough_models(model_object_list:list, e:int, image_dataset, lable_dataset, save_path, epochs=None)->None:
     """Iterates through the modesl to get the accuracy using the validation set. This information is saved on the object,
     and later saved in a csv file
 
@@ -478,7 +491,7 @@ def iterate_trough_models(model_object_list:list, e:int, image_dataset, lable_da
 
         image_dataset = auto_reshape_images(model_object_list[i].img_shape, image_dataset)
 
-        right, wrong = iterate_trough_imgs(model_object_list[i], image_dataset, lable_dataset,label_dict)
+        right, wrong = iterate_trough_imgs(model_object_list[i], image_dataset, lable_dataset,label_dict, save_path=save_path)
 
         try:
             percent = (right / (wrong + right)) * 100
@@ -494,7 +507,7 @@ def iterate_trough_models(model_object_list:list, e:int, image_dataset, lable_da
 
         get_model_results(label_dict, model_object_list[i], (e, True), should_print=False)
 
-def iterate_trough_imgs(model_object:object,image_dataset:list,lable_dataset:list,label_dict:dict)->tuple:
+def iterate_trough_imgs(model_object:object,image_dataset:list,lable_dataset:list,label_dict:dict, save_path=None)->tuple:
     """For each image in the dataset, it is predicted using the input mode, and the result saved in the lable_dict
 
     Args:
@@ -527,6 +540,14 @@ def iterate_trough_imgs(model_object:object,image_dataset:list,lable_dataset:lis
             else:
                 wrong += 1
                 label_dict[lable_dataset[j]][0] += 1
+                try:
+                    if not save_path is None:
+                        arr_to_save = image_dataset[j] * 255
+                        random_array = arr_to_save.astype(np.uint8)
+                        img_to_save = Image.fromarray(random_array)
+                        img_to_save.save(f"{save_path}/{j}.jpeg") 
+                except Exception as e:
+                    print(f"ERROR: {e}, iterate_through_imgs")
         except IndexError as e:
             print(f"ERROR: {e}")
             raise IndexError

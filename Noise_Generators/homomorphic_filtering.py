@@ -77,8 +77,8 @@ class homomorphic():
         #     self.b = 0.5
         self.y = (self.a + self.b*filter)*self.y
         # self.calc_scalar()
-        print ("b", self.b)
-        print ("a", self.a)
+        # print ("b", self.b)
+        # print ("a", self.a)
 
     def merge_image(self): 
         self.y = Image.fromarray(self.y)
@@ -109,12 +109,12 @@ class homomorphic():
         h_c = int(h/2)
         h_p = int(h * 0.2)
         w_p = int(w * 0.2)
-        print ("w", w, "h", h)
+        # print ("w", w, "h", h)
         total = 0
         max_pix = 0
         smallest_pepe = 0
         kernal_size = h_p * w_p
-        print ("kernal size" , kernal_size)
+        # print ("kernal size" , kernal_size)
         n = 0
         for i in range(0, w_p):
             for j in range(0, h_p):
@@ -126,11 +126,11 @@ class homomorphic():
                 n +=1
         mean_av = total / kernal_size
         # print ('a' , mean_av)
-        print ("total", total)
-        print ( "min pixel", smallest_pepe)
-        print ( "max pixel", max_pix)
+        # print ("total", total)
         # print ( "min pixel", smallest_pepe)
-        print ('mean' , mean_av)
+        # print ( "max pixel", max_pix)
+        # # print ( "min pixel", smallest_pepe)
+        # print ('mean' , mean_av)
         # percieved_light = math.sqrt(0.241 * (mean**2)) *2
         # rms = stat.rms[0]
         # avg = stat.average[0]
@@ -173,8 +173,8 @@ class homomorphic():
         w,h = image.size
         w_center = w/2
         h_center = h/2
-        print (w,h)
-        print (w_center, h_center)
+        # print (w,h)
+        # print (w_center, h_center)
     
 
 if __name__=='__main__':

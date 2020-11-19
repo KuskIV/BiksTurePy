@@ -103,12 +103,15 @@ class Filter: #TODO create homophobic filter
 
         done = len(imgs)
         progress = trange(done, desc='mult stuff', leave=True)
-
-        for i in progress:
-            progress.set_description(f"{i}/{done} multi done")
-            progress.refresh()
-            returnList.append(self + imgs[i])
-        return returnList
+        try:
+            for i in progress:
+                progress.set_description(f"{i}/{done} multi done")
+                progress.refresh()
+                returnList.append(self + imgs[i])
+            return returnList
+        except Exception as e:
+            print(f"ERROR: {e}")
+            raise Exception
         
     def get_config(self):
         return self.configuration
@@ -132,7 +135,7 @@ def chunk_it(seq, num):
 
     return out
 
-def apply_multiple_filters(Imgs:list,mode = 'rand', KeepOriginal:bool=True, filters:dict=None, **kwargs)->list:
+def apply_multiple_filters(Imgs:list,mode = 'rand', KeepOriginal:bool=True, filters:dict=None, chungus=4, **kwargs)->list:
     """
     A function that takes a input of pictures and applys them to eahc picture based on the selected mode. 
     The result will contain the edited picture with the name of the filter useed and the class of the orignal picture. 
@@ -156,25 +159,31 @@ def apply_multiple_filters(Imgs:list,mode = 'rand', KeepOriginal:bool=True, filt
 
     fil = list(filters.items())
     if mode == 'linear':
-        indexes=chunk_it(range(len(images)),len(fil)+4) #TODO find ideal number to add here(didnt work)
+        indexes=chunk_it(range(len(images)),len(fil) + chungus) #TODO find ideal number to add here(didnt work)
 
-        done = len(indexes)-4
+        done = len(indexes) - chungus
         progress = trange(done, desc='index stuff', leave=True)        
+        try:
+            for i in progress:
+                try:
+                    progress.set_description(f"{i+1} / {done} images has been processed")
+                    progress.refresh()
+                except Exception as e:
+                    print(f"ERROR: {e}, {done}")
 
-        for i in progress:
-            progress.set_description(f"{i+1} / {done} images has been processed")
-            progress.refresh()
+                for j in range(len(fil)):
 
-            for j in range(len(fil)):
-
-                temp_list = fil[j][1]*images[indexes[i].start:indexes[i].stop]
-                temptemp_list = lables[indexes[i].start:indexes[i].stop]
-                for k in range(len(temp_list)):
-                    temp_list[k] = (temp_list[k],fil[j][0],temptemp_list[k])
+                    temp_list = fil[j][1]*images[indexes[i].start:indexes[i].stop]
+                    temptemp_list = lables[indexes[i].start:indexes[i].stop]
+                    for k in range(len(temp_list)):
+                        temp_list[k] = (temp_list[k],fil[j][0],temptemp_list[k])
+                        
+                    # lst = [(entry,fil[j][0],lables[0]) for entry in temp_list]
                     
-                # lst = [(entry,fil[j][0],lables[0]) for entry in temp_list]
-                
-                result.extend(temp_list)
+                    result.extend(temp_list)
+        except Exception as e:
+            print(f"ERROR: {e}")
+            raise Exception
 
     done = len(lables)
     progress = trange(done, desc="Lable stuff", leave=True)
@@ -293,7 +302,7 @@ def QuickDebugL():
     homo = premade_single_filter('std_homo')
     dict = {'fog':F,'rain':R,'snow':S,'day':D,'night':N}    
     homom = {'homo':homo}
-    res = apply_multiple_filters(imgs,filters=homom, mode='linear', KeepOriginal=False)
+    res = apply_multiple_filters(4,imgs,filters=homom, mode='linear', KeepOriginal=False)
     for i in range(len(res)):
         res[i][0].save(f'C:/Users/roni/Desktop/Jeppe_Wrong/{imgs[2][i]}.png')
 
