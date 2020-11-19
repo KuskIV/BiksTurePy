@@ -1,0 +1,6 @@
+category,sub category,images,model_55_epoch,model_45_epoch,model_24_epoch
+Dangerous warning,Dangerous warning,4550,87.3,84.1,83.6
+Regularoty,Priority ,100,93.0,90.0,71.0
+Regularoty,Prohibitory,1000,86.1,84.7,74.8
+Regularoty,Mandatory,700,95.0,95.0,94.0
+Regularoty,Special regulations,2000,88.8,89.9,87.3

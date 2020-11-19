@@ -13,19 +13,19 @@ from plot.sum_main import get_class_accuracy, get_sub_category, get_category
 from plot.generalized_sum import generalized_sum
 from plot.phase2_merged_file_sum import sum_merged_file, sum_cat_file
 
-def sum_for_model(csv_obj):
+def sum_for_model(csv_obj): #? @JeppeHolt will make unit test on this one
     return generalized_sum(csv_obj, model_con(get_class_accuracy))
 
-def sum_for_class_accuracy(csv_obj):
+def sum_for_class_accuracy(csv_obj): #? @JeppeHolt will make unit test on this one
     return generalized_sum(csv_obj, acc_con(get_sub_category, get_category, get_class_accuracy))
 
-def sum_summed_for_class_accuracy(csv_obj):
+def sum_summed_for_class_accuracy(csv_obj): #? @JeppeHolt will make unit test on this one
     return generalized_sum(csv_obj, summed_acc_con(get_category, get_class_accuracy))
 
-def sum_phase_2_files(base_path):
+def sum_phase_2_files(base_path): #? @JeppeHolt will make unit test on this one
     sum_merged_file(get_category, get_sub_category, get_class_accuracy, base_path)
     
-def sum_phase_2_cat_file(base_path, csv_name):
+def sum_phase_2_cat_file(base_path, csv_name): #? @JeppeHolt will make unit test on this one
     return sum_cat_file(csv_name, get_category, get_sub_category, get_class_accuracy, base_path)
 
 

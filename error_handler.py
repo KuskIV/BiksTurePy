@@ -2,10 +2,13 @@ import os,sys,inspect
 
 
 def get_file_location():
-    frame = inspect.stack()[7]
-    module = inspect.getmodule(frame[0])
-    filename = module.__file__
-    return filename
+    try:
+        frame = inspect.stack()[7]
+        module = inspect.getmodule(frame[0])
+        filename = module.__file__
+        return filename
+    except:
+        return "????"
 
 def check_if_valid_path(path:str, class_name = None):
     """checks if a path exsists in the system, returns an unaltered path if True, exits if false
@@ -28,7 +31,7 @@ def check_if_valid_path(path:str, class_name = None):
         sys.exit()
     return path
 
-def custom_error_check(error_method:bool, msg:str, class_name = None):
+def custom_error_check(error_method:bool, msg:str, class_name = None, exit_program=True):
     """checks if some error method returns true the message will be printet torgeter with some aditional information
 
     Args:
@@ -40,7 +43,11 @@ def custom_error_check(error_method:bool, msg:str, class_name = None):
         print("----------------------BEGIN_ERROR_MESSAGE----------------------")
         print(msg)
         print(f"FILE: The error occurred in {get_file_location()}")
+        
         if not class_name == None:
             print(f"CLASS: The class where the error occurred is {class_name}")            
         print(f"METHOD: The method the errors occurred in is {inspect.stack()[1][3]}")
         print("----------------------END_ERROR_MESSAGE----------------------")
+        
+        if exit_program:
+            sys.exit()

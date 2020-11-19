@@ -1,0 +1,1 @@
+[(<class 'TypeError'>, TypeError("object of type 'NoneType' has no len()"), <traceback object at 0x7f758c499600>), (<class 'TypeError'>, TypeError("object of type 'NoneType' has no len()"), <traceback object at 0x7f758b9b34c0>), (<class 'TypeError'>, TypeError("object of type 'NoneType' has no len()"), <traceback object at 0x7f761014fc80>)]

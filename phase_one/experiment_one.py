@@ -23,9 +23,10 @@ from plot.write_csv_file import cvs_object, plot
 from general_image_func import auto_reshape_images, convert_numpy_image_to_image
 from Models.test_model import make_prediction
 from plot.sum_for_model import sum_for_model, sum_for_class_accuracy, sum_summed_for_class_accuracy
+from error_handler import check_if_valid_path, custom_error_check
 
 
-def find_ideal_model(h5_obj:object, model_object_list:list, epochs:int=10, lazy_split:int=10, save_models:bool=False)->None:
+def find_ideal_model(h5_obj:object, model_object_list:list, epochs:int=10, lazy_split:int=10, save_models:bool=False, data_to_test_on=1)->None:
     """Will based on a list of model objects, a h5py file an a max epochs amount, train the models and record the accracy in order to find the
     best model
 
@@ -45,25 +46,29 @@ def find_ideal_model(h5_obj:object, model_object_list:list, epochs:int=10, lazy_
         print(f"    - {model_object.get_csv_name()} ({model_object.path})")
     print(f"-----------------")
 
-    for j in range(lazy_split):
-        train_images, train_labels, test_images, test_labels = h5_obj.shuffle_and_lazyload(j, lazy_split)
+    train_images, train_labels, test_images, test_labels = h5_obj.shuffle_and_lazyload(0, data_to_test_on)
 
-        print(f"Images in train_set: {len(train_images)} ({len(train_images) == len(train_labels)}), Images in val_set: {len(test_images)} ({len(test_images) == len(test_labels)})")
-        print(f"This version will split the dataset in {lazy_split} sizes.")
+    print(f"Images in train_set: {len(train_images)} ({len(train_images) == len(train_labels)}), Images in val_set: {len(test_images)} ({len(test_images) == len(test_labels)})")
 
-        # train models
-        for i in range(len(model_object_list)):
-            if model_object_list[i].run_on_epoch(epochs):
-                print(f"\n\nTraining model {i + 1} / {len(model_object_list) } for part in dataset {j + 1} / {lazy_split}")
-                validation_loss, validation_accuracy = train_and_eval_models_for_size(model_object_list[i].img_shape, model_object_list[i].model, train_images, train_labels, test_images, test_labels, epochs)
+    for i in range(len(model_object_list)):
+        if model_object_list[i].run_on_epoch(epochs):
+            print(f"\n\nTraining model {i + 1} / {len(model_object_list)} for part in dataset {1} / {lazy_split}")
+            validation_loss, validation_accuracy = train_and_eval_models_for_size(model_object_list[i].img_shape, model_object_list[i].model, train_images, train_labels, test_images, test_labels, epochs)
+            
+            for j in range(len(validation_loss)):
+                try:
+                    add_val = validation_loss[j]
+                    add_acc = validation_accuracy[j]
+                except IndexError as e:
+                    print(f"ERROR: {e}")
+                    raise IndexError(f'Index {j} could not be accessed in either list val_loss (len: {len(validation_loss)} or val_acc (len: {len(validation_accuracy)})')
                 
-                for j in range(len(validation_loss)):
-                    model_object_list[i].fit_data.append([j+1, validation_loss[j], validation_accuracy[j]])
-            else:
-                print(f"\n\nMESSAGE: For epoch {epochs} model {model_object_list[i].get_csv_name()} will not train anymore, as the limit is {model_object_list[i].epoch}")
-        
-        del(train_images)
-        del(test_images)
+                model_object_list[i].fit_data.append([j+1, add_val, add_acc])
+        else:
+            print(f"\n\nMESSAGE: For epoch {epochs} model {model_object_list[i].get_csv_name()} will not train anymore, as the limit is {model_object_list[i].epoch}")
+    
+    del(train_images)
+    del(test_images)
         
     if save_models:
         for models in model_object_list:
@@ -83,9 +88,7 @@ def get_best_models(model_object_list:list)->list:
     best_models = []
 
     for model_object in model_object_list:
-        if not path.exists(model_object.get_summed_csv_path()):
-            print(f"\nThe following path does not exist: {model_object.get_summed_csv_path()}\nCode: plot.write_csv_file.py")
-            sys.exit()
+        check_if_valid_path(model_object.get_summed_csv_path())
 
         with open(model_object.get_summed_csv_path(), 'r') as csvfile:
             plots = csv.reader(csvfile, delimiter=',')
@@ -97,62 +100,50 @@ def get_best_models(model_object_list:list)->list:
             resolution = 0
 
             for row in plots:
-                if float(row[1]) > highest_accuracy:
-                    highest_accuracy = float(row[1])
-                    best_epoch = row[0]
-                    resolution = row[2]
+                try:
+                    if float(row[1]) > highest_accuracy:
+                        highest_accuracy = float(row[1])
+                        best_epoch = row[0]
+                        resolution = row[2]
+                except ValueError as e:
+                    print(f"ERROR: {e}")
+                    raise ValueError(f'{row[1]} cannot be converted to a float')
+                except IndexError as e:
+                    print(f"ERROR: {e}")
+                    raise IndexError(f'Index two is being accesed in an array of lengt {len(row)}')
 
         best_models.append((highest_accuracy, best_epoch, resolution))
 
     print("\nThe best epoch for each model is as follows:")
     for bm in best_models:
-        print(f"    - model{bm[2]}_{bm[1]}, accuracy: {round(bm[0], 2)}")
+        try:
+            print(f"    - model{bm[2]}_{bm[1]}, accuracy: {round(bm[0], 2)}")
+        except TypeError as e:
+            print(f"ERROR: {e}")
+            raise TypeError(f"{bm[0]} cannot be rounded, as it is the wrong type")
+        except IndexError as e:
+            print(f"ERROR: {e}")
+            raise IndexError(f"index two is being accessed in an array of lenght {len(bm)}")
+    
     print("\n")
 
     return best_models
-
-
-# def generate_csv_for_best_model(best_model_names:list)->None:
-#     """Will based on the model object list produce a csv illustrating the accuracy for each epoch.
-#     This data is saved on the object when they are training
-
-#     Args:
-#         best_model_names (list): The input list of model objects
-#     """
-
-#     model_names = [f"model{x[2]}_{x[1]}" for x in best_model_names]
-#     model_indexes = [0]
-#     data = [['class']]
-#     data[0].extend(model_names)
-
-#     csv_base_path = get_paths('phase_one_csv')
-#     csv_path = f"{csv_base_path}/class_accuracy.csv"
-#     save_path = f"{csv_base_path}/class_accuracy_minimized.csv"
-
-#     if not path.exists(csv_path):
-#         print(f"\nThe following path does not exist: {csv_path}\nCode: plot.write_csv_file.py")
-#         sys.exit()
-
-#     with open(csv_path, 'r') as csv_obj:
-#         rows = csv.reader(csv_obj, delimiter=',')
-#         rows = list(rows)
-
-#         model_indexes.extend([rows[0].index(x) for x in model_names if x in rows[0]])
-
-#         for i in range(1, len(rows)):
-#             data.append([rows[i][x] for x in model_indexes])
-
-#     csv_obj = cvs_object(save_path)
-#     csv_obj.write(data)
 
 def get_largest_index(best_model_names:list)->int:
     best_acc = 0
     best_index = 0
 
     for i in range(len(best_model_names)):
-        if best_model_names[i][0] > best_acc:
-            best_acc = best_model_names[i][0]
-            best_index = i
+        try:
+            if best_model_names[i][0] > best_acc:
+                best_acc = best_model_names[i][0]
+                best_index = i
+        except TypeError as e:
+            print(f"ERROR: {e}")
+            raise TypeError(f"{best_model_names[i][0]} cannot be comapted to a number using '>'.")
+        except IndexError as e:
+            print(f"ERROR: {e}")
+            raise IndexError
 
     return best_index
 
@@ -160,53 +151,77 @@ def max_epoch_from_list(epoch_list):
     best_epoch = 0
     
     for i in range(1, len(epoch_list)):
-        best_epoch = int(epoch_list[i][1]) if int(epoch_list[i][1]) > best_epoch else best_epoch
+        try:
+            best_epoch = int(epoch_list[i][1]) if int(epoch_list[i][1]) > best_epoch else best_epoch
+        except TypeError as e:
+            print(f"ERROR {e}")
+            raise TypeError
+        except IndexError as e:
+            print(f"ERROR: {e}")
+            raise IndexError
+            
     
     return best_epoch
+
+def verify_list_lenght(rows):
+    return not len(rows) > 0
 
 def sum_summed_plots(model_object_list:list, extension, base_path)->None:
     csv_data = []
     raw_data = []
     
     for model_object in model_object_list:
-        if not path.exists(model_object.get_summed_csv_path(extension=extension)):
-            print(f"ERROR: the file \"{model_object.get_summed_csv_path(extension=extension)}\" does not exists when trying to sum it. Program will exit.")
-            sys.exit()
-        with open(model_object.get_summed_csv_path(extension=extension), 'r') as csv_obj:
+        csv_path = f"{base_path}/{model_object.get_summed_csv_name(extension=extension)}.csv"
+        check_if_valid_path(csv_path)
+
+        with open(csv_path, 'r') as csv_obj:
             rows = csv.reader(csv_obj, delimiter=',')
             rows = list(rows)
             
-            if not len(rows) > 0:
-                print(f"ERROR: the file \"{model_object.get_summed_csv_path(extension=extension)}\" only has {len(rows)} items, should be {model_object.output_layer_size}")
+            custom_error_check(not verify_list_lenght(rows), f"the file \"{csv_path}\" only has {len(rows)} items, should be {model_object.output_layer_size}")
 
-            rows[0][1] = model_object.get_csv_name(extension=extension)
+            try:
+                rows[0][1] = model_object.get_csv_name(extension=extension)
+            except IndexError as e:
+                print(f"ERROR: {e}")
+                raise IndexError
             
             raw_data.append(rows)
     
-    csv_data = [x[0:1] for x in raw_data[0]]
+    try:
+        csv_data = [x[0:1] for x in raw_data[0]]
+    except IndexError as e:
+        print(f"ERROR {e}")
+        raise IndexError
     
     for i in range(len(raw_data)):
         for j in range(len(csv_data)):
-            csv_data[j].append(raw_data[i][j][1])
+            try:
+                csv_data[j].append(raw_data[i][j][1])
+            except IndexError as e:
+                print(f"ERROR: {e}")
+                raise IndexError
         
     csv_obj = cvs_object(f"{base_path}/{extension}_sum_summed.csv")
     csv_obj.write(csv_data)
 
 def output_best_model_names(model_object_list):
     output_names = []
-    # best_models.append((highest_accuracy, best_epoch, resolution))
-    # ['epoch', 'validation_loss', 'validation_accuracy']
     
     for model_object in model_object_list:
-        output_names.append([model_object.fit_data[-1][1], model_object.fit_data[-1][0], model_object.get_size()])
+        try:
+            output_names.append([model_object.fit_data[-1][1], model_object.fit_data[-1][0], model_object.get_size()])
+        except IndexError as e:
+            print(f"ERROR: {e}")
+            raise IndexError
         
     return output_names
 
 def iterate_and_sum(model_object_list, extension, sum_path, image_dataset, lable_dataset, epochs_end, images_in_classes, base_path, epochs=None):
     iterate_trough_models(model_object_list, epochs_end, image_dataset, lable_dataset, epochs=epochs)
 
-    save_plot(model_object_list, extension)
-    sum_plot(model_object_list, extension)
+    save_plot(model_object_list, extension, base_path)
+    sum_plot(model_object_list, extension, base_path)
     sum_summed_plots(model_object_list, extension, base_path)
     path = sum_class_accuracy(model_object_list, images_in_classes, extension, base_path)
     data_class_acc_val = sum_for_class_accuracy(cvs_object(path))
@@ -215,8 +230,10 @@ def iterate_and_sum(model_object_list, extension, sum_path, image_dataset, lable
     data = sum_summed_for_class_accuracy(csv_obj)
     csv_obj.write(data, path=f"{base_path}/{extension}_sum_summed_class_accuracy.csv", overwrite_path=True)
 
+def verify_class_amounts(class_in_test, class_int_train):
+    return class_in_test == class_int_train
 
-def run_experiment_one(lazy_split:int, train_h5_path:str, test_h5_path:str, get_models, epochs_end:int=10, dataset_split:int=0.7, folder_extension = None, model_paths=None)->None:
+def run_experiment_one(lazy_split:int, train_h5_path:str, test_h5_path:str, get_models, epochs_end:int=10, dataset_split:int=0.7, folder_extension = None, model_paths=None, data_to_test_on=1)->None:
     """This method runs experiment one, and is done in several steps:
             1. For each epoch to train for, the models are trained. After each epoch, the accuracy is saved on the object.
             2. When the training is done, all the data is saved in csv files as (Epochs,Resolution,Class,Class_Acuracy,Total_in_Class)
@@ -237,34 +254,70 @@ def run_experiment_one(lazy_split:int, train_h5_path:str, test_h5_path:str, get_
     base_path = get_paths('phase_one_csv') if folder_extension == None else f"{get_paths('phase_one_csv')}/{folder_extension}"
     if not folder_extension == None and not os.path.exists(base_path):
         os.mkdir(base_path)
-        
+    
+    print("---------------------")
+    print(f"The output data for the following experiment will be saved in the following folder:")
+    print(f"{base_path}")
+    print("---------------------")
+    
+    check_if_valid_path(base_path)
+    
     h5_train = h5_object(train_h5_path, training_split=dataset_split)
     h5_test = h5_object(test_h5_path, training_split=1)
 
-    if h5_train.class_in_h5 != h5_test.class_in_h5:
-        print(f"The input train and test set does not have matching classes {h5_train.class_in_h5} - {h5_test.class_in_h5}")
-        sys.exit()
+    custom_error_check(verify_class_amounts(h5_test.class_in_h5, h5_train.class_in_h5), f"The input train and test set does not have matching classes {h5_train.class_in_h5} - {h5_test.class_in_h5}")
 
     model_object_list = get_models(h5_train.class_in_h5, model_paths=model_paths)
 
-    find_ideal_model(h5_train, model_object_list, lazy_split=lazy_split, epochs=epochs_end, save_models=True)
+    find_ideal_model(h5_train, model_object_list, lazy_split=lazy_split, epochs=epochs_end, save_models=True, data_to_test_on=data_to_test_on)
 
     print(f"\n------------------------\nTraining done. Now evaluation will be made.\n\n")
 
     sum_test_path = f"{base_path}/test_sum_class_accuracy.csv"
     sum_val_path = f"{base_path}/val_sum_class_accuracy.csv"
 
-    model_object_list_loaded = get_models(h5_train.class_in_h5, load_trained_models=True)
-    
     #TODO: Fix epoch count in test_val_sum_class_accuracy.csv
-    _, _, image_dataset, lable_dataset = h5_train.shuffle_and_lazyload(0, 1)
+    _, _, image_dataset, lable_dataset = h5_train.shuffle_and_lazyload(0, data_to_test_on)
     iterate_and_sum(model_object_list, 'val', sum_val_path, image_dataset, lable_dataset, epochs_end, h5_train.images_in_classes, base_path)
     
-    image_dataset, lable_dataset, _, _ = h5_test.shuffle_and_lazyload(0, 1)
+    model_object_list_loaded = get_models(h5_train.class_in_h5, load_trained_models=True)
+    image_dataset, lable_dataset, _, _ = h5_test.shuffle_and_lazyload(0, data_to_test_on)
     iterate_and_sum(model_object_list_loaded, 'test', sum_test_path, image_dataset, lable_dataset, -1, h5_test.images_in_classes, base_path, epochs=[x.fit_data[-1][0] for x in model_object_list])
     combine_two_summed_class_accracy(sum_test_path, sum_val_path, base_path)
 
     save_fitdata(model_object_list, base_path)
+
+def combine_fitdata(model_object_list, base_path):
+    data = [['epoch']]
+    
+    max_len = max([len(x.fit_data) for x in model_object_list])
+    
+    for model_object in model_object_list:
+        for i in range(max_len):
+            try:
+                if i+1 > len(data):
+                    data.append([i])
+                
+                if i == 0:
+                    data[i].append(model_object.get_csv_name())
+                else:
+                    if i >= len(model_object.fit_data):
+                        data[i].append(' ')
+                    else:
+                        data[i].append(model_object.fit_data[i][1])
+            except IndexError as e:
+                print(f"ERROR {e}")
+                raise IndexError
+            except TypeError as e:
+                print(f"ERROR: {e}")
+                raise TypeError
+            except Exception as e:
+                print(f"ERROR: {e}")
+                raise Exception
+    
+    fitdata_path = f"{base_path}/fitdata_combined.csv"
+    csv_obj = cvs_object(fitdata_path)
+    csv_obj.write(data)
 
 def save_fitdata(model_object_list:list, base_path:str)->None:
     """This is the data used to produce the loss/epoch graht, and is saved in a csv file. as "epoch", "loss", "accuracy"
@@ -274,27 +327,11 @@ def save_fitdata(model_object_list:list, base_path:str)->None:
         base_path (str): the base path to save the data in
     """
     for model in model_object_list:
-        csv_obj = cvs_object(f"{base_path}/{model.get_csv_name()}_fitdata.csv")
+        fitdata_path = f"{base_path}/{model.get_csv_name()}_fitdata.csv"
+        csv_obj = cvs_object(fitdata_path)
         csv_obj.write(model.fit_data)
-
-    data = [['epoch']]
     
-    max_len = max([len(x.fit_data) for x in model_object_list])
-    
-    for model_object in model_object_list:
-        for i in range(max_len):
-            if i+1 > len(data):
-                data.append([i])
-            
-            if i == 0:
-                data[i].append(model_object.get_csv_name())
-            else:
-                if i >= len(model_object.fit_data):
-                    data[i].append(' ')
-                else:
-                    data[i].append(model_object.fit_data[i][1])
-    csv_obj = cvs_object(f"{base_path}/fitdata_combined.csv")
-    csv_obj.write(data)
+    combine_fitdata(model_object_list, base_path)
 
 def sum_class_accuracy(model_object_list:list, images_in_classes, extension, base_path)->dict:
     """When training the accuracy for each class for each epoch is recorded. Here the sum of all accuracies for all classes for each epoch is summed together.
@@ -310,19 +347,24 @@ def sum_class_accuracy(model_object_list:list, images_in_classes, extension, bas
 
     for model_object in model_object_list:
         model_class_accuracy[model_object.get_csv_name()] = {}
+        open_path = f"{base_path}/{model_object.get_csv_name(extension=extension)}.csv"
+        check_if_valid_path(open_path)
 
-        if not path.exists(model_object.get_csv_path(extension=extension)):
-                print(f"\nThe following path does not exist: {model_object.get_csv_path(extension=extension)}\nCode: plot.write_csv_file.py")
-                sys.exit()
-
-        with open(model_object.get_csv_path(extension=extension), 'r') as csvfile:
+        with open(open_path, 'r') as csvfile:
                 plots = csv.reader(csvfile, delimiter=',')
 
                 next(plots)
                 for row in plots:
-                    if not row[0] in model_class_accuracy[model_object.get_csv_name()]:
-                        model_class_accuracy[model_object.get_csv_name()][row[0]] = {}
-                    model_class_accuracy[model_object.get_csv_name()][row[0]][row[2]] = row[3]
+                    try:
+                        if not row[0] in model_class_accuracy[model_object.get_csv_name()]:
+                            model_class_accuracy[model_object.get_csv_name()][row[0]] = {}
+                        model_class_accuracy[model_object.get_csv_name()][row[0]][row[2]] = row[3]
+                    except IndexError as e:
+                        print(f"ERROR: {e}")
+                        raise IndexError
+                    except Exception as e:
+                        print(f"ERROR: {e}")
+                        raise Exception
 
     data_list = convert_dict_to_list(model_class_accuracy, images_in_classes)
     save_data_obj = cvs_object(save_path)
@@ -343,18 +385,29 @@ def convert_dict_to_list(model_class_accuracy:dict, images_in_classes:dict)->lis
     data_list = [['Class', 'Size']]
     for key, value in model_class_accuracy.items():
         for key2, value2 in model_class_accuracy[key].items():
-            data_list[0].append(f"{key}_{key2}")
-            keys = list(value2.keys())
-            keys.sort(key=int)
+            try:
+                data_list[0].append(f"{key}_{key2}")
+                keys = list(value2.keys())
+                keys.sort(key=int)
+            except Exception as e:
+                print(f"ERROR: {e}")
+                raise Exception
 
             for i in range(len(keys)):
-                if len(data_list) == i + 1:
-                    data_list.append([keys[i], images_in_classes[keys[i]]])
-                data_list[int(i) + 1].append(model_class_accuracy[key][key2][str(keys[i])])
+                try:
+                    if len(data_list) == i + 1:
+                        data_list.append([keys[i], images_in_classes[keys[i]]])
+                    data_list[int(i) + 1].append(model_class_accuracy[key][key2][str(keys[i])])
+                except IndexError as e:
+                    print(f"ERROR: {e}")
+                    raise IndexError
+                except Exception as e:
+                    print(f"ERROR: {e}")
+                    raise Exception
 
     return data_list
 
-def sum_plot(model_object_list:list, extension:str)->None:
+def sum_plot(model_object_list:list, extension:str, base_path)->None:
     """converts the csv file showing the accuracy for each class, to a csv showing the accuracy for each sub category
 
     Args:
@@ -363,12 +416,12 @@ def sum_plot(model_object_list:list, extension:str)->None:
     """
     csv_object_list =  []
     for model_object in model_object_list:
-        obj = cvs_object(model_object.get_csv_path(extension=extension), label=model_object.get_size())
+        obj = cvs_object(f"{base_path}/{model_object.get_csv_name(extension=extension)}.csv", label=model_object.get_size())
         data = sum_for_model(obj)
-        obj.write(data, model_object.get_summed_csv_path(extension=extension), overwrite_path=True)
+        obj.write(data, f"{base_path}/{model_object.get_summed_csv_name(extension=extension)}.csv", overwrite_path=True)
         csv_object_list.append(obj)
 
-def save_plot(model_object_list:list, extension)->None:
+def save_plot(model_object_list:list, extension, base_path)->None:
     """Iterates through each model object, and saves the accuracy for each class in a
 
     Args:
@@ -376,7 +429,7 @@ def save_plot(model_object_list:list, extension)->None:
         extension (str): the extension, deciding whether it is 'test' or 'val'
     """
     for model_object in model_object_list:
-        cvs_obj = cvs_object(model_object.get_csv_path(extension=extension))
+        cvs_obj = cvs_object(f"{base_path}/{model_object.get_csv_name(extension=extension)}.csv")
         cvs_obj.write(model_object.csv_data)
 
 def initalize_dict(lable_dataset:list)->dict:
@@ -408,7 +461,14 @@ def iterate_trough_models(model_object_list:list, e:int, image_dataset, lable_da
     
     for i in range(len(model_object_list)):
         if update_epoch and epochs != None:
-            e = epochs[i]
+            try:
+                e = epochs[i]
+            except IndexError as e:
+                print(f"ERROR: {e}")
+                raise IndexError
+            except Exception as e:
+                print(f"ERROR: {e}")
+                raise Exception
             
         if int(e) < 0:
             print(f"\nERROR: when iterating through the models, the epoch is smaller than 0 ({e})\n")
@@ -420,9 +480,17 @@ def iterate_trough_models(model_object_list:list, e:int, image_dataset, lable_da
 
         right, wrong = iterate_trough_imgs(model_object_list[i], image_dataset, lable_dataset,label_dict)
 
-        percent = (right / (wrong + right)) * 100
+        try:
+            percent = (right / (wrong + right)) * 100
+        except ZeroDivisionError as e:
+            print(f"ERROR: {e}")
+            raise ZeroDivisionError
+        except Exception as e:
+            print(f"ERROR: {e}")
+            raise Exception
         
-        print(f"\nModel: \"{model_object_list[i].path.split('/')[-1].split('.')[0]}\"\nEpocs: {e} \nResult: \n    Right: {right}\n    wrong: {wrong}\n    percent correct: {percent}\n\n")
+        
+        print(f"\nModel: \"{model_object_list[i].path.split('/')[-1].split('.')[0]}\"\nResolution: {model_object_list[i].img_shape}\nEpocs: {e} \nResult: \n    Right: {right}\n    wrong: {wrong}\n    percent correct: {percent}\n\n")
 
         get_model_results(label_dict, model_object_list[i], (e, True), should_print=False)
 
@@ -452,12 +520,20 @@ def iterate_trough_imgs(model_object:object,image_dataset:list,lable_dataset:lis
         prediction = make_prediction(model_object.model, image_dataset[j].copy(),  model_object.get_size_tuple(3))
         predicted_label = np.argmax(prediction)
 
-        if int(predicted_label) == int(lable_dataset[j]):
-            right += 1
-            label_dict[lable_dataset[j]][1] += 1
-        else:
-            wrong += 1
-            label_dict[lable_dataset[j]][0] += 1
+        try:
+            if int(predicted_label) == int(lable_dataset[j]):
+                right += 1
+                label_dict[lable_dataset[j]][1] += 1
+            else:
+                wrong += 1
+                label_dict[lable_dataset[j]][0] += 1
+        except IndexError as e:
+            print(f"ERROR: {e}")
+            raise IndexError
+        except Exception as e:
+            print(f"ERROR: {e}")
+            raise Exception
+
     return right,wrong
 
 
@@ -472,11 +548,19 @@ def update_values(key:int,label_dict:dict,prt:bool)->tuple:
     Returns:
         tuple: a typle containing the class name, accuracy and size, to be added to the class dict
     """
-    class_name = str(key)
-    right_name = str(label_dict[key][1]).rjust(4, ' ')
-    wrong_name = str(label_dict[key][0]).rjust(4, ' ')
-    class_size = label_dict[key][0]+label_dict[key][1]
-    class_percent = round((label_dict[key][1]/class_size)*100, 2)
+    
+    try:
+        class_name = str(key)
+        right_name = str(label_dict[key][1]).rjust(4, ' ')
+        wrong_name = str(label_dict[key][0]).rjust(4, ' ')
+        class_size = label_dict[key][0]+label_dict[key][1]
+        class_percent = round((label_dict[key][1]/class_size)*100, 2)
+    except IndexError as e:
+        print(f"ERROR: {e}")
+        raise IndexError
+    except TypeError as e:
+        print(f"ERROR: {e}")
+        raise TypeError
 
     if prt:
         print(f"class: {class_name.zfill(3)} | right: {right_name} | wrong: {wrong_name} | procent: {round(class_percent, 2)}")
@@ -497,8 +581,15 @@ def get_model_results(lable_dict:dict, model_object:object ,settings:tuple,shoul
         print(f"----------------\n\nDetails regarding each class accuracy is as follows:\n")
 
     for key in lable_dict.keys():
-        class_name, class_percent, class_size = update_values(key, lable_dict,should_print)
-        model_object.csv_data.append([model_object.fit_data[-1][0], model_object.get_size(), class_name, class_percent, class_size])
+        try:
+            class_name, class_percent, class_size = update_values(key, lable_dict,should_print)
+            model_object.csv_data.append([model_object.fit_data[-1][0], model_object.get_size(), class_name, class_percent, class_size])
+        except IndexError as e:
+            print(f"ERROR: {e}")
+            raise IndexError
+        except Exception as e:
+            print(f"ERROR: {e}")
+            raise Exception
 
     if should_print:
         print("----------------")

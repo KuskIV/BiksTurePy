@@ -47,7 +47,7 @@ def generate_noise_dataset(h5_obj, dataset_split, filters,image_size, lazy_end=1
 
 def generate_and_save_noise_dataset(h5_obj, data_split, filters, img_shape, data_set_noise_path, data_set_path, h5_noise_path):
     dataset = generate_noise_dataset(h5_obj,data_split,filters,img_shape)#generates the dataset with noises on the training and validation set
-    save_dataset(dataset, get_training_set_noise_path()) #saves the dataset in the provided path
+    save_dataset(dataset, data_set_noise_path) #saves the dataset in the provided path
     rename_and_add_folders(data_set_noise_path, data_set_path)
     generate_h5(h5_noise_path,data_set_noise_path)
 
@@ -122,9 +122,9 @@ def qucik_debug():#TODO insert params, these should idealy lead to a already gen
     model_object_list = get_satina_gains_model_object_list(h5_obj.class_in_h5)
     generat_dataset = True
     for model_object in model_object_list:
-        train_noise_model(model_object,0.6,load_filters(), generate_dataset=generat_dataset)
+        train_noise_model(model_object,training_split,load_filters(), generate_dataset=generat_dataset)
         generat_dataset=False
 
 if __name__ == "__main__":
-    qucik_debug()
+    qucik_debug() 
     

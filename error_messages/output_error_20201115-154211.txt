@@ -1,0 +1,1 @@
+[(<class 'IsADirectoryError'>, IsADirectoryError(21, 'Is a directory'), <traceback object at 0x7f20e4215640>)]

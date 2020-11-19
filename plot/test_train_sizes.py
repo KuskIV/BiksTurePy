@@ -13,14 +13,17 @@ from plot.sum_constructors.sum_test_train_constructor import get_object as sum_c
 from plot.sum_constructors.sum_summed_test_train_constructor import get_object as sum_summed_con
 
 def get_sub_category(class_name):
+    class_text_labels, categories, subcategories = read_class_descrip(get_category_csv())
+    subcategories.append(categories[0]) #add danger as sub category
+    subcategories.append(categories[-1]) #add others as sub category
     return get_category_from_class(subcategories, int(class_name) + 1)
 
 def get_category(class_name):
+    class_text_labels, categories, subcategories = read_class_descrip(get_category_csv())
+    subcategories.append(categories[0]) #add danger as sub category
+    subcategories.append(categories[-1]) #add others as sub category
     return get_category_from_class(categories, int(class_name) + 1)
 
-class_text_labels, categories, subcategories = read_class_descrip(get_category_csv())
-subcategories.append(categories[0]) #add danger as sub category
-subcategories.append(categories[-1]) #add others as sub category
 
 def iterate_through_dict(class_dict, output_dict, input_key):
     for key, value in class_dict.items():

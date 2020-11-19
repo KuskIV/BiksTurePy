@@ -8,6 +8,7 @@ from os import path
 from tqdm import tqdm
 from tqdm import trange
 
+
 def generate_h5(h5Path:str, dataset_path:str)->None:
     """This method generates a H5PY file from the data in the dataset_path, and a
     saves it in the h5Path
@@ -31,15 +32,15 @@ def generate_h5(h5Path:str, dataset_path:str)->None:
         classes.set_description(f"Class {i + 1} / {done}")
         classes.refresh()
         
-        group_name = os.path.join(dataset_path, os.listdir(dataset_path)[i])
+        if not os.listdir(dataset_path)[i].endswith('.csv'):
+            group_name = os.path.join(dataset_path, os.listdir(dataset_path)[i])        
+            group = h5.create_group(group_name)
 
-        group = h5.create_group(group_name)
+            for j in os.listdir(group_name):
+                img_path = os.path.join(group_name, j)
+                if img_path.endswith('.ppm'):
+                    img = Image.open(img_path)
+                    data = np.asarray(img) / 255.0
 
-        for j in os.listdir(group_name):
-            img_path = os.path.join(group_name, j)
-            if img_path.endswith('.ppm'):
-                img = Image.open(img_path)
-                data = np.asarray(img) / 255.0
-
-                data_set = group.create_dataset(j, data=data)
+                    data_set = group.create_dataset(j, data=data)
     h5.close()

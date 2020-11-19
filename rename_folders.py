@@ -49,6 +49,7 @@ def rename_and_add_folders(train_path,test_path):
     # rename_folders(test_path)
     
 if __name__ == "__main__":
+
     add_folders(train_path, test_path)
 
     rename_folders(train_path)

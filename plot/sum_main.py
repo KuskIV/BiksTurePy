@@ -10,15 +10,19 @@ from global_paths import get_paths, get_category_csv
 from plot.phase2_merged_file_sum import sum_merged_file
 from plot.test_train_sizes import sum_train_test_file
 
-class_text_labels, categories, subcategories = read_class_descrip(get_category_csv())
-subcategories.append(categories[0])
-subcategories.append(categories[-1])
 
 def get_sub_category(class_name):
-    return get_category_from_class(subcategories, int(class_name) + 1)
+    class_text_labels, categories, subcategories = read_class_descrip(get_category_csv())
+    subcategories.append(categories[0])
+    subcategories.append(categories[-1])
+    return get_category_from_class(subcategories, int(class_name))
 
 def get_category(class_name):
-    return get_category_from_class(categories, int(class_name) + 1)
+    class_text_labels, categories, subcategories = read_class_descrip(get_category_csv())
+    subcategories.append(categories[0])
+    subcategories.append(categories[-1])
+
+    return get_category_from_class(categories, int(class_name))
 
 def get_class_accuracy(current_class_accuracy, current_total_in_class):
     total = 0
