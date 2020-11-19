@@ -17,6 +17,7 @@ Dataset/satina_gains_images/
 Dataset/h5Dataset/
 Models/saved_models
 Dataset/belgian_images/
+Dataset/homotest/
 phase_one/csv_data/
 phase_two/csv_output/
 # Distribution / packaging
