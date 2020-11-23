@@ -152,4 +152,4 @@ def QuickDebug()-> None:
     w.add_weather(img).show()
 
 
-QuickDebug()
+# QuickDebug()

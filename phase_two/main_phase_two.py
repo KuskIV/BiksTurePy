@@ -46,7 +46,7 @@ def weird_shuffle_of_the_tuple(image_tuples:list,numpy_imgs:list)->list:
     return image_tuples
 
 def phase_2_1(model:object,noise_filter:dict, base_path:str, original_images:list, original_labels:list)->None:
-    image_tuples = add_noise((convert_between_pill_numpy(original_images * 255,mode='numpy->pil'),original_labels),noise_filter) #tuple(image,class,filter) the method returns the before show tuple where some of the images ahve been applied some noise
+    image_tuples = add_noise(4,(convert_between_pill_numpy(original_images * 255,mode='numpy->pil'),original_labels),noise_filter) #tuple(image,class,filter) the method returns the before show tuple where some of the images ahve been applied some noise
     numpy_imgs = convert_between_pill_numpy([changeImageSize(model.img_shape[0],model.img_shape[1],im[0].convert('RGB')) for im in image_tuples],mode='pil->numpy')#?confused about the specefics, but the result seems to be a list of numpy imgs that is returned
     image_tuples = weird_shuffle_of_the_tuple(image_tuples,numpy_imgs) #!still unsure id this is nessesary
     # values = append_pred_to_tuples(image_tuples,model)
@@ -68,8 +68,8 @@ def load_filters()->dict: #*DONE
     #dict = {'fog':F,'rain':R,'snow':S,'day':D,'night':N}
     return dict
 
-def add_noise(imgs:list,noise_filter:dict)->list: #*DONE
-    return apply_multiple_filters(imgs,filters = noise_filter, mode='rand', KeepOriginal=True)
+def add_noise(chungus, imgs:list,noise_filter:dict)->list: #*DONE
+    return apply_multiple_filters(imgs,filters = noise_filter, mode='rand', chungus=chungus , KeepOriginal=True)
 
 def convert_to_csv(path:str,values:list)->None: #*DONE
     with open(path, mode='w') as phase2_results:

@@ -6,9 +6,13 @@ paths = {
     'train_set': 'Dataset/satina_gains_images/satina_trains',
     'test_set': 'Dataset/satina_gains_images/satina_tests',
     'train_set_noise': 'Dataset/satina_gains_images/satina_trains_noise',
+    'train_set_homo': 'Dataset/satina_gains_images/satina_trains_homo',
     'test_set_noise': 'Dataset/satina_gains_images/satina_tests_noise',
+    'test_set_homo': 'Dataset/satina_gains_images/satina_tests_homo',
     'h5_train_noise': 'Dataset/h5Dataset/h5_train_noise.h5py',
+    'h5_train_homo': 'Dataset/h5Dataset/h5_train_homo.h5py',
     'h5_test_noise': 'Dataset/h5Dataset/h5_test_noise.h5py',
+    'h5_test_homo': 'Dataset/h5Dataset/h5_test_homo.h5py',
     'model': 'Models/saved_models',
     'ex_one_ideal': 'Models/saved_models/ex_one_ideal.h5',
     'large': 'Models/saved_models/large200.h5',
@@ -25,6 +29,9 @@ paths = {
     'satina_avg_noise':'Models/saved_models/satina_avg_noise.h5',
     'satina_median_noise':'Models/saved_models/satina_median_noise.h5',
     'satina_mode_noise':'Models/saved_models/satina_mode_noise.h5',
+    'satina_avg_homo':'Models/saved_models/satina_avg_homo.h5',
+    'satina_median_homo':'Models/saved_models/satina_median_homo.h5',
+    'satina_mode_homo':'Models/saved_models/satina_mode_homo.h5',
     # 'category_csv':'Dataset/test.csv',
     'category_csv':'Dataset/ETSD_Adjusted/test.csv',
     # 'category_csv':'Dataset/class_descrip.csv',
@@ -61,17 +68,20 @@ def get_h5_path() -> str:
 def get_h5_train() -> str:
     return paths.get('h5_train')
 
-
 def get_h5_test() -> str:
     return paths.get('h5_test')
+
+def get_h5_train_homo() -> str:
+    return paths.get('h5_train_homo')
+
+def get_h5_test_homo() -> str:
+    return paths.get('h5_test_homo')
 
 def get_h5_train_noise() -> str:
     return paths.get('h5_train_noise')
 
-
 def get_h5_test_noise() -> str:
     return paths.get('h5_test_noise')
-
 
 def get_training_set_path() -> str:
     return paths.get('train_set')
@@ -169,6 +179,16 @@ def get_satina_model_avg_path_noise() -> str:
 
 def get_satina_model_median_path_noise() -> str:
     return paths.get('satina_median_noise')
+
+def get_satina_model_mode_path_homo() -> str:
+    return paths.get('satina_mode_homo')
+
+
+def get_satina_model_avg_path_homo() -> str:
+    return paths.get('satina_avg_homo')
+
+def get_satina_model_median_path_homo() -> str:
+    return paths.get('satina_median_homo')
 
 def get_phase_two_csv(name:str=None, extension:str=None)->str:
     base_path=get_paths('phase_two_csv')

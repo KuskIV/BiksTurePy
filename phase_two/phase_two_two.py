@@ -34,52 +34,49 @@ def create_dir(path):
     if not os.path.exists(path):
         os.mkdir(path)
 
-def generate_noise_dataset(h5_obj, dataset_split, filters,image_size, lazy_end=1, lazy_start=0):
+def generate_dataset(h5_obj, dataset_split, filters,image_size, chungus, keep_original, lazy_end=1, lazy_start=0):
     original_images, original_labels, _, _ = h5_obj.shuffle_and_lazyload(lazy_start, lazy_end)#TODO this should be training and validation set instead. Since the test set should now be loaded in sperately
-    training_set = add_noise((original_images,original_labels), filters, image_size)#adds the noise to the images in linear
-    # for i in range(len(training_set)):
-    #     training_set[i][0].show()
-    #     print(training_set[i][1])
-    # test_set = add_noise((test_images,test_labels), filters, image_size)#adds the noise to the images in linear
+    training_set = add_noise((original_images,original_labels), filters, image_size, chungus, keep_original)#adds the noise to the images in linear
     return training_set #,test_set
 
-
-
-def generate_and_save_noise_dataset(h5_obj, data_split, filters, img_shape, data_set_noise_path, data_set_path, h5_noise_path):
-    dataset = generate_noise_dataset(h5_obj,data_split,filters,img_shape)#generates the dataset with noises on the training and validation set
+def generate_and_save_dataset(h5_obj, data_split, filters, img_shape, data_set_noise_path, data_set_path, h5_noise_path, chungus, keep_original):
+    dataset = generate_dataset(h5_obj,data_split,filters,img_shape, chungus, keep_original)#generates the dataset with noises on the training and validation set
     save_dataset(dataset, data_set_noise_path) #saves the dataset in the provided path
     rename_and_add_folders(data_set_noise_path, data_set_path)
     generate_h5(h5_noise_path,data_set_noise_path)
 
-def generate_train_set(data_split, filters, img_shape):
+def generate_train_set(data_split, filters, img_shape, keep_original, train_noise_key='train_set_noise', h5_noise_key='h5_train_noise', train_key='train_set', chungus=4):
     h5_path = get_h5_train()
     h5_obj = h5_object(h5_path, training_split=1)
-    generate_and_save_noise_dataset(h5_obj, 
+    generate_and_save_dataset(h5_obj, 
                                     data_split, 
                                     filters, 
                                     img_shape, 
-                                    get_paths('train_set_noise'), 
-                                    get_paths('train_set'), 
-                                    get_paths('h5_train_noise')
+                                    get_paths(train_noise_key), 
+                                    get_paths(train_key), 
+                                    get_paths(h5_noise_key),
+                                    chungus,
+                                    keep_original
                                     )
 
-def generate_test_set(data_split, filters, img_shape):
+def generate_test_set(data_split, filters, img_shape, keep_original, test_noise_key='test_set_noise', h5_noise_key='h5_test_noise', test_key='test_set',chungus=4):
     h5_path = get_h5_test()
     h5_obj = h5_object(h5_path, training_split=1)
-    generate_and_save_noise_dataset(h5_obj, 
+    generate_and_save_dataset(h5_obj, 
                                 data_split, 
                                 filters, 
                                 img_shape, 
-                                get_paths('test_set_noise'), 
-                                get_paths('test_set'), 
-                                get_paths('h5_test_noise')
+                                get_paths(test_noise_key), 
+                                get_paths(test_key), 
+                                get_paths(h5_noise_key),
+                                chungus,
+                                keep_original
                                 )
 
-def train_noise_model(model_object_list,data_split,filters, generate_dataset=False):
-    if generate_dataset:
-        generate_train_set(data_split, filters,model_object_list.img_shape)
-        generate_test_set(data_split, filters,model_object_list.img_shape)
-    # train_model(dataset,model_object) #trains model on new dataset
+
+def load_homo_filters():
+    H = premade_single_filter('std_homo')
+    return {'std_homo':H}
 
 def load_filters():
     F = premade_single_filter('fog')
@@ -91,10 +88,10 @@ def load_filters():
     dict = {'fog':F}
     return dict
 
-def add_noise(imgs, noise_filter, image_size):
+def add_noise(imgs, noise_filter, image_size, chungus, keep_original):
     pil_imgs = convert_between_pill_numpy(imgs[0] * 255,mode='numpy->pil') #converts numpy_img list to pill imges in a list
     lables = [lable for lable in imgs[1]] #extracts the lables for the images
-    image_tuples = apply_multiple_filters((pil_imgs,lables),filters = noise_filter, mode='linear', KeepOriginal=True) #applies the diffrent noises to the images in a linear distribution, based on the number of filters inputet
+    image_tuples = apply_multiple_filters((pil_imgs,lables),filters = noise_filter, mode='linear', chungus=chungus, KeepOriginal=keep_original) #applies the diffrent noises to the images in a linear distribution, based on the number of filters inputet
     RGB_img = [changeImageSize(image_size[0],image_size[1],im[0].convert('RGB')) for im in image_tuples]#TODO find out what this line is used for other that its length. potentialy a useless computation
     #numpy_imgs = convert_between_pill_numpy(RGB_img,mode='pil->numpy')
     for i in range(len(RGB_img)):
@@ -114,17 +111,32 @@ def train_model(data_set, model_object, epochs = 10, save_model = True):
 
     train_and_eval_models_for_size(model_object.img_shape ,model_object.model,train_imgs,train_lables,test_imgs,test_lables,epochs=epochs)#!High potentiel to be patialy deprecated, and should propely be updated the a new form
 
+def generate_noise_dataset(img_shape, keep_original, data_split=1):
+    filters = load_filters()
+    generate_train_set(data_split, filters, img_shape, keep_original)
+    generate_test_set(data_split, filters, img_shape, keep_original)
+
+def generate_homo_dataset(img_shape, keep_original, data_split=1):
+    filters = load_homo_filters()
+    generate_train_set(data_split, filters,img_shape, keep_original, chungus=0, train_noise_key='train_set_homo', h5_noise_key='h5_train_homo')
+    generate_test_set(data_split, filters, img_shape, keep_original, chungus=0, test_noise_key='test_set_homo', h5_noise_key='h5_test_homo')
+
+def generate_datasets():
+    img_shape = (200, 200)
+    generate_homo_dataset(img_shape, False) 
+    # generate_noise_dataset(img_shape, True)
+
 def qucik_debug():#TODO insert params, these should idealy lead to a already generated dataset with applied noise
-    #!All code blow this comment is propably deprecated as massive changes to the used classes have be made since, it was originaly written.
-    h5_path = get_h5_train()
-    training_split = 1
-    h5_obj = h5_object(h5_path, training_split=training_split)
-    model_object_list = get_satina_gains_model_object_list(h5_obj.class_in_h5)
-    generat_dataset = True
-    for model_object in model_object_list:
-        train_noise_model(model_object,training_split,load_filters(), generate_dataset=generat_dataset)
-        generat_dataset=False
+    # #!All code blow this comment is propably deprecated as massive changes to the used classes have be made since, it was originaly written.
+    # h5_path = get_h5_train()
+    # training_split = 1
+    # h5_obj = h5_object(h5_path, training_split=training_split)
+    # model_object_list = get_satina_gains_model_object_list(h5_obj.class_in_h5)
+    # generat_dataset = True
+    # for model_object in model_object_list:
+    #     train_noise_model(model_object,training_split,load_filters(), generate_dataset=generat_dataset)
+    #     generat_dataset=False
+    pass
 
 if __name__ == "__main__":
-    qucik_debug() 
-    
+    generate_datasets()

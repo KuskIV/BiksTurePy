@@ -77,8 +77,8 @@ class homomorphic():
         #     self.b = 0.5
         self.y = (self.a + self.b*filter)*self.y
         # self.calc_scalar()
-        print ("b", self.b)
-        print ("a", self.a)
+        # print ("b", self.b)
+        # print ("a", self.a)
 
     def merge_image(self): 
         self.y = Image.fromarray(self.y)
@@ -88,6 +88,7 @@ class homomorphic():
         return Image.merge('YCbCr',(y, cb, cr)).convert('RGB')
 
     def homofy(self,img):
+        self.image_kernel(img)
         conv_img = self.convert_image_YCC(img)
         freq_dom = self.transform_into_freqdomain()
         ft = self.fourier_transfor()
@@ -104,41 +105,51 @@ class homomorphic():
         stat = ImageStat.Stat(self.y)
         mean= stat.mean[0]
         w,h = image.size
-        print ("w", w, "h", h)
+        w_c = int(w/2)
+        h_c = int(h/2)
+        h_p = int(h * 0.2)
+        w_p = int(w * 0.2)
+        # print ("w", w, "h", h)
         total = 0
         max_pix = 0
         smallest_pepe = 0
-        for i in range(0, w):
-            for j in range(0,h):
-                total += image.getpixel((i,j))
-                if max_pix < image.getpixel((i,j)): 
-                    max_pix = image.getpixel((i,j))
-                if smallest_pepe > image.getpixel((i,j)): 
-                    smallest_pepe = image.getpixel((i,j))
-        mean_av = total / (w * h)
+        kernal_size = h_p * w_p
+        # print ("kernal size" , kernal_size)
+        n = 0
+        for i in range(0, w_p):
+            for j in range(0, h_p):
+                total += image.getpixel((i+w_c,j+h_c))
+                if max_pix < image.getpixel((i+w_c,j+h_c)): 
+                    max_pix = image.getpixel((i+w_c,j+h_c))
+                if smallest_pepe > image.getpixel((i+w_c,j+h_c)): 
+                    smallest_pepe = image.getpixel((i+w_c,j+h_c))
+                n +=1
+        mean_av = total / kernal_size
         # print ('a' , mean_av)
-        print ( "contrast", smallest_pepe)
-        print ( "max pixel", max_pix)
-        print ( "min pixel", smallest_pepe)
-        print ('mean' , mean_av)
+        # print ("total", total)
+        # print ( "min pixel", smallest_pepe)
+        # print ( "max pixel", max_pix)
+        # # print ( "min pixel", smallest_pepe)
+        # print ('mean' , mean_av)
         # percieved_light = math.sqrt(0.241 * (mean**2)) *2
         # rms = stat.rms[0]
         # avg = stat.average[0]
         scalar = self.calc_scalar(mean_av, max_pix)
-        # if max_pix > 240 and mean_av < 127 and mean_av <= 180:
-        #     self.a = 1
-        #     self.b = 0.5
-        # # elif max_pix > 240 and mean_av < 127 and mean_av <= 220: 
-        # #     self.a = 1.5
-        # #     self.b = 0.5
-        # elif mean_av < 127 :
+        if mean_av >= 127:
+            self.a = 1
+            self.b = 0.5
+        # elif max_pix > 240 and mean_av < 127 and mean_av <= 220: 
         #     self.a = 1.5
         #     self.b = 0.5
-        # elif max_pix > 240 and mean_av > 180 :
-        #     self.a = 0.9
-        #     self.b = 0.4
-        # else :
-        #     print ("fuck")
+        elif mean_av <= 127 and mean_av >= 31:
+            self.a = 1.1
+            self.b = 0.5
+        elif mean_av <= 70:
+            self.a = 1.5
+            self.b = 0.5
+
+        else :
+            print ("fuck")
         return mean_av, max_pix
         
     def calc_scalar(self, lumunosisty, intensity): 
@@ -158,9 +169,13 @@ class homomorphic():
         inverse_sigmoid = ()
         return self
     
-    def bring_the_light(self) : 
-        
-        return self 
+    def image_kernel(self, image) :
+        w,h = image.size
+        w_center = w/2
+        h_center = h/2
+        # print (w,h)
+        # print (w_center, h_center)
+    
 
 if __name__=='__main__':
     config_normal= {'a':1,'b':0.5,'cutoff':800}
@@ -168,14 +183,15 @@ if __name__=='__main__':
     config_lightaf = {'a':0.7,'b':0.3,'cutoff':30}
     config_config = {"normal": config_normal, "dark": config_dark, "light": config_lightaf}
     homo = homomorphic(config_dark)
-    path1 = 'C:/Users/roni/Desktop/Project/BiksTurePy/Dataset/images/00002/00000_00000.ppm'
-    path2 = 'C:/Users/roni/Desktop/Project/BiksTurePy/Dataset/images/00002/00074_00013.ppm'
+    path2 = 'C:/Users/roni/Desktop/Project/BiksTurePy/Dataset/images/00011/00001_00024.ppm'
+    path1 = 'C:/Users/roni/Desktop/Project/BiksTurePy/Dataset/images/00011/00010_00029.ppm'
     img_light = Image.open(path1)
     img_dark = Image.open(path2)
     print ('Dark Image')
     homo.homofy(img_dark).show()
     print ('Light Image')
     homo.homofy(img_light).show()
+    
     # homo.homofy(img).save('C:/Users/jeppe/Desktop/Coroni_wrong/res.png')
 
 
