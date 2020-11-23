@@ -12,10 +12,8 @@ def rename_folder(bjarke_dumb, c, rn):
   try:
       os.rename(bjarke_dumb + "/" + 'Testing' + "/" + str(c), bjarke_dumb + "/" + "Testing" + "/" + str(rn))
       os.rename(bjarke_dumb + "/" + "Training" + "/" + str(c), bjarke_dumb + "/" + "Training" + "/" + str(rn))
-  except Exception as e:
-      print(bjarke_dumb + "/" + 'Testing' + "/" + str(c))
-      print(bjarke_dumb + "/" + "Testing" + "/" + str(rn))
-      print('Error in rename.', {e})
+  except:
+      print('Error in rename.')
 
 # Move files
 def move_files(files, bjarke_dumb, c, tFile):
@@ -51,10 +49,18 @@ def add_folder(bjarke_dumb, tdir, c):
   # except:
   #   print("ERROR")
 
+# Method to make temporary folder
+def make_temporary_folder(bjarke_dumb, name):
+  if not os.path.isdir(bjarke_dumb + "/temp/" + name):
+    os.makedirs(bjarke_dumb + "/temp/" + name)
+
 # Split the list of classes
 def randomize_and_split_list(slist, bjarke_dumb, c, testing_percentage):
   #random.shuffle(slist)
   slist = numpy.array(slist)
+
+
+
   x_train, x_test = train_test_split(slist, test_size=testing_percentage)
 
   move_files(x_train, bjarke_dumb, c, 'Training')
@@ -86,9 +92,9 @@ def get_samples_from_folders(classes, testing_percentage, bjarke_dumb):
     split = []
     for j in classes[c]:
       tList = [j + "/" + s for s in fnmatch.filter(os.listdir(j), '*.ppm')]
+      fnmatch.filter(os.listdir(j), '*.ppm')
       for i in tList:
        split.append(i)
-
     if len(split) < 10:
       remove_folder(bjarke_dumb, c)
     else:
@@ -116,23 +122,23 @@ def find_and_edit(old, bjarke_dumb):
   with open(old + '/Classes_Description.csv', 'r') as readFile:
     reader = csv.reader(readFile)
     for row in reader:
+      if tmp_cell != '':
+        row[1] = tmp_cell
+        tmp_cell = ''
       if row[4] in classes:
-        if tmp_cell != "":
-          row[2] = tmp_cell
-          tmp_cell = ''
         row[4] = count
         count += 1
         lines.append(row)
       else:
         if row[4] == 'European class':
           lines.append(row)
-        if row[2] != '' and row[4] != 'European class':
-          tmp_cell = row[2]
+        if row[1] != '' and row[4] != 'European class':
+          tmp_cell = row[1]
         # row.remove()
   return lines
 
 def save_csv_file(bjarke_dumb, lines):
-  with open(bjarke_dumb + '/test.csv', 'w', newline='') as writeFile:
+  with open(bjarke_dumb + '/Classes_Description.csv', 'w', newline='') as writeFile:
     writer = csv.writer(writeFile)
     writer.writerows(lines)
 
@@ -144,11 +150,50 @@ def rename_folders(bjarke_dumb):
         rename_folder(bjarke_dumb,c,count)
         count += 1
 
+def get_file_from_class(new_path, folder_number):
+  return os.listdir(new_path + "/Training/" + folder_number)[0]
+
+def validate_file(old_path, class_id, filename):
+  exist1 = os.path.exists(old_path + "/Training/" + str(class_id).zfill(3) + "/" + str(filename))
+  exist2 = os.path.exists(old_path + "/Testing/" + str(class_id).zfill(3) + "/" + str(filename))
+  if not exist1 or not exist2:
+    return True
+  else:
+    return False
+
+def validate_folders(new_path, old_path):
+  new_classes = dict()
+
+  with open(new_path + '/Classes_Description.csv', 'r') as readFile:
+    reader = csv.reader(readFile)
+    count = 0
+    for row in reader:
+      if row[4] != 'European class':
+        c_picture = get_file_from_class(new_path, row[4])
+        new_classes[row[2]] = c_picture
+        count += 1
+        if len(new_classes) != count:
+          new_classes[row[2]] = c_picture
+      
+  with open(old_path + '/Classes_Description.csv', 'r') as readFile:
+    reader = csv.reader(readFile)
+    for row in reader:
+      if row[4] != 'European class':
+        if row[2] in new_classes:
+          if not validate_file(old_path, row[4], new_classes[row[2]]):
+            print('Duplicate in old dataset: ' + old_path + "/Training/" + str(row[4]).zfill(3) + "/" + str(new_classes[row[2]]))
+          else:
+            print('Correct class link.')
+
+
+
+
 def run_split_dataset(bjarke_dumb, testing_percentage, old):
   clist = get_classes_from_folders(bjarke_dumb)
   get_samples_from_folders(clist, testing_percentage, bjarke_dumb)
   save_csv_file(bjarke_dumb, find_and_edit(old, bjarke_dumb))
   rename_folders(bjarke_dumb)
+  validate_folders(bjarke_dumb, old)
 
 #path = r"C:/Users\bbalt/Desktop/European Traffic Sign Dataset"
 
