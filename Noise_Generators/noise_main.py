@@ -28,6 +28,7 @@ class Filter: #TODO create homophobic filter
     wh_set = None
     homo_set = None
     configuration = None
+    np_array_given = False
 
     def __init__(self,config:dict):
         """The to configure the default variables in perlin noise.
@@ -57,6 +58,9 @@ class Filter: #TODO create homophobic filter
         Returns:
             Image.Image: Image with filters on it
         """
+        if(type(img) == 'numpy.ndarray'):
+            img = Image.fromarray(img)
+            self.np_array_given = True
         old_size = img.size
         # img = changeImageSize(200,200,img)
         if(self.wh_set != None):
@@ -76,6 +80,11 @@ class Filter: #TODO create homophobic filter
             img = hom.homofy(img)
 
         img = changeImageSize(old_size[1],old_size[0],img)
+
+        if self.np_array_given:
+            img=np.asarray(img)
+            np_array_given = False
+            
         return img
 
     def __add__(self,img:Image.Image)->Image.Image:
