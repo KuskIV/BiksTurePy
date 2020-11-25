@@ -23,9 +23,52 @@ def load_homo_filters()->dict:
     S = premade_single_filter('snowhomo')
     D = premade_single_filter('dayhomo')
     N = premade_single_filter('nighthomo')
-    dict = [{'fog':F}, {'night':N},{'rain':R},{'snow':S},{'day':D},{'night':N}]
+    
     #dict = {'fog':F,'rain':R,'snow':S,'day':D,'night':N}
+    dict = [{'fog':F}, {'night':N},{'rain':R},{'snow':S},{'day':D},{'night':N}]
     return dict
+
+def load_lobster_filters()->dict:
+    FN = premade_single_filter('fog_night')
+    FS = premade_single_filter('fog_snow')
+    FR = premade_single_filter('fog_rain')
+    RN = premade_single_filter('rain_night')
+    SN = premade_single_filter('snow_night')
+    
+    dict = [{'fognight':FN}, {'fogsnow':FS},{'fograin':FR},{'rainnight':RN},{'snownight':SN}]
+    return dict
+
+def load_lobster_level_filters()->dict:
+    FL = premade_single_filter('fog_mild')
+    FM = premade_single_filter('fog_medium')
+    FH = premade_single_filter('fog_heavy')
+    RL = premade_single_filter('rain_mild')
+    RM = premade_single_filter('rain_medium')
+    RH = premade_single_filter('rain_heavy')
+    SL = premade_single_filter('snow_mild')
+    SM = premade_single_filter('snow_medium')
+    SH = premade_single_filter('snow_heavy')
+    NL = premade_single_filter('night_mild')
+    NM = premade_single_filter('night_medium')
+    NH = premade_single_filter('night_heavy')
+    
+    dict = [{'fogmild':FL},{'fogmedium':FM},{'fogheavy':FH},
+            {'rainmild':RL},{'rainmedium':RM},{'rainheavy':RH},
+            {'snowmild':SL},{'snowmedium':SM},{'snowheavy':SH},
+            {'nightmild':NL},{'nightmedium':NM},{'nightheavy':NH}
+        ]
+    return dict
+
+def create_dirs(base_ex, base_result, base_big_lobster, base_big_lobster_level):
+    create_dir(f"{get_paths('phase_one_csv')}/{base_ex}")
+    create_dir(f"{get_paths('phase_two_csv')}/{base_ex}")
+    
+    create_dir(f"{get_paths('phase_one_csv')}/{base_result}")
+    create_dir(f"{get_paths('phase_two_csv')}/{base_result}")
+
+    create_dir(f"{get_paths('phase_two_csv')}/{base_big_lobster}")
+    
+    create_dir(f"{get_paths('phase_two_csv')}/{base_big_lobster_level}")
 
 def apply_noise_evenly(img_batch, noises, batch_size):
     global_idx = 0
@@ -97,94 +140,161 @@ if __name__ == "__main__":
     ideal_path = get_ideal_paths()
     ideal_noise_path = get_ideal_noise_paths()
     
-    data_to_test_on = 1
+    run_base_experiments = False
+    run_ideal_experiments = False
+    run_lobster_experiments = True
+    run_lobster_level_experiments = True
+    
+    ideal_noise_worked = False
+    ideal_worked = False
     
     base_ex = "experiment_two_data"
     base_result = "experiment_two_result"
+    base_big_lobster = "experiment_big_lobster"
+    base_big_lobster_level = "experiment_big_lobster_level"
     
-    create_dir(f"{get_paths('phase_one_csv')}/{base_ex}")
-    create_dir(f"{get_paths('phase_two_csv')}/{base_ex}")
-    
-    create_dir(f"{get_paths('phase_one_csv')}/{base_result}")
-    create_dir(f"{get_paths('phase_two_csv')}/{base_result}")
+    create_dirs(base_ex, base_result, base_big_lobster, base_big_lobster_level)
 
+    data_to_test_on = 1
+    
     errors = []
     # TODO train the models 5 times and take average of the fitdata
 
+    if run_base_experiments:
+        try:
+            baseline_folder = "experiment_baseline"
+            ex_folder = get_ex_folder(baseline_folder, base_ex)
+            introduce_experiment(baseline_folder)
+            ex_one(test_path, train_path, folder_extension=ex_folder, data_to_test_on=data_to_test_on)
+            ex_two_eval_noise(test_path, ex_folder, data_to_test_on=data_to_test_on)
+        except:
+            print("ERROR IN EXPERIMENT 'TRAIN ON BASELINE'")
+            e = sys.exc_info()
+            print(e)
+            errors.append(e)
 
-    try:
-        baseline_folder = "experiment_baseline"
+        try:
+            norm_folder = "experiment_two_eval_norm"
+            ex_folder = get_ex_folder(norm_folder, base_ex)
+            introduce_experiment(norm_folder)
+            ex_two_eval_norm(test_path, train_path, folder_extension=ex_folder, data_to_test_on=data_to_test_on)
+            ex_two_eval_noise(test_path, ex_folder, get_models=get_satina_gains_model_norm_object_list, data_to_test_on=data_to_test_on)
+        except:
+            print("ERROR IN EXPERIMENT 'TRAIN ON NORM'")
+            e = sys.exc_info()
+            print(e)
+            errors.append(e)
         
-        ex_folder = get_ex_folder(baseline_folder, base_ex)
-        introduce_experiment(baseline_folder)
-        ex_one(test_path, train_path, folder_extension=ex_folder, data_to_test_on=data_to_test_on)
-        ex_two_eval_noise(test_path, ex_folder, data_to_test_on=data_to_test_on)
-    except:
-        print("ERROR IN EXPERIMENT 'TRAIN ON BASELINE'")
-        e = sys.exc_info()
-        print(e)
-        errors.append(e)
-
-    try:
-        norm_folder = "experiment_two_eval_norm"
-        ex_folder = get_ex_folder(norm_folder, base_ex)
-        introduce_experiment(norm_folder)
-        ex_two_eval_norm(test_path, train_path, folder_extension=ex_folder, data_to_test_on=data_to_test_on)
-        ex_two_eval_noise(test_path, ex_folder, get_models=get_satina_gains_model_norm_object_list, data_to_test_on=data_to_test_on)
-    except:
-        print("ERROR IN EXPERIMENT 'TRAIN ON NORM'")
-        e = sys.exc_info()
-        print(e)
-        errors.append(e)
-    
-    try:
-        homo_folder = "experiment_two_eval_homo"
-        ex_folder = get_ex_folder(homo_folder, base_ex)
-        introduce_experiment(homo_folder)
-        # ex_one(test_path, train_path, folder_extension=homo_folder, data_to_test_on=data_to_test_on, model_paths=homo_path, noise_tuple=get_fog_twenty_tuple())
-        ex_one(homo_test_path, homo_train_path, folder_extension=ex_folder, data_to_test_on=data_to_test_on, model_paths=homo_path, noise_tuple=get_fog_twenty_tuple())
-        ex_two_eval_noise(homo_test_path, ex_folder, data_to_test_on=data_to_test_on, model_paths=homo_path, filter_method=load_homo_filters)
-    except:
-        print("ERROR IN EXPERIMENT 'TRAIN ON HOMO'")
-        e = sys.exc_info()
-        print(e)
-        errors.append(e)
-    
-    try:
-        noise_folder = "experiment_two_eval_noise"
-        ex_folder = get_ex_folder(noise_folder, base_ex)
-        introduce_experiment(noise_folder)
-        ex_one(noise_test_path, noise_train_path, folder_extension=ex_folder, model_paths=noise_paths, data_to_test_on=data_to_test_on)
-        ex_two_eval_noise(test_path, ex_folder, model_paths=noise_paths, data_to_test_on=data_to_test_on)
-    except:
-        print("ERROR IN EXPERIMENT 'TRAIN ON NOISE'")
-        e = sys.exc_info()
-        print(e)
-        errors.append(e)
-
-    try:
-        ideal_folder = "experiment_two_eval_ideal"
-        ex_folder = get_ex_folder(ideal_folder, base_result)
-        introduce_experiment(ideal_folder)
-        ex_two_eval_norm(homo_test_path, homo_train_path, folder_extension=ex_folder, data_to_test_on=data_to_test_on, model_paths=ideal_path)
-        ex_two_eval_noise(homo_test_path, ex_folder, get_models=get_satina_gains_model_norm_object_list, data_to_test_on=data_to_test_on, model_paths=ideal_path, filter_method=load_homo_filters)
-    except Exception as e:
-        print("ERROR IN EXPERIMENT 'TRAIN ON IDEAL'")
-        e = sys.exc_info()
-        print(e)
-        errors.append(e)
+        try:
+            homo_folder = "experiment_two_eval_homo"
+            ex_folder = get_ex_folder(homo_folder, base_ex)
+            introduce_experiment(homo_folder)
+            # ex_one(test_path, train_path, folder_extension=homo_folder, data_to_test_on=data_to_test_on, model_paths=homo_path, noise_tuple=get_fog_twenty_tuple())
+            ex_one(homo_test_path, homo_train_path, folder_extension=ex_folder, data_to_test_on=data_to_test_on, model_paths=homo_path, noise_tuple=get_fog_twenty_tuple())
+            ex_two_eval_noise(homo_test_path, ex_folder, data_to_test_on=data_to_test_on, model_paths=homo_path, filter_method=load_homo_filters)
+        except:
+            print("ERROR IN EXPERIMENT 'TRAIN ON HOMO'")
+            e = sys.exc_info()
+            print(e)
+            errors.append(e)
         
-    try:
-        ideal_noise_folder = "experiment_two_eval_idealnoise"
-        ex_folder = get_ex_folder(ideal_noise_folder, base_result)
-        introduce_experiment(ideal_noise_folder)
-        ex_two_eval_norm(ideal_noise_test_path, ideal_noise_train_path, folder_extension=ex_folder, data_to_test_on=data_to_test_on, model_paths=ideal_noise_path)
-        ex_two_eval_noise(homo_test_path, ex_folder, get_models=get_satina_gains_model_norm_object_list, data_to_test_on=data_to_test_on, model_paths=ideal_noise_path, filter_method=load_homo_filters)
-    except Exception as e:
-        print("ERROR IN EXPERIMENT 'TRAIN ON IDEAL'")
-        e = sys.exc_info()
-        print(e)
-        errors.append(e)
+        try:
+            noise_folder = "experiment_two_eval_noise"
+            ex_folder = get_ex_folder(noise_folder, base_ex)
+            introduce_experiment(noise_folder)
+            ex_one(noise_test_path, noise_train_path, folder_extension=ex_folder, model_paths=noise_paths, data_to_test_on=data_to_test_on)
+            ex_two_eval_noise(test_path, ex_folder, model_paths=noise_paths, data_to_test_on=data_to_test_on)
+        except:
+            print("ERROR IN EXPERIMENT 'TRAIN ON NOISE'")
+            e = sys.exc_info()
+            print(e)
+            errors.append(e)
+
+    if run_ideal_experiments:
+        try:
+            ideal_folder = "experiment_two_eval_ideal"
+            ex_folder = get_ex_folder(ideal_folder, base_result)
+            introduce_experiment(ideal_folder)
+            ex_two_eval_norm(homo_test_path, homo_train_path, folder_extension=ex_folder, data_to_test_on=data_to_test_on, model_paths=ideal_path)
+            ex_two_eval_noise(homo_test_path, ex_folder, get_models=get_satina_gains_model_norm_object_list, data_to_test_on=data_to_test_on, model_paths=ideal_path, filter_method=load_homo_filters)
+            ideal_worked = True
+        except Exception as e:
+            print("ERROR IN EXPERIMENT 'TRAIN ON IDEAL'")
+            e = sys.exc_info()
+            print(e)
+            errors.append(e)
+            
+        try:
+            ideal_noise_folder = "experiment_two_eval_idealnoise"
+            ex_folder = get_ex_folder(ideal_noise_folder, base_result)
+            introduce_experiment(ideal_noise_folder)
+            ex_two_eval_norm(ideal_noise_test_path, ideal_noise_train_path, folder_extension=ex_folder, data_to_test_on=data_to_test_on, model_paths=ideal_noise_path)
+            ex_two_eval_noise(homo_test_path, ex_folder, get_models=get_satina_gains_model_norm_object_list, data_to_test_on=data_to_test_on, model_paths=ideal_noise_path, filter_method=load_homo_filters)
+            ideal_noise_worked = True
+        except Exception as e:
+            print("ERROR IN EXPERIMENT 'TRAIN ON IDEAL'")
+            e = sys.exc_info()
+            print(e)
+            errors.append(e)
+
+    if run_lobster_experiments:
+        try:
+            if ideal_worked or not run_ideal_experiments:
+                ideal_lobster_folder = "experiment_two_big_lobster_ideal"
+                ex_folder = get_ex_folder(ideal_lobster_folder, base_big_lobster)
+                introduce_experiment(ideal_lobster_folder)
+                ex_two_eval_noise(homo_test_path, ex_folder, get_models=get_satina_gains_model_norm_object_list, data_to_test_on=data_to_test_on, model_paths=ideal_path, filter_method=load_lobster_filters)
+            else:
+                print("---\nWARNING: experiment lobster_ideal will not run since an error occured when training the model\n---")
+        except Exception as e:
+            print("ERROR IN EXPERIMENT 'TRAIN ON IDEAL LOBSTER'")
+            e = sys.exc_info()
+            print(e)
+            errors.append(e)
+        
+        try:
+            if ideal_worked or not run_ideal_experiments:
+                noise_lobster_folder = "experiment_two_big_lobster_noise"
+                ex_folder = get_ex_folder(noise_lobster_folder, base_big_lobster)
+                introduce_experiment(noise_lobster_folder)
+                ex_two_eval_noise(homo_test_path, ex_folder, get_models=get_satina_gains_model_norm_object_list, data_to_test_on=data_to_test_on, model_paths=ideal_noise_path, filter_method=load_lobster_filters)
+            else:
+                print("---\nWARNING: experiment lobster_noise will not run since an error occured when training the model\n---")
+        except Exception as e:
+            print("ERROR IN EXPERIMENT 'TRAIN ON NOISE LOBSTER'")
+            e = sys.exc_info()
+            print(e)
+            errors.append(e)
+    
+    
+    if run_lobster_level_experiments:
+        try:
+            if ideal_worked or not run_ideal_experiments:
+                ideal_lobster_level_folder = "experiment_two_big_lobster_ideal_level"
+                ex_folder = get_ex_folder(ideal_lobster_level_folder, base_big_lobster_level)
+                introduce_experiment(ideal_lobster_level_folder)
+                ex_two_eval_noise(homo_test_path, ex_folder, get_models=get_satina_gains_model_norm_object_list, data_to_test_on=data_to_test_on, model_paths=ideal_path, filter_method=load_lobster_level_filters)
+            else:
+                print("---\nWARNING: experiment lobster_ideal will not run since an error occured when training the model\n---")
+        except Exception as e:
+            print("ERROR IN EXPERIMENT 'TRAIN ON IDEAL LOBSTER'")
+            e = sys.exc_info()
+            print(e)
+            errors.append(e)
+        
+        try:
+            if ideal_worked or not run_ideal_experiments:
+                noise_lobster_level_folder = "experiment_two_big_lobster_noise_level"
+                ex_folder = get_ex_folder(noise_lobster_level_folder, base_big_lobster_level)
+                introduce_experiment(noise_lobster_level_folder)
+                ex_two_eval_noise(homo_test_path, ex_folder, get_models=get_satina_gains_model_norm_object_list, data_to_test_on=data_to_test_on, model_paths=ideal_noise_path, filter_method=load_lobster_level_filters)
+            else:
+                print("---\nWARNING: experiment lobster_noise will not run since an error occured when training the model\n---")
+        except Exception as e:
+            print("ERROR IN EXPERIMENT 'TRAIN ON NOISE LOBSTER'")
+            e = sys.exc_info()
+            print(e)
+            errors.append(e)
 
     sum_merged_files('phase_two/csv_output')
 

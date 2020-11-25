@@ -191,7 +191,6 @@ def initailize_initial_values(folder_extension:str, filter_method)->tuple:
         tuple: [retunes a tuple of the filters and the basepath]
     """
     filters = filter_method()
-    filter_names = []
     base_path = get_paths('phase_two_csv') if folder_extension == None else f"{get_paths('phase_two_csv')}/{folder_extension}"
     if not folder_extension == None and not os.path.exists(base_path):
         os.mkdir(base_path)
@@ -248,6 +247,20 @@ def generate_csv_files_for_phase2(filter_names:list, h5_obj:object, base_path:st
     merge_csv(list(dict.fromkeys(filter_names)), merge_csv_path, h5_obj.images_in_classes, [x.get_csv_name() for x in model_object_list], base_path)
     sum_phase_2_files(base_path)
 
+def introduce_experiment_properties(filters, base_path, test_path, model_object_list, folder_extension, data_to_test_on):
+    print("--------------------------")
+    print(f"EXPERIMENT '{folder_extension}' HAS THE FOLLOWING PROPERTIES:")
+    print(f"  - The filters include:")
+    for key in filters:
+        print(f"    - {list(key.keys())[0]}")
+    print(f"  - Images will be from: {test_path}")
+    print(f"  - CSV data will be saved in:\n      {base_path}")
+    print(f"  - The models will be from:")
+    for model in model_object_list:
+        print(f"    - {model.path}")
+    print(f"  - Running on 1 / {data_to_test_on} data")
+    print("--------------------------")
+
 def ex_two_eval_noise(test_path:str, folder_extension:str, get_models:list=get_satina_gains_model_object_list, training_split:int=1, model_paths:str=None, data_to_test_on=1, filter_method=load_filters)->None:
     """This function enables the evalutation of a tensor flow models using some filters and images from teh models training set.
 
@@ -261,6 +274,7 @@ def ex_two_eval_noise(test_path:str, folder_extension:str, get_models:list=get_s
     """
     filters, base_path = initailize_initial_values(folder_extension, filter_method) #TODO seems folder_exstension is never used for anything, remove or identify use
     h5_obj, model_object_list = get_h5_with_models(civp(test_path),training_split=training_split,get_models=get_models, model_paths=model_paths)
+    introduce_experiment_properties(filters, base_path, test_path, model_object_list, folder_extension, data_to_test_on)
     filter_names = evaluate_models_on_noise(filters, model_object_list, h5_obj, base_path, data_to_test_on=data_to_test_on) #TODO seems data_to_test_on is never used remove or identify use
     generate_csv_files_for_phase2(filter_names,h5_obj,base_path, model_object_list) #TODO move all csv related function into this method, speceficly the one from 2_1    
     
