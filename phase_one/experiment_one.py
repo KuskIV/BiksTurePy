@@ -27,7 +27,7 @@ from plot.sum_for_model import sum_for_model, sum_for_class_accuracy, sum_summed
 from error_handler import check_if_valid_path, custom_error_check
 
 
-def find_ideal_model(h5_obj:object, model_object_list:list, epochs:int=10, lazy_split:int=10, save_models:bool=False, data_to_test_on=1)->None:
+def find_ideal_model(h5_obj:object, model_object_list:list, epochs:int=10, lazy_split:int=10, save_models:bool=False, data_to_test_on=1, noise_tuple=None)->None:
     """Will based on a list of model objects, a h5py file an a max epochs amount, train the models and record the accracy in order to find the
     best model
 
@@ -54,7 +54,7 @@ def find_ideal_model(h5_obj:object, model_object_list:list, epochs:int=10, lazy_
     for i in range(len(model_object_list)):
         if model_object_list[i].run_on_epoch(epochs):
             print(f"\n\nTraining model {i + 1} / {len(model_object_list)} for part in dataset {1} / {lazy_split}")
-            validation_loss, validation_accuracy = train_and_eval_models_for_size(model_object_list[i].img_shape, model_object_list[i].model, train_images, train_labels, test_images, test_labels, epochs)
+            validation_loss, validation_accuracy = train_and_eval_models_for_size(model_object_list[i].img_shape, model_object_list[i].model, train_images, train_labels, test_images, test_labels, epochs, noise_tuple=noise_tuple)
             
             for j in range(len(validation_loss)):
                 try:
@@ -246,7 +246,7 @@ def iterate_and_sum(model_object_list, extension, sum_path, image_dataset, lable
 def verify_class_amounts(class_in_test, class_int_train):
     return class_in_test == class_int_train
 
-def run_experiment_one(lazy_split:int, train_h5_path:str, test_h5_path:str, get_models, epochs_end:int=10, dataset_split:int=0.7, folder_extension = None, model_paths=None, data_to_test_on=1)->None:
+def run_experiment_one(lazy_split:int, train_h5_path:str, test_h5_path:str, get_models, epochs_end:int=10, dataset_split:int=0.7, folder_extension = None, model_paths=None, data_to_test_on=1, noise_tuple=None)->None:
     """This method runs experiment one, and is done in several steps:
             1. For each epoch to train for, the models are trained. After each epoch, the accuracy is saved on the object.
             2. When the training is done, all the data is saved in csv files as (Epochs,Resolution,Class,Class_Acuracy,Total_in_Class)
@@ -282,7 +282,7 @@ def run_experiment_one(lazy_split:int, train_h5_path:str, test_h5_path:str, get_
 
     model_object_list = get_models(h5_train.class_in_h5, model_paths=model_paths)
 
-    find_ideal_model(h5_train, model_object_list, lazy_split=lazy_split, epochs=epochs_end, save_models=True, data_to_test_on=data_to_test_on)
+    find_ideal_model(h5_train, model_object_list, lazy_split=lazy_split, epochs=epochs_end, save_models=True, data_to_test_on=data_to_test_on, noise_tuple=noise_tuple)
 
     print(f"\n------------------------\nTraining done. Now evaluation will be made.\n\n")
 

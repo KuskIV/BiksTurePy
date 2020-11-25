@@ -1,17 +1,71 @@
 
-from global_paths import get_h5_test, get_h5_train, get_h5_test_noise, get_h5_train_noise, get_satina_model_mode_path_noise, get_satina_model_median_path_noise, get_satina_model_avg_path_noise, get_satina_model_mode_path_homo, get_satina_model_median_path_homo, get_satina_model_avg_path_homo, get_h5_train_homo, get_h5_test_homo
+from global_paths import get_paths, get_h5_test, get_h5_train, get_h5_test_noise, get_h5_train_noise, get_h5_train_homo, get_h5_test_homo
 from phase_one.main_phase_one import ex_two_eval_norm, ex_one
 from phase_two.main_phase_two import ex_two_eval_noise
 from phase_one.find_ideal_model import get_satina_gains_model_norm_object_list
 from phase_two.sum_phase_two import sum_merged_files
+from Noise_Generators.noise_main import premade_single_filter
 import sys
 import time
+import math
+from PIL import Image
+import numpy as np
+import os
+import shutil
+
+def create_dir(path):
+    if not os.path.exists(path):
+        os.mkdir(path)
+
+def load_homo_filters()->dict:
+    F = premade_single_filter('foghomo')
+    R = premade_single_filter('rainhomo')
+    S = premade_single_filter('snowhomo')
+    D = premade_single_filter('dayhomo')
+    N = premade_single_filter('nighthomo')
+    dict = [{'fog':F}, {'night':N},{'rain':R},{'snow':S},{'day':D},{'night':N}]
+    #dict = {'fog':F,'rain':R,'snow':S,'day':D,'night':N}
+    return dict
+
+def apply_noise_evenly(img_batch, noises, batch_size):
+    global_idx = 0
+    aug_bs = batch_size // len(noises)
+    
+    for i, noise in enumerate(noises):
+        for img in img_batch[i*aug_bs:i+1*aug_bs]:
+            img_batch[global_idx] = noise + img
+            global_idx += 1
+
+def get_noise_evenly_tuple():
+    return apply_noise_evenly, premade_single_filter('NOT IMPLEMETED')
+
+def apply_got_twenty(img_batch, noise, batch_size):
+    # global_idx = 0
+    aug_bs = math.ceil((batch_size / 100) * 20)
+    img_batch[:aug_bs] = noise * img_batch[:aug_bs]
+    return img_batch
+    # for img in img_batch[:aug_bs]:
+    #     img_batch[global_idx] = noise + img
+    #     global_idx += 1
+
+def get_fog_twenty_tuple():
+    return apply_got_twenty, premade_single_filter('night'), True
 
 def get_noise_paths():
-    return [get_satina_model_median_path_noise(), get_satina_model_avg_path_noise(), get_satina_model_mode_path_noise()]
+    return [get_paths('satina_median_noise'), get_paths('satina_avg_noise'), get_paths('satina_mode_noise')]
+    # return [get_satina_model_median_path_noise(), get_satina_model_avg_path_noise(), get_satina_model_mode_path_noise()]
 
 def get_homo_paths():
-    return [get_satina_model_median_path_homo(), get_satina_model_avg_path_homo(), get_satina_model_mode_path_homo()]
+    return [get_paths('satina_median_homo'), get_paths('satina_avg_homo'), get_paths('satina_mode_homo')]
+    # return [get_satina_model_median_path_homo(), get_satina_model_avg_path_homo(), get_satina_model_mode_path_homo()]
+
+def get_ideal_paths():
+    return [get_paths('satina_median_ideal'), get_paths('satina_avg_ideal'), get_paths('satina_mode_ideal')]
+    # return [get_satina_model_median_path_ideal(), get_satina_model_avg_path_ideal(), get_satina_model_mode_path_ideal()]
+
+def get_ideal_noise_paths():
+    return [get_paths('satina_median_idealnoise'), get_paths('satina_avg_idealnoise'), get_paths('satina_mode_idealnoise')]
+    # return [get_satina_model_median_path_ideal_noise(), get_satina_model_avg_path_ideal_noise(), get_satina_model_mode_path_ideal_noise()]
 
 def introduce_experiment(folder_name):
     try:
@@ -21,6 +75,9 @@ def introduce_experiment(folder_name):
         print("-----------------------")
     except TypeError:
         print("jeppe pls fuck off, dont exploit my methods you monster")
+
+def get_ex_folder(baseline_folder, base):
+    return f"{base}/{baseline_folder}"
 
 if __name__ == "__main__":
     test_path = get_h5_test()
@@ -32,18 +89,36 @@ if __name__ == "__main__":
     homo_test_path = get_h5_test_homo()
     homo_train_path = get_h5_train_homo()
     
+    ideal_noise_test_path = get_paths('h5_test_ideal_noise')
+    ideal_noise_train_path = get_paths('h5_train_ideal_noise')
+    
     noise_paths = get_noise_paths()
     homo_path = get_homo_paths()
+    ideal_path = get_ideal_paths()
+    ideal_noise_path = get_ideal_noise_paths()
     
     data_to_test_on = 1
     
+    base_ex = "experiment_two_data"
+    base_result = "experiment_two_result"
+    
+    create_dir(f"{get_paths('phase_one_csv')}/{base_ex}")
+    create_dir(f"{get_paths('phase_two_csv')}/{base_ex}")
+    
+    create_dir(f"{get_paths('phase_one_csv')}/{base_result}")
+    create_dir(f"{get_paths('phase_two_csv')}/{base_result}")
+
     errors = []
+    # TODO train the models 5 times and take average of the fitdata
+
 
     try:
         baseline_folder = "experiment_baseline"
+        
+        ex_folder = get_ex_folder(baseline_folder, base_ex)
         introduce_experiment(baseline_folder)
-        ex_one(test_path, train_path, folder_extension=baseline_folder, data_to_test_on=data_to_test_on)
-        ex_two_eval_noise(test_path, baseline_folder, data_to_test_on=data_to_test_on)
+        ex_one(test_path, train_path, folder_extension=ex_folder, data_to_test_on=data_to_test_on)
+        ex_two_eval_noise(test_path, ex_folder, data_to_test_on=data_to_test_on)
     except:
         print("ERROR IN EXPERIMENT 'TRAIN ON BASELINE'")
         e = sys.exc_info()
@@ -52,9 +127,10 @@ if __name__ == "__main__":
 
     try:
         norm_folder = "experiment_two_eval_norm"
+        ex_folder = get_ex_folder(norm_folder, base_ex)
         introduce_experiment(norm_folder)
-        ex_two_eval_norm(test_path, train_path, folder_extension=norm_folder, data_to_test_on=data_to_test_on)
-        ex_two_eval_noise(test_path, norm_folder, get_models=get_satina_gains_model_norm_object_list, data_to_test_on=data_to_test_on)
+        ex_two_eval_norm(test_path, train_path, folder_extension=ex_folder, data_to_test_on=data_to_test_on)
+        ex_two_eval_noise(test_path, ex_folder, get_models=get_satina_gains_model_norm_object_list, data_to_test_on=data_to_test_on)
     except:
         print("ERROR IN EXPERIMENT 'TRAIN ON NORM'")
         e = sys.exc_info()
@@ -63,9 +139,11 @@ if __name__ == "__main__":
     
     try:
         homo_folder = "experiment_two_eval_homo"
+        ex_folder = get_ex_folder(homo_folder, base_ex)
         introduce_experiment(homo_folder)
-        ex_one(homo_test_path, homo_train_path, folder_extension=homo_folder, data_to_test_on=data_to_test_on, model_paths=homo_path)
-        ex_two_eval_noise(homo_test_path, homo_folder, data_to_test_on=data_to_test_on, model_paths=homo_path)
+        # ex_one(test_path, train_path, folder_extension=homo_folder, data_to_test_on=data_to_test_on, model_paths=homo_path, noise_tuple=get_fog_twenty_tuple())
+        ex_one(homo_test_path, homo_train_path, folder_extension=ex_folder, data_to_test_on=data_to_test_on, model_paths=homo_path, noise_tuple=get_fog_twenty_tuple())
+        ex_two_eval_noise(homo_test_path, ex_folder, data_to_test_on=data_to_test_on, model_paths=homo_path, filter_method=load_homo_filters)
     except:
         print("ERROR IN EXPERIMENT 'TRAIN ON HOMO'")
         e = sys.exc_info()
@@ -74,11 +152,36 @@ if __name__ == "__main__":
     
     try:
         noise_folder = "experiment_two_eval_noise"
+        ex_folder = get_ex_folder(noise_folder, base_ex)
         introduce_experiment(noise_folder)
-        ex_one(noise_test_path, noise_train_path, folder_extension=noise_folder, model_paths=noise_paths, data_to_test_on=data_to_test_on)
-        ex_two_eval_noise(test_path, noise_folder, model_paths=noise_paths, data_to_test_on=data_to_test_on)
+        ex_one(noise_test_path, noise_train_path, folder_extension=ex_folder, model_paths=noise_paths, data_to_test_on=data_to_test_on)
+        ex_two_eval_noise(test_path, ex_folder, model_paths=noise_paths, data_to_test_on=data_to_test_on)
     except:
         print("ERROR IN EXPERIMENT 'TRAIN ON NOISE'")
+        e = sys.exc_info()
+        print(e)
+        errors.append(e)
+
+    try:
+        ideal_folder = "experiment_two_eval_ideal"
+        ex_folder = get_ex_folder(ideal_folder, base_result)
+        introduce_experiment(ideal_folder)
+        ex_two_eval_norm(homo_test_path, homo_train_path, folder_extension=ex_folder, data_to_test_on=data_to_test_on, model_paths=ideal_path)
+        ex_two_eval_noise(homo_test_path, ex_folder, get_models=get_satina_gains_model_norm_object_list, data_to_test_on=data_to_test_on, model_paths=ideal_path, filter_method=load_homo_filters)
+    except Exception as e:
+        print("ERROR IN EXPERIMENT 'TRAIN ON IDEAL'")
+        e = sys.exc_info()
+        print(e)
+        errors.append(e)
+        
+    try:
+        ideal_noise_folder = "experiment_two_eval_idealnoise"
+        ex_folder = get_ex_folder(ideal_noise_folder, base_result)
+        introduce_experiment(ideal_noise_folder)
+        ex_two_eval_norm(ideal_noise_test_path, ideal_noise_train_path, folder_extension=ex_folder, data_to_test_on=data_to_test_on, model_paths=ideal_noise_path)
+        ex_two_eval_noise(homo_test_path, ex_folder, get_models=get_satina_gains_model_norm_object_list, data_to_test_on=data_to_test_on, model_paths=ideal_noise_path, filter_method=load_homo_filters)
+    except Exception as e:
+        print("ERROR IN EXPERIMENT 'TRAIN ON IDEAL'")
         e = sys.exc_info()
         print(e)
         errors.append(e)

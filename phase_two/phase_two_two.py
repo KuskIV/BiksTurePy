@@ -78,15 +78,21 @@ def load_homo_filters():
     H = premade_single_filter('std_homo')
     return {'std_homo':H}
 
-def load_filters():
+def load_fog_filters():
     F = premade_single_filter('fog')
-    R = premade_single_filter('rain')
-    S = premade_single_filter('snow')
-    D = premade_single_filter('day')
-    N = premade_single_filter('night')
-    #dict = [{'fog':F}, {'night':N},{'rain':R},{'snow':S},{'day':D},{'night':N}]
     dict = {'fog':F}
     return dict
+
+def load_filters():
+    F = premade_single_filter('foghomo')
+    R = premade_single_filter('rainhomo')
+    S = premade_single_filter('snowhomo')
+    D = premade_single_filter('dayhomo')
+    N = premade_single_filter('nighthomo')
+    dict = {'fog':F,'night':N,'rain':R,'snow':S,'day':D,'night':N}
+    # dict = {'fog':F}
+    return dict
+
 
 def add_noise(imgs, noise_filter, image_size, chungus, keep_original):
     pil_imgs = convert_between_pill_numpy(imgs[0] * 255,mode='numpy->pil') #converts numpy_img list to pill imges in a list
@@ -112,7 +118,7 @@ def train_model(data_set, model_object, epochs = 10, save_model = True):
     train_and_eval_models_for_size(model_object.img_shape ,model_object.model,train_imgs,train_lables,test_imgs,test_lables,epochs=epochs)#!High potentiel to be patialy deprecated, and should propely be updated the a new form
 
 def generate_noise_dataset(img_shape, keep_original, data_split=1):
-    filters = load_filters()
+    filters = load_fog_filters()
     generate_train_set(data_split, filters, img_shape, keep_original)
     generate_test_set(data_split, filters, img_shape, keep_original)
 
@@ -121,22 +127,16 @@ def generate_homo_dataset(img_shape, keep_original, data_split=1):
     generate_train_set(data_split, filters,img_shape, keep_original, chungus=0, train_noise_key='train_set_homo', h5_noise_key='h5_train_homo')
     generate_test_set(data_split, filters, img_shape, keep_original, chungus=0, test_noise_key='test_set_homo', h5_noise_key='h5_test_homo')
 
+def generate_noise_homo_dataset(img_shape, keep_original, data_split=1):
+    filters = load_filters()
+    generate_train_set(data_split, filters,img_shape, keep_original, chungus=0, train_noise_key='train_set_ideal_noise', h5_noise_key='h5_train_ideal_noise')
+    generate_test_set(data_split, filters, img_shape, keep_original, chungus=0, test_noise_key='test_set_ideal_noise', h5_noise_key='h5_test_ideal_noise')
+
 def generate_datasets():
     img_shape = (200, 200)
     generate_homo_dataset(img_shape, False) 
-    # generate_noise_dataset(img_shape, True)
-
-def qucik_debug():#TODO insert params, these should idealy lead to a already generated dataset with applied noise
-    # #!All code blow this comment is propably deprecated as massive changes to the used classes have be made since, it was originaly written.
-    # h5_path = get_h5_train()
-    # training_split = 1
-    # h5_obj = h5_object(h5_path, training_split=training_split)
-    # model_object_list = get_satina_gains_model_object_list(h5_obj.class_in_h5)
-    # generat_dataset = True
-    # for model_object in model_object_list:
-    #     train_noise_model(model_object,training_split,load_filters(), generate_dataset=generat_dataset)
-    #     generat_dataset=False
-    pass
+    generate_noise_dataset(img_shape, True)
+    generate_noise_homo_dataset(img_shape, False)
 
 if __name__ == "__main__":
     generate_datasets()

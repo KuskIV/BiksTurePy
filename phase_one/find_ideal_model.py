@@ -7,7 +7,6 @@ from tqdm import tqdm
 from tqdm import trange
 import keras.backend as K
 
-
 from tensorflow.keras import datasets, layers, models
 import matplotlib.pyplot as plt
 import os.path
@@ -18,6 +17,7 @@ current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentfra
 parent_dir = os.path.dirname(current_dir)
 sys.path.insert(0, parent_dir)
 
+from phase_one.fit_model_on_batch import fit_model
 from error_handler import check_if_valid_path, custom_error_check
 from general_image_func import get_class_names, display_numpy_image                        # Not an error
 from Models.create_model import flatten_and_dense          # Not an error
@@ -293,7 +293,8 @@ def train_model(model:tf.python.keras.engine.sequential.Sequential,
                 train_labels:np.array,
                 val_images:np.array,
                 val_labels:np.array,
-                epochs:int)->None:
+                epochs:int,
+                noise_tuple)->None:
     """Method for using the data set on some input model
 
     Args:
@@ -319,9 +320,35 @@ def train_model(model:tf.python.keras.engine.sequential.Sequential,
         print(f"    - train images : {len(train_images)} - {len(train_labels)} : train lables")
         print(f"    - validation images : {len(val_images)} - {len(val_labels)} : validation lables")
         sys.exit()
+    
+    filter_names = []
 
-    initial_learning_rate = 0.001
+    # initial_learning_rate = 0.001 #TODO should be default (0.0001, maybe)
+    
+    # opt = tf.keras.optimizers.Adam(
+    #     learning_rate=initial_learning_rate, beta_1=0.9, beta_2=0.999, epsilon=1e-07, amsgrad=False, name='Adam'
+    # )
 
+
+    # model.compile(optimizer='adam',
+    #             loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+    #             metrics=['sparse_categorical_accuracy'])
+    
+    
+    # noise_method, noise_names, augmentation = noise_tuple
+    
+    
+    # try:
+    #     model, validation_loss, val_accuracy = fit_model(model, train_images, train_labels, val_images, val_labels, noise_names, monitor='val_loss',
+    #             epochs=100, restore_weights=False, apply_noise_method=noise_method, augmentation=augmentation)
+    # except Exception as e:
+    #     print(f"ERROR: {e}")
+    #     raise Exception
+    # # sys.exit()
+    # return validation_loss, val_accuracy
+
+    initial_learning_rate = 0.001 #TODO should be default (0.0001, maybe)
+    
     opt = tf.keras.optimizers.Adam(
         learning_rate=initial_learning_rate, beta_1=0.9, beta_2=0.999, epsilon=1e-07, amsgrad=False, name='Adam'
     )
@@ -334,8 +361,6 @@ def train_model(model:tf.python.keras.engine.sequential.Sequential,
                 loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
                 metrics=['sparse_categorical_accuracy'])
 
-    # test_images = test_images
-    # train_images = train_images
 
     def lr_exp_decay(epoch, lr):
         k = 0.1
@@ -363,6 +388,7 @@ def train_and_eval_models_for_size(
         test_images:np.array,
         test_labels:np.array,
         epochs=10,
+        noise_tuple=None
         )->None:
     """Trains and evaluates models based on the size of images used
 
@@ -390,7 +416,7 @@ def train_and_eval_models_for_size(
     print(size)
     print("---------------------\n")
 
-    validation_loss, validation_accuracy = train_model(model, reshaped_train_images, train_labels, reshaped_test_images, test_labels, epochs)
+    validation_loss, validation_accuracy = train_model(model, reshaped_train_images, train_labels, reshaped_test_images, test_labels, epochs, noise_tuple)
 
     print("\n---------------------")
     print("The test for this model is now done")
