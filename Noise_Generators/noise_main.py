@@ -58,11 +58,14 @@ class Filter: #TODO create homophobic filter
         Returns:
             Image.Image: Image with filters on it
         """
-        if(type(img) == 'numpy.ndarray'):
+        # if(type(img).__name__ == 'numpy.ndarray'):
+        if isinstance(img, np.ndarray):
+            img = img * 255.0
+            img = img.astype(np.uint8)
             img = Image.fromarray(img)
             self.np_array_given = True
         old_size = img.size
-        # img = changeImageSize(200,200,img)
+        img = changeImageSize(200,200,img)
         if(self.wh_set != None):
             wn =  weather(self.wh_set)
             img = wn.add_weather(img)
@@ -82,8 +85,9 @@ class Filter: #TODO create homophobic filter
         img = changeImageSize(old_size[1],old_size[0],img)
 
         if self.np_array_given:
-            img=np.asarray(img)
-            np_array_given = False
+            img=np.asarray(img.convert('RGB'))
+            img = img / 255.0
+            self.np_array_given = False
             
         return img
 
@@ -110,12 +114,19 @@ class Filter: #TODO create homophobic filter
         """
         returnList = []
 
-        done = len(imgs)
-        progress = trange(done, desc='mult stuff', leave=True)
+        if len(imgs) > 100:
+            done = len(imgs)
+            show_progress = True
+            progress = trange(done, desc='mult stuff', leave=True)
+        else:
+            show_progress = False
+            progress = range(len(imgs))
+        
         try:
             for i in progress:
-                progress.set_description(f"{i}/{done} multi done")
-                progress.refresh()
+                if show_progress:
+                    progress.set_description(f"{i}/{done} multi done")
+                    progress.refresh()
                 returnList.append(self + imgs[i])
             return returnList
         except Exception as e:
@@ -175,21 +186,21 @@ def apply_multiple_filters(Imgs:list,mode = 'rand', KeepOriginal:bool=True, filt
         try:
             for i in progress:
                 try:
-                    progress.set_description(f"{i+1} / {done} images has been processed")
+                    progress.set_description(f"{i+1} / {done} chunks has been processed")
                     progress.refresh()
                 except Exception as e:
                     print(f"ERROR: {e}, {done}")
+    
+                # for j in range(len(fil)):
 
-                for j in range(len(fil)):
-
-                    temp_list = fil[j][1]*images[indexes[i].start:indexes[i].stop]
-                    temptemp_list = lables[indexes[i].start:indexes[i].stop]
-                    for k in range(len(temp_list)):
-                        temp_list[k] = (temp_list[k],fil[j][0],temptemp_list[k])
-                        
-                    # lst = [(entry,fil[j][0],lables[0]) for entry in temp_list]
+                temp_list = fil[i][1]*images[indexes[i].start:indexes[i].stop]
+                temptemp_list = lables[indexes[i].start:indexes[i].stop]
+                for k in range(len(temp_list)):
+                    temp_list[k] = (temp_list[k],fil[i][0],temptemp_list[k])
                     
-                    result.extend(temp_list)
+                # lst = [(entry,fil[j][0],lables[0]) for entry in temp_list]
+                
+                result.extend(temp_list)
         except Exception as e:
             print(f"ERROR: {e}")
             raise Exception
@@ -258,7 +269,7 @@ def premade_single_filter(str:str)->Filter:
         config =  {'density':(0.03,0.14),'density_uniformity':(0.8,1.0),'drop_size':(0.3,0.4),'drop_size_uniformity':(0.1,0.5),'angle':(-15,15),'speed':(0.1,0.2),'blur':(0.001,0.001)}
         result = Filter({'wh_set':config})
     if str == 'rain_mild':
-        config =     config = {'density':(0.01,0.02),'density_uniformity':(0.7,1.0),'drop_size':(0.25,0.3),'drop_size_uniformity':(0.1,0.5),'angle':(-20,20),'speed':(0.1,0.15),'blur':(0.004,0.01)}
+        config = {'density':(0.01,0.02),'density_uniformity':(0.7,1.0),'drop_size':(0.25,0.3),'drop_size_uniformity':(0.1,0.5),'angle':(-20,20),'speed':(0.1,0.15),'blur':(0.004,0.01)}
         result = Filter({'wh_set':config})
     if str == 'rain_medium':
         config ={'density':(0.06,0.08),'density_uniformity':(0.7,1.0),'drop_size':(0.3,0.4),'drop_size_uniformity':(0.1,0.5),'angle':(-20,20),'speed':(0.1,0.15),'blur':(0.001,0.001)}
@@ -296,7 +307,52 @@ def premade_single_filter(str:str)->Filter:
     if str == 'std_homo':
         config = {'a':1,'b':0.5,'cutoff':800}
         result = Filter({'homo_set':config})
+    if str == 'foghomo':
+        config_h = {'a':1,'b':0.5,'cutoff':800}
+        config_f = {'octaves':8, 'persistence':0.3, 'lacunarity': 5, 'alpha': 0.4}
+        result = Filter({'fog_set':config_f,'homo_set':config_h})
+    if str == 'rainhomo':
+        config_h = {'a':1,'b':0.5,'cutoff':800}
+        config_r= {'density':(0.03,0.14),'density_uniformity':(0.8,1.0),'drop_size':(0.3,0.4),'drop_size_uniformity':(0.1,0.5),'angle':(-15,15),'speed':(0.1,0.2),'blur':(0.001,0.001)}
+        result = Filter({'wh_set':config_r,'homo_set':config_h})
+    if str == 'snowhomo':
+        config_h = {'a':1,'b':0.5,'cutoff':800}
+        config_s = {'density':(0.03,0.14),'density_uniformity':(0.8,1.0),'drop_size':(0.3,0.4),'drop_size_uniformity':(0.1,0.5),'angle':(-15,15),'speed':(0.1,0.2),'blur':(0.001,0.001),'mode':'snow'}
+        result = Filter({'wh_set':config_s,'homo_set':config_h})
+    if str == 'dayhomo':
+        config_h = {'a':1,'b':0.5,'cutoff':800}
+        config_d = {'factor':1.0}
+        result = Filter({'day_set':config_d,'homo_set':config_h})
+    if str == 'nighthomo':
+        config_h = {'a':1,'b':0.5,'cutoff':800}
+        config_n = {'factor':0.3}
+        result = Filter({'day_set':config_n,'homo_set':config_h})
+    if str == 'fog_night':
+        config_f = {'octaves':8, 'persistence':0.3, 'lacunarity': 5, 'alpha': 0.4}
+        config_n = {'factor':0.3}
+        result = Filter({'day_set':config_n,'fog_set':config_f})
+    if str == 'fog_day':
+        config_f = {'octaves':8, 'persistence':0.3, 'lacunarity': 5, 'alpha': 0.4}
+        config_n = {'factor':1.0}
+        result = Filter({'day_set':config_n,'fog_set':config_f})
+    if str == 'fog_rain':
+        config_f = {'octaves':8, 'persistence':0.3, 'lacunarity': 5, 'alpha': 0.4}
+        config_w = {'density':(0.03,0.14),'density_uniformity':(0.8,1.0),'drop_size':(0.3,0.4),'drop_size_uniformity':(0.1,0.5),'angle':(-15,15),'speed':(0.1,0.2),'blur':(0.001,0.001),'mode':'snow'}
+        result = Filter({'wh_set':config_w,'fog_set':config_f})
+    if str == 'fog_snow':
+        config_f = {'octaves':8, 'persistence':0.3, 'lacunarity': 5, 'alpha': 0.4}
+        config_w = {'density':(0.03,0.14),'density_uniformity':(0.8,1.0),'drop_size':(0.3,0.4),'drop_size_uniformity':(0.1,0.5),'angle':(-15,15),'speed':(0.1,0.2),'blur':(0.001,0.001),'mode':'snow'}
+        result = Filter({'wh_set':config_w,'fog_set':config_f})
+    if str == 'rain_night':
+        config_w = {'density':(0.03,0.14),'density_uniformity':(0.8,1.0),'drop_size':(0.3,0.4),'drop_size_uniformity':(0.1,0.5),'angle':(-15,15),'speed':(0.1,0.2),'blur':(0.001,0.001),'mode':'snow'}
+        config_n = {'factor':0.3}
+        result = Filter({'wh_set':config_w,'day_set':config_n})
+    if str == 'snow_night':
+        config_w = {'density':(0.03,0.14),'density_uniformity':(0.8,1.0),'drop_size':(0.3,0.4),'drop_size_uniformity':(0.1,0.5),'angle':(-15,15),'speed':(0.1,0.2),'blur':(0.001,0.001),'mode':'snow'}
+        config_n = {'factor':0.3}
+        result = Filter({'wh_set':config_w,'day_set':config_n})
     return result
+
 
 def QuickDebugL():
     #imgs = Image.open("C:\\Users\\jeppe\\Desktop\\GTSRB_Final_Training_Images\\GTSRB\\Final_Training\\Images\\00000\\00002_00029.ppm")

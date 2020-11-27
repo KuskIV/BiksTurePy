@@ -9,7 +9,7 @@ sys.path.insert(0, parent_dir)
 
 import Dataset.os_h5_constructor as osc
 from global_paths import get_paths
-from phase_two.phase_two_two import qucik_debug
+from phase_two.phase_two_two import generate_datasets
 from train_test_split import run_split_dataset
 
 
@@ -43,7 +43,7 @@ if __name__ == '__main__':
     generate_h5(get_paths('h5_train'), train_image_path)
     generate_h5(get_paths('h5_test'), test_image_path)
     
-    qucik_debug()
+    generate_datasets()
     
     
 

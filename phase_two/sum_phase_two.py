@@ -38,6 +38,8 @@ def sum_merged_files_to_one_line(base_path:str, csv_file_name:str)->str:
     Returns:
         str: the name of the file the csv files are combined into
     """
+    return_csv_name = ""
+    
     for folder in os.listdir(base_path):
         folder_path = f"{base_path}/{folder}"
         
@@ -105,7 +107,7 @@ def verify_cell(cell_data):
 
 def dissasemble_cell(cell):
     cell_data = cell.split('_')
-    custom_error_check(verify_cell(cell_data), f'The cell {cell} is not in the correct syntax. Should contain four underscores')
+    custom_error_check(verify_cell(cell_data), f'The cell {cell} is not in the correct syntax. Should contain three underscores')
     return cell_data[0], f"{cell_data[3]}_{cell_data[2]}"
 
 def data_index_exists(data_to_append):
@@ -160,14 +162,14 @@ def merge_final_files(base_path, output_csv_name):
     """
     data_to_combine = {'filter':[]}
     
-    for folder in os.listdir(base_path):
+    for folder in os.listdir(base_path): 
         folder_path = f"{base_path}/{folder}"
-        
+        #data_to_combine = {}#TODO dette har jeg added, for teste en bug
         csv_path = f"{folder_path}/{output_csv_name}"
         if os.path.exists(csv_path):
             data_to_append = read_csv_file(csv_path)
             custom_error_check(data_index_exists(data_to_append), f"The list data_to_append should have length 2, but is {len(data_to_append)}.")
-            for i in range(1, len(data_to_append[0])):
+            for i in range(1, len(data_to_append[0])): #loops trough the headers one by one
                 noise, experiment = dissasemble_cell(data_to_append[0][i])
                 if noise not in data_to_combine['filter']:
                     data_to_combine['filter'].append(noise)
@@ -188,9 +190,12 @@ def sum_merged_files(base_path):
         print(f"The input path does not exists: \"{base_path}\"")
     csv_file_name = "sum_cat.csv"
     
-    output_csv_name = sum_merged_files_to_one_line(base_path, csv_file_name)
-    # sum_merged_files_to_one_file(base_path, output_csv_name)
-    merge_final_files(base_path, output_csv_name)
+    for d in os.listdir(base_path):
+        csv_path = f"{base_path}/{d}"
+        output_csv_name = sum_merged_files_to_one_line(csv_path, csv_file_name)
+        # sum_merged_files_to_one_file(base_path, output_csv_name)
+        if output_csv_name != "":
+            merge_final_files(csv_path, output_csv_name)
 
 if __name__ == '__main__':
     sum_merged_files('phase_two/csv_output')

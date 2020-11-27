@@ -3,16 +3,20 @@ paths = {
     'h5': 'Dataset/h5Dataset/h5set.h5py',
     'h5_train': 'Dataset/h5Dataset/h5_train.h5py',
     'h5_test': 'Dataset/h5Dataset/h5_test.h5py',
-    'train_set': 'Dataset/satina_gains_images/satina_trains',
-    'test_set': 'Dataset/satina_gains_images/satina_tests',
+    'train_set': 'Dataset/ETSD_Adjusted/Training',
+    'test_set': 'Dataset/ETSD_Adjusted/Testing',
     'train_set_noise': 'Dataset/satina_gains_images/satina_trains_noise',
     'train_set_homo': 'Dataset/satina_gains_images/satina_trains_homo',
+    'train_set_ideal_noise': 'Dataset/satina_gains_images/satina_trains_ideal_noise',
     'test_set_noise': 'Dataset/satina_gains_images/satina_tests_noise',
     'test_set_homo': 'Dataset/satina_gains_images/satina_tests_homo',
+    'test_set_ideal_noise': 'Dataset/satina_gains_images/satina_tests_ideal_noise',
     'h5_train_noise': 'Dataset/h5Dataset/h5_train_noise.h5py',
     'h5_train_homo': 'Dataset/h5Dataset/h5_train_homo.h5py',
+    'h5_train_ideal_noise': 'Dataset/h5Dataset/h5_train_ideal_noise.h5py',
     'h5_test_noise': 'Dataset/h5Dataset/h5_test_noise.h5py',
     'h5_test_homo': 'Dataset/h5Dataset/h5_test_homo.h5py',
+    'h5_test_ideal_noise': 'Dataset/h5Dataset/h5_test_ideal_noise.h5py',
     'model': 'Models/saved_models',
     'ex_one_ideal': 'Models/saved_models/ex_one_ideal.h5',
     'large': 'Models/saved_models/large200.h5',
@@ -26,6 +30,12 @@ paths = {
     'satina_avg_norm':'Models/saved_models/satina_avg_norm.h5',
     'satina_median_norm':'Models/saved_models/satina_median_norm.h5',
     'satina_mode_norm':'Models/saved_models/satina_mode_norm.h5',
+    'satina_avg_ideal':'Models/saved_models/satina_avg_ideal.h5',
+    'satina_median_ideal':'Models/saved_models/satina_median_ideal.h5',
+    'satina_mode_ideal':'Models/saved_models/satina_mode_ideal.h5',
+    'satina_avg_idealnoise':'Models/saved_models/satina_avg_idealnoise.h5',
+    'satina_median_idealnoise':'Models/saved_models/satina_median_idealnoise.h5',
+    'satina_mode_idealnoise':'Models/saved_models/satina_mode_idealnoise.h5',
     'satina_avg_noise':'Models/saved_models/satina_avg_noise.h5',
     'satina_median_noise':'Models/saved_models/satina_median_noise.h5',
     'satina_mode_noise':'Models/saved_models/satina_mode_noise.h5',
@@ -33,7 +43,7 @@ paths = {
     'satina_median_homo':'Models/saved_models/satina_median_homo.h5',
     'satina_mode_homo':'Models/saved_models/satina_mode_homo.h5',
     # 'category_csv':'Dataset/test.csv',
-    'category_csv':'Dataset/ETSD_Adjusted/test.csv',
+    'category_csv':'Dataset/ETSD_Adjusted/Classes_Description.csv',
     # 'category_csv':'Dataset/class_descrip.csv',
     'txt_file': 'labels.txt'
 }
@@ -169,6 +179,17 @@ def get_satina_model_avg_path_norm() -> str:
 
 def get_satina_model_median_path_norm() -> str:
     return paths.get('satina_median_norm')
+
+def get_satina_model_mode_path_ideal() -> str:
+    return paths.get('satina_mode_ideal')
+
+
+def get_satina_model_avg_path_ideal() -> str:
+    return paths.get('satina_avg_ideal')
+
+
+def get_satina_model_median_path_ideal() -> str:
+    return paths.get('satina_median_ideal')
 
 def get_satina_model_mode_path_noise() -> str:
     return paths.get('satina_mode_noise')
