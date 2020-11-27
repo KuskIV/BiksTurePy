@@ -59,7 +59,7 @@ def phase_2_1(model:object,noise_filter:dict, base_path:str, original_images:lis
     convert_to_csv(f"{base_path}/{model.get_csv_name()}_result.csv",[val[1:4] for val in values]) #tuple(image,class,filter,predicted_class)
 
 def load_filters()->dict: #*DONE
-    F = premade_single_filter('fog')
+    F = premade_single_filter('fog_medium')
     R = premade_single_filter('rain')
     S = premade_single_filter('snow')
     D = premade_single_filter('day')

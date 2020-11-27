@@ -142,7 +142,7 @@ if __name__ == "__main__":
     
     run_base_experiments = False
     run_ideal_experiments = False
-    run_lobster_experiments = True
+    run_lobster_experiments = False
     run_lobster_level_experiments = True
     
     ideal_noise_worked = False
@@ -270,7 +270,7 @@ if __name__ == "__main__":
     if run_lobster_level_experiments:
         try:
             if ideal_worked or not run_ideal_experiments:
-                ideal_lobster_level_folder = "experiment_two_big_lobster_ideal_level"
+                ideal_lobster_level_folder = "experiment_two_big_lobster_ideallevel"
                 ex_folder = get_ex_folder(ideal_lobster_level_folder, base_big_lobster_level)
                 introduce_experiment(ideal_lobster_level_folder)
                 ex_two_eval_noise(homo_test_path, ex_folder, get_models=get_satina_gains_model_norm_object_list, data_to_test_on=data_to_test_on, model_paths=ideal_path, filter_method=load_lobster_level_filters)
@@ -284,7 +284,7 @@ if __name__ == "__main__":
         
         try:
             if ideal_worked or not run_ideal_experiments:
-                noise_lobster_level_folder = "experiment_two_big_lobster_noise_level"
+                noise_lobster_level_folder = "experiment_two_big_lobster_noiselevel"
                 ex_folder = get_ex_folder(noise_lobster_level_folder, base_big_lobster_level)
                 introduce_experiment(noise_lobster_level_folder)
                 ex_two_eval_noise(homo_test_path, ex_folder, get_models=get_satina_gains_model_norm_object_list, data_to_test_on=data_to_test_on, model_paths=ideal_noise_path, filter_method=load_lobster_level_filters)

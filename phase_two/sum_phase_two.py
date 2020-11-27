@@ -162,14 +162,14 @@ def merge_final_files(base_path, output_csv_name):
     """
     data_to_combine = {'filter':[]}
     
-    for folder in os.listdir(base_path):
+    for folder in os.listdir(base_path): 
         folder_path = f"{base_path}/{folder}"
-        
+        #data_to_combine = {}#TODO dette har jeg added, for teste en bug
         csv_path = f"{folder_path}/{output_csv_name}"
         if os.path.exists(csv_path):
             data_to_append = read_csv_file(csv_path)
             custom_error_check(data_index_exists(data_to_append), f"The list data_to_append should have length 2, but is {len(data_to_append)}.")
-            for i in range(1, len(data_to_append[0])):
+            for i in range(1, len(data_to_append[0])): #loops trough the headers one by one
                 noise, experiment = dissasemble_cell(data_to_append[0][i])
                 if noise not in data_to_combine['filter']:
                     data_to_combine['filter'].append(noise)
