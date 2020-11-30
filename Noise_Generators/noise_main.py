@@ -278,16 +278,16 @@ def premade_single_filter(str:str)->Filter:
         config ={'density':(0.1,0.15),'density_uniformity':(0.9,1.0),'drop_size':(0.5,0.65),'drop_size_uniformity':(0.1,0.5),'angle':(-20,20),'speed':(0.1,0.2),'blur':(0.001,0.001)}
         result = Filter({'wh_set':config})
     if str == 'snow':
-        config = {'density':(0.03,0.14),'density_uniformity':(0.8,1.0),'drop_size':(0.3,0.4),'drop_size_uniformity':(0.1,0.5),'angle':(-15,15),'speed':(0.1,0.2),'blur':(0.001,0.001),'mode':'snow'}
+        config = {'density':(0.03,0.14),'density_uniformity':(0.8,1.0),'drop_size':(0.7,0.8),'drop_size_uniformity':(0.2,0.3),'angle':(-15,15),'speed':(0.1,0.2),'blur':(0.001,0.001),'mode':'snow'}
         result = Filter({'wh_set':config})
     if str == 'snow_mild':
-        config ={'density':(0.07,0.07),'density_uniformity':(0.95,1.0),'drop_size':(0.2,0.5),'drop_size_uniformity':(0.2,0.7),'angle':(-30,30),'speed':(0.04,0.1),'blur':(0.004,0.01),'mode':'snow'}
+        config ={'density':(0.07,0.07),'density_uniformity':(0.95,1.0),'drop_size':(0.7,0.8),'drop_size_uniformity':(0.2,0.3),'angle':(-30,30),'speed':(0.04,0.1),'blur':(0.004,0.01),'mode':'snow'}
         result = Filter({'wh_set':config})
     if str == 'snow_medium':
-        config = {'density':(0.09,0.1),'density_uniformity':(0.95,1.0),'drop_size':(0.3,0.6),'drop_size_uniformity':(0.3,0.7),'angle':(-30,30),'speed':(0.04,0.1),'blur':(0.004,0.01),'mode':'snow'}
+        config = {'density':(0.09,0.1),'density_uniformity':(0.95,1.0),'drop_size':(0.7,0.8),'drop_size_uniformity':(0.2,0.3),'angle':(-30,30),'speed':(0.04,0.1),'blur':(0.004,0.01),'mode':'snow'}
         result = Filter({'wh_set':config})
     if str == 'snow_heavy':
-        config = {'density':(0.11,0.16),'density_uniformity':(0.95,1.0),'drop_size':(0.4,0.7),'drop_size_uniformity':(0.4,0.7),'angle':(-30,30),'speed':(0.04,0.1),'blur':(0.004,0.01),'mode':'snow'}
+        config = {'density':(0.11,0.16),'density_uniformity':(0.95,1.0),'drop_size':(0.7,0.8),'drop_size_uniformity':(0.2,0.3),'angle':(-30,30),'speed':(0.04,0.1),'blur':(0.004,0.01),'mode':'snow'}
         result = Filter({'wh_set':config})
     if str == 'day':
         config = {'factor':1.0}
@@ -317,7 +317,7 @@ def premade_single_filter(str:str)->Filter:
         result = Filter({'wh_set':config_r,'homo_set':config_h})
     if str == 'snowhomo':
         config_h = {'a':1,'b':0.5,'cutoff':800}
-        config_s = {'density':(0.03,0.14),'density_uniformity':(0.8,1.0),'drop_size':(0.3,0.4),'drop_size_uniformity':(0.1,0.5),'angle':(-15,15),'speed':(0.1,0.2),'blur':(0.001,0.001),'mode':'snow'}
+        config_s = {'density':(0.03,0.14),'density_uniformity':(0.8,1.0),'drop_size':(0.7,0.8),'drop_size_uniformity':(0.2,0.3),'angle':(-15,15),'speed':(0.1,0.2),'blur':(0.001,0.001),'mode':'snow'}
         result = Filter({'wh_set':config_s,'homo_set':config_h})
     if str == 'dayhomo':
         config_h = {'a':1,'b':0.5,'cutoff':800}
@@ -341,14 +341,14 @@ def premade_single_filter(str:str)->Filter:
         result = Filter({'wh_set':config_w,'fog_set':config_f})
     if str == 'fog_snow':
         config_f = {'octaves':8, 'persistence':0.3, 'lacunarity': 5, 'alpha': 0.4}
-        config_w = {'density':(0.03,0.14),'density_uniformity':(0.8,1.0),'drop_size':(0.3,0.4),'drop_size_uniformity':(0.1,0.5),'angle':(-15,15),'speed':(0.1,0.2),'blur':(0.001,0.001),'mode':'snow'}
+        config_w = {'density':(0.03,0.14),'density_uniformity':(0.8,1.0),'drop_size':(0.7,0.8),'drop_size_uniformity':(0.2,0.3),'angle':(-15,15),'speed':(0.1,0.2),'blur':(0.001,0.001),'mode':'snow'}
         result = Filter({'wh_set':config_w,'fog_set':config_f})
     if str == 'rain_night':
         config_w = {'density':(0.03,0.14),'density_uniformity':(0.8,1.0),'drop_size':(0.3,0.4),'drop_size_uniformity':(0.1,0.5),'angle':(-15,15),'speed':(0.1,0.2),'blur':(0.001,0.001),'mode':'snow'}
         config_n = {'factor':0.3}
         result = Filter({'wh_set':config_w,'day_set':config_n})
     if str == 'snow_night':
-        config_w = {'density':(0.03,0.14),'density_uniformity':(0.8,1.0),'drop_size':(0.3,0.4),'drop_size_uniformity':(0.1,0.5),'angle':(-15,15),'speed':(0.1,0.2),'blur':(0.001,0.001),'mode':'snow'}
+        config_w = {'density':(0.03,0.14),'density_uniformity':(0.8,1.0),'drop_size':(0.7,0.8),'drop_size_uniformity':(0.2,0.3),'angle':(-15,15),'speed':(0.1,0.2),'blur':(0.001,0.001),'mode':'snow'}
         config_n = {'factor':0.3}
         result = Filter({'wh_set':config_w,'day_set':config_n})
     return result
@@ -388,16 +388,21 @@ def QuickDebug():
 
     # Filter_Con = {'fog_set':fog}
     # F = Filter(Filter_Con)
-    noises = ['fog','rain','snow','night']
-    levels = ['mild','medium','heavy']
+    filters = []
+    filters.append((premade_single_filter('fog_night'),"fog_night"))
+    filters.append((premade_single_filter('fog_snow'),"fog_snow"))
+    filters.append((premade_single_filter('fog_rain'),"fog_rain"))
+    filters.append((premade_single_filter('rain_night'),"rain_night"))
+    filters.append((premade_single_filter('snow_night'),"snow_night"))
+    for i in range(100):
+        for F,noise_type  in filters:
+            (F + img).save(f'C:/Users/jeppe/Desktop/Fogs_For_Coroni/{noise_type}{i}.png')
 
-    for noise in noises:
-        for level in levels:
-            noise_type = f"{noise}_{level}"
-            F = premade_single_filter(noise_type)
-            #(F + img).show()
-            (F + img).save(f'C:/Users/jeppe/Desktop/Fogs_For_Coroni/{noise_type}.png')
-    #newImage = F*imgs
+    # for noise in noises:
+    #     for level in levels:
+    #         noise_type = f"{noise}_{level}"
+    #         F = premade_single_filter(noise_type)
+    #             #newImage = F*imgs
     #newImage[0].show()
     #newImage[1].show()
 
