@@ -384,6 +384,11 @@ def premade_single_filter(str:str)->Filter:
         config_n = {'factor':0.5}
         config_d = {'kernel':15}
         result = Filter({'day_set':config_n,'defog_set':config_d})
+    if str == 'day_dehaze':
+        config_da = {'factor':1.0}
+        config_d = {'kernel':15}
+        result = filter({'day_set':config_da,'defog_set':config_d})
+
     return result
 
 if __name__ == '__main__':
