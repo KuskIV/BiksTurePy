@@ -3,7 +3,7 @@ import math
 import numpy as np
 from PIL import Image
 import sys
-
+#Greatly inspired by https://github.com/He-Zhang/image_dehaze
 class fog_remove():
     kernel_size = 15
 

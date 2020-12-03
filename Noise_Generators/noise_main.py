@@ -262,7 +262,7 @@ def load_X_images(path):
 def premade_single_filter(str:str)->Filter:
     config = {}
     if str == 'fog':
-        config = {'octaves':8, 'persistence':0.3, 'lacunarity': 5, 'alpha': 0.4}
+        config = {'octaves':4, 'persistence':0.2, 'lacunarity': 3, 'alpha': 0.5, 'darkness':0.5}
         result = Filter({'fog_set':config})
     if str == 'fog_mild':
         config = {'octaves':1, 'persistence':0.2, 'lacunarity': 3, 'alpha': 0.5, 'darkness':0.5}
@@ -424,10 +424,13 @@ def QuickDebug():
     #newImage[1].show()
 
 if __name__ == '__main__':
+    import time
     path = 'C:/Users/jeppe/Desktop/Fogs_For_Coroni/fog_rain65.png'
     filt = premade_single_filter("de_fog15")
     img = Image.open(path)
     img = filt + img
+    toc = time.time()
+    print((toc-tic))
     img.show()
     #QuickDebug()
 #fog_set=(1)
