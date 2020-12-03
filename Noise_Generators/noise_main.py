@@ -370,67 +370,12 @@ def premade_single_filter(str:str)->Filter:
         result = Filter({'defog_set':config})
     return result
 
-
-def QuickDebugL():
-    #imgs = Image.open("C:\\Users\\jeppe\\Desktop\\GTSRB_Final_Training_Images\\GTSRB\\Final_Training\\Images\\00000\\00002_00029.ppm")
-    imgs = load_X_images('C:/Users/roni/Desktop/Project/BiksTurePy/Dataset/homotest')
-
-    
-    F = premade_single_filter('fog')
-    R = premade_single_filter('rain')
-    S = premade_single_filter('snow')
-    D = premade_single_filter('day')
-    N = premade_single_filter('night')
-    homo = premade_single_filter('std_homo')
-    dict = {'fog':F,'rain':R,'snow':S,'day':D,'night':N}    
-    homom = {'homo':homo}
-    res = apply_multiple_filters(4,imgs,filters=homom, mode='linear', KeepOriginal=False)
-    for i in range(len(res)):
-        res[i][0].save(f'C:/Users/roni/Desktop/Jeppe_Wrong/{imgs[2][i]}.png')
-
-        
-
-def QuickDebug():
-    """Small debug function
-    """
-    img = Image.open('C:/Users/jeppe/Desktop/GTSRB_Final_Training_Images/GTSRB/Final_Training/images/00014/00020_00029.ppm')
-    # imgs = [img,img]
-    # fog = {'octaves':8, 'persistence':0.3, 'lacunarity': 5, 'alpha': 0.4}
-    # day = {'factor':1.0} 
-    # night = {'factor':0.3}
-    #snow = {'density':(0.2,0.3),'density_uniformity':(0.95,1.0),'drop_size':(0.8,0.9), 'drop_size_uniformity':(0.2,0.6),'angle':(-30,30),'speed':(0.08,0.15),'blur':(0.004,0.01)}
-    #snow = {'density':(0.1,0.15),'density_uniformity':(0.95,1.0),'drop_size':(0.8,0.9),'drop_size_uniformity':(0.2,0.6),'angle':(-30,30),'speed':(0.1,0.15),'blur':(0.004,0.01)}
-    # rain = {}
-    #rain_mild["density"] = (0.5, 1)
-
-    # Filter_Con = {'fog_set':fog}
-    # F = Filter(Filter_Con)
-    filters = []
-    filters.append((premade_single_filter('fog_night'),"fog_night"))
-    filters.append((premade_single_filter('fog_snow'),"fog_snow"))
-    filters.append((premade_single_filter('fog_rain'),"fog_rain"))
-    filters.append((premade_single_filter('rain_night'),"rain_night"))
-    filters.append((premade_single_filter('snow_night'),"snow_night"))
-    for i in range(100):
-        for F,noise_type  in filters:
-            (F + img).save(f'C:/Users/jeppe/Desktop/Fogs_For_Coroni/{noise_type}{i}.png')
-
-    # for noise in noises:
-    #     for level in levels:
-    #         noise_type = f"{noise}_{level}"
-    #         F = premade_single_filter(noise_type)
-    #             #newImage = F*imgs
-    #newImage[0].show()
-    #newImage[1].show()
-
 if __name__ == '__main__':
     import time
     path = 'C:/Users/jeppe/Desktop/Fogs_For_Coroni/fog_rain65.png'
     filt = premade_single_filter("de_fog15")
     img = Image.open(path)
     img = filt + img
-    toc = time.time()
-    print((toc-tic))
     img.show()
     #QuickDebug()
 #fog_set=(1)
