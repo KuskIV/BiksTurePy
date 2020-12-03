@@ -262,7 +262,7 @@ def load_X_images(path):
 def premade_single_filter(str:str)->Filter:
     config = {}
     if str == 'fog':
-        config = {'octaves':4, 'persistence':0.2, 'lacunarity': 3, 'alpha': 0.5, 'darkness':0.5}
+        config = {'octaves':4, 'persistence':0.2, 'lacunarity': 3, 'alpha': 0.4, 'darkness':0.5}
         result = Filter({'fog_set':config})
     if str == 'fog_mild':
         config = {'octaves':1, 'persistence':0.2, 'lacunarity': 3, 'alpha': 0.5, 'darkness':0.5}
@@ -368,6 +368,22 @@ def premade_single_filter(str:str)->Filter:
     if str == 'de_fog5':
         config = {'kernel':5}
         result = Filter({'defog_set':config})
+    if str == 'fog_dehaze':
+        config_f = {'octaves':4, 'persistence':0.2, 'lacunarity': 3, 'alpha': 0.5, 'darkness':0.5}
+        config_d = {'kernel':15}
+        result = Filter({'fog_set':config_f,'defog_set':config_d})
+    if str == 'rain_dehaze':
+        config_r = {'density':(0.03,0.14),'density_uniformity':(0.8,1.0),'drop_size':(0.3,0.4),'drop_size_uniformity':(0.1,0.5),'angle':(-15,15),'speed':(0.1,0.2),'blur':(0.001,0.001)}
+        config_d = {'kernel':15}
+        result = Filter({'wh_set':config_r,'defog_set':config_d})
+    if str == 'snow_dehaze':
+        config_s = {'density':(0.03,0.14),'density_uniformity':(0.8,1.0),'drop_size':(0.3,0.4),'drop_size_uniformity':(0.1,0.5),'angle':(-15,15),'speed':(0.1,0.2),'blur':(0.001,0.001)}
+        config_d = {'kernel':15}
+        result = Filter({'wh_set':config_s,'defog_set':config_d})
+    if str == 'night_dehaze':
+        config_n = {'factor':0.5}
+        config_d = {'kernel':15}
+        result = Filter({'day_set':config_n,'defog_set':config_d})
     return result
 
 if __name__ == '__main__':
