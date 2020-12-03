@@ -13,6 +13,7 @@ from Noise_Generators.weather_gen import weather
 from Noise_Generators.Perlin_noise import perlin
 from Noise_Generators.brightness import brightness
 from Noise_Generators.homomorphic_filtering import homomorphic
+from Noise_Generators.fog_remove import fog_remove
 
 class Filter: #TODO create homophobic filter
     """The filter class is a combination the three noises fog, 
@@ -27,6 +28,7 @@ class Filter: #TODO create homophobic filter
     day_set = None
     wh_set = None
     homo_set = None
+    defog_set = None
     configuration = None
     np_array_given = False
 
@@ -39,7 +41,7 @@ class Filter: #TODO create homophobic filter
             Keys = ['fog_set','day_set','wh_set','homo_set']
         """
         self.configuration = config
-        Keys = ['fog_set','day_set','wh_set','homo_set']
+        Keys = ['fog_set','day_set','wh_set','homo_set','defog_set']
         if Keys[0] in config:
             self.fog_set = config.get(Keys[0])
         if config.get(Keys[1]) != None:
@@ -48,6 +50,8 @@ class Filter: #TODO create homophobic filter
             self.wh_set = config.get(Keys[2])
         if config.get(Keys[3]) != None:
             self.homo_set = config.get(Keys[3])
+        if config.get(Keys[4]) != None:
+            self.defog_set = config.get(Keys[4])
         
     def Apply(self,img:Image.Image)->Image.Image:
         """The method that applies the filters onto the images
@@ -81,6 +85,10 @@ class Filter: #TODO create homophobic filter
         if(self.homo_set != None):
             hom = homomorphic(self.homo_set)
             img = hom.homofy(img)
+
+        if(self.defog_set != None):
+            fr = fog_remove(self.defog_set)
+            img = fr.de_fog(img)
 
         img = changeImageSize(old_size[1],old_size[0],img)
 
@@ -351,6 +359,15 @@ def premade_single_filter(str:str)->Filter:
         config_w = {'density':(0.03,0.14),'density_uniformity':(0.8,1.0),'drop_size':(0.7,0.8),'drop_size_uniformity':(0.2,0.3),'angle':(-15,15),'speed':(0.1,0.2),'blur':(0.001,0.001),'mode':'snow'}
         config_n = {'factor':0.3}
         result = Filter({'wh_set':config_w,'day_set':config_n})
+    if str == 'de_fog15':
+        config = {'kernel':15}
+        result = Filter({'defog_set':config})
+    if str == 'de_fog10':
+        config = {'kernel':10}
+        result = Filter({'defog_set':config}) 
+    if str == 'de_fog5':
+        config = {'kernel':5}
+        result = Filter({'defog_set':config})
     return result
 
 
@@ -407,7 +424,12 @@ def QuickDebug():
     #newImage[1].show()
 
 if __name__ == '__main__':
-    QuickDebug()
+    path = 'C:/Users/jeppe/Desktop/Fogs_For_Coroni/fog_rain65.png'
+    filt = premade_single_filter("de_fog15")
+    img = Image.open(path)
+    img = filt + img
+    img.show()
+    #QuickDebug()
 #fog_set=(1)
 #day_set=(0.5)
 #wh_set = (70,7,2,(2,2),(130,130,130))
