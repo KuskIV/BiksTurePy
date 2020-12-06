@@ -1,4 +1,4 @@
-
+import re
 from PIL import Image
 import random
 import numpy as np
@@ -113,7 +113,6 @@ class Filter: #TODO create homophobic filter
 
     def __mul__(self, imgs:list)->list:
         """Method for applying the same filter on multiple images
-        #TODO loading bar pls mads
         Args:
             imgs (list): List of Pil images
 
@@ -261,6 +260,14 @@ def load_X_images(path):
 
 def premade_single_filter(str:str)->Filter:
     config = {}
+
+    #special case fog with ajustable aplha
+    if str.contains("mod"):
+        if not re.search("mod_fog\d+\.\d+",str) == None:
+            modifier = re.search("\d+\.\d+",str)
+            config = {'octaves':4, 'persistence':0.2, 'lacunarity': 3, 'alpha': float(modifier), 'darkness':0.5}
+            result = Filter({'fog_set':config})
+
     if str == 'fog':
         config = {'octaves':4, 'persistence':0.2, 'lacunarity': 3, 'alpha': 0.4, 'darkness':0.5}
         result = Filter({'fog_set':config})
