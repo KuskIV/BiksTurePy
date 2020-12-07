@@ -68,6 +68,7 @@ class Filter: #TODO create homophobic filter
             img = img.astype(np.uint8)
             img = Image.fromarray(img)
             self.np_array_given = True
+
         old_size = img.size
         img = changeImageSize(200,200,img)
         if(self.wh_set != None):
@@ -82,13 +83,14 @@ class Filter: #TODO create homophobic filter
             bn = brightness(self.day_set)
             img = bn.DayAdjustment(img)
 
+        if(self.defog_set != None):
+            fr = fog_remove(self.defog_set)
+            img = fr.de_fog(img)
+
         if(self.homo_set != None):
             hom = homomorphic(self.homo_set)
             img = hom.homofy(img)
 
-        if(self.defog_set != None):
-            fr = fog_remove(self.defog_set)
-            img = fr.de_fog(img)
 
         img = changeImageSize(old_size[1],old_size[0],img)
 
@@ -267,7 +269,19 @@ def premade_single_filter(str:str)->Filter:
             modifier = re.search("\d+\.\d+",str)
             config = {'octaves':4, 'persistence':0.2, 'lacunarity': 3, 'alpha': float(modifier.group(0)), 'darkness':0.5}
             result = Filter({'fog_set':config})
-
+        if not re.search("mod_night\d+\.\d+") == None:
+            modifier = re.search("\d+\.\d+",str)
+            config = {'factor': float(modifier.group(0))-0.001}
+            result = Filter({'day_set':config})
+        if not re.search("mod_rain\d+.\d+") == None:
+            modifier = re.search("\d+\.\d+")
+            config ={'density':(0.1*float(modifier.group(0)), 0.15*float(modifier.group(0))),'density_uniformity':(0.9,1.0),'drop_size':(0.5,0.65),'drop_size_uniformity':(0.1,0.5),'angle':(-20,20),'speed':(0.1,0.2),'blur':(0.001,0.001)}
+            result = Filter({'wh_set':config})
+        if not re.search("mod_snow\d+.\d+") == None:
+            modifier = re.search("\d+\.\d+")
+            config = {'density':(0.11*float(modifier.group(0)),0.16*float(modifier.group(0))),'density_uniformity':(0.95,1.0),'drop_size':(0.7,0.8),'drop_size_uniformity':(0.2,0.3),'angle':(-30,30),'speed':(0.04,0.1),'blur':(0.004,0.01),'mode':'snow'}
+            result = Filter({'wh_set':config})
+            
     if str == 'fog':
         config = {'octaves':4, 'persistence':0.2, 'lacunarity': 3, 'alpha': 0.4, 'darkness':0.5}
         result = Filter({'fog_set':config})
@@ -395,16 +409,41 @@ def premade_single_filter(str:str)->Filter:
         config_da = {'factor':1.0}
         config_d = {'kernel':15}
         result = Filter({'day_set':config_da,'defog_set':config_d})
-
+    if str == 'dehaze_homo':
+        config_d = {'kernel':15}
+        config = {'a':1,'b':0.5,'cutoff':800}
+        result = Filter({'homo_set':config,'defog_set':config_d})
     return result
 
 if __name__ == '__main__':
     import time
-    path = 'C:/Users/jeppe/Desktop/Fogs_For_Coroni/fog_rain65.png'
-    filt = premade_single_filter("mod_fog0.5")
-    img = Image.open(path)
-    img = filt + img
-    img.show()
+    path1 = 'C:/Users/jeppe/Downloads/Combnoise_for_coronoi-20201207T131136Z-001/Combnoise_for_coronoi/fog_night.png'
+    path2 = 'C:/Users/jeppe/Downloads/Combnoise_for_coronoi-20201207T131136Z-001/Combnoise_for_coronoi/rain_night1.png'
+    path3 = 'C:/Users/jeppe/Downloads/Combnoise_for_coronoi-20201207T131136Z-001/Combnoise_for_coronoi/snow_night.png'
+    path4 = 'C:/Users/jeppe/Downloads/Combnoise_for_coronoi-20201207T131136Z-001/Combnoise_for_coronoi/fog_rain10.png'
+    path5 = 'C:/Users/jeppe/Downloads/Combnoise_for_coronoi-20201207T131136Z-001/Combnoise_for_coronoi/fog_snow.png'
+    save_path = 'C:/Users/jeppe/Desktop/Homomorphic'
+    premade_single_filter
+
+    filt_homo = premade_single_filter("std_homo")
+    filt_de_homo = premade_single_filter("dehaze_homo")
+    img1 = Image.open(path1)
+    img2 = Image.open(path2)
+    img3 = Image.open(path3)
+    img4 = Image.open(path4)
+    img5 = Image.open(path5)
+
+    img1 = filt_de_homo + img1
+    img2 = filt_homo + img2
+    img3 = filt_homo + img3
+    img4 = filt_de_homo + img4
+    img5 = filt_de_homo + img5
+
+    img1.save(save_path+"/fog_night_homo_haze.png")
+    img2.save(save_path+"/rain_night_homo.png")
+    img3.save(save_path+"/snow_night_homo.png")
+    img4.save(save_path+"/fog_rain_homo_haze.png")
+    img5.save(save_path+"/fog_snow_homo_haze.png")
     #QuickDebug()
 #fog_set=(1)
 #day_set=(0.5)
