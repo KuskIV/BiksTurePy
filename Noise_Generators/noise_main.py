@@ -262,10 +262,10 @@ def premade_single_filter(str:str)->Filter:
     config = {}
 
     #special case fog with ajustable aplha
-    if str.contains("mod"):
+    if "mod" in str:
         if not re.search("mod_fog\d+\.\d+",str) == None:
             modifier = re.search("\d+\.\d+",str)
-            config = {'octaves':4, 'persistence':0.2, 'lacunarity': 3, 'alpha': float(modifier), 'darkness':0.5}
+            config = {'octaves':4, 'persistence':0.2, 'lacunarity': 3, 'alpha': float(modifier.group(0)), 'darkness':0.5}
             result = Filter({'fog_set':config})
 
     if str == 'fog':
@@ -401,7 +401,7 @@ def premade_single_filter(str:str)->Filter:
 if __name__ == '__main__':
     import time
     path = 'C:/Users/jeppe/Desktop/Fogs_For_Coroni/fog_rain65.png'
-    filt = premade_single_filter("de_fog15")
+    filt = premade_single_filter("mod_fog0.5")
     img = Image.open(path)
     img = filt + img
     img.show()
