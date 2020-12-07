@@ -387,7 +387,7 @@ def premade_single_filter(str:str)->Filter:
     if str == 'day_dehaze':
         config_da = {'factor':1.0}
         config_d = {'kernel':15}
-        result = filter({'day_set':config_da,'defog_set':config_d})
+        result = Filter({'day_set':config_da,'defog_set':config_d})
 
     return result
 

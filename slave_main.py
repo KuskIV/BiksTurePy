@@ -28,6 +28,16 @@ def load_homo_filters()->dict:
     dict = [{'fog':F}, {'night':N},{'rain':R},{'snow':S},{'day':D},{'night':N}]
     return dict
 
+def load_dehaze_filters()->dict:
+    F = premade_single_filter('fog_dehaze')
+    R = premade_single_filter('rain_dehaze')
+    S = premade_single_filter('snow_dehaze')
+    D = premade_single_filter('day_dehaze')
+    N = premade_single_filter('night_dehaze')
+    
+    dict = [{'fog':F}, {'night':N},{'rain':R},{'snow':S},{'day':D},{'night':N}]
+    return dict
+
 def load_lobster_filters()->dict:
     FN = premade_single_filter('fog_night')
     FS = premade_single_filter('fog_snow')
@@ -195,6 +205,17 @@ def run_biksture(index, data_to_test_on, run_base_experiments=True, run_ideal_ex
             print(e)
             errors.append(e)
         
+        # try:
+        #     dehaze_folder = "experiment_two_eval_dehaze"
+        #     ex_folder = get_ex_folder(dehaze_folder, base_ex)
+        #     introduce_experiment(dehaze_folder)
+        #     ex_two_eval_noise(test_path, ex_folder, data_to_test_on=data_to_test_on, filter_method=load_dehaze_filters)
+        # except:
+        #     print("ERROR IN EXPERIMENT 'TRAIN ON DEHAZE'")
+        #     e = sys.exc_info()
+        #     print(e)
+        #     errors.append(e)
+        
         try:
             noise_folder = "experiment_two_eval_noise"
             ex_folder = get_ex_folder(noise_folder, base_ex)
@@ -213,8 +234,8 @@ def run_biksture(index, data_to_test_on, run_base_experiments=True, run_ideal_ex
             ex_folder = get_ex_folder(ideal_folder, base_result)
             introduce_experiment(ideal_folder)
             ex_two_eval_norm(homo_test_path, homo_train_path, folder_extension=ex_folder, data_to_test_on=data_to_test_on, model_paths=ideal_path)
-            ex_two_eval_noise(homo_test_path, ex_folder, get_models=get_satina_gains_model_norm_object_list, data_to_test_on=data_to_test_on, model_paths=ideal_path, filter_method=load_homo_filters)
             ideal_worked = True
+            ex_two_eval_noise(homo_test_path, ex_folder, get_models=get_satina_gains_model_norm_object_list, data_to_test_on=data_to_test_on, model_paths=ideal_path, filter_method=load_homo_filters)
         except Exception as e:
             print("ERROR IN EXPERIMENT 'TRAIN ON IDEAL'")
             e = sys.exc_info()
@@ -226,8 +247,8 @@ def run_biksture(index, data_to_test_on, run_base_experiments=True, run_ideal_ex
             ex_folder = get_ex_folder(ideal_noise_folder, base_result)
             introduce_experiment(ideal_noise_folder)
             ex_two_eval_norm(ideal_noise_test_path, ideal_noise_train_path, folder_extension=ex_folder, data_to_test_on=data_to_test_on, model_paths=ideal_noise_path)
-            ex_two_eval_noise(homo_test_path, ex_folder, get_models=get_satina_gains_model_norm_object_list, data_to_test_on=data_to_test_on, model_paths=ideal_noise_path, filter_method=load_homo_filters)
             ideal_noise_worked = True
+            ex_two_eval_noise(homo_test_path, ex_folder, get_models=get_satina_gains_model_norm_object_list, data_to_test_on=data_to_test_on, model_paths=ideal_noise_path, filter_method=load_homo_filters)
         except Exception as e:
             print("ERROR IN EXPERIMENT 'TRAIN ON IDEAL'")
             e = sys.exc_info()
@@ -292,8 +313,11 @@ def run_biksture(index, data_to_test_on, run_base_experiments=True, run_ideal_ex
             print(e)
             errors.append(e)
 
-    sum_merged_files(f'phase_two/csv_output/{index}')
-
+    try:
+        sum_merged_files(f'phase_two/csv_output/{index}')
+    except Exception as e:
+        print(f"ERROR: {e}")
+    
     if len(errors) != 0:
         time_str = time.strftime("%Y%m%d-%H%M%S")
         save_path = f"error_messages/output_error_{time_str}.txt"

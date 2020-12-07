@@ -24,6 +24,7 @@ paths = {
     'small': 'Models/saved_models/small32.h5',
     'phase_one_csv': 'phase_one/csv_data',
     'phase_two_csv': 'phase_two/csv_output',
+    'result_csv': 'results',
     'satina_avg':'Models/saved_models/satina_avg.h5',
     'satina_median':'Models/saved_models/satina_median.h5',
     'satina_mode':'Models/saved_models/satina_mode.h5',
