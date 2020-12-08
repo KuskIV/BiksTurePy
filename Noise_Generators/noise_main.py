@@ -274,8 +274,8 @@ def premade_single_filter(str:str)->Filter:
             config = {'factor': 1-(float(modifier.group(0))-0.001)}
             homo = {'a':1,'b':0.5,'cutoff':800}
             result = Filter({'day_set':config,'homo_set':homo})
-        if not re.search("mod_rain\d+\.\d+") == None:
-            modifier = re.search("\d+\.\d+")
+        if not re.search("mod_rain\d+\.\d+", str) == None:
+            modifier = re.search("\d+\.\d+", str)
             config ={'density':(0.1*float(modifier.group(0)), 0.15*float(modifier.group(0))),'density_uniformity':(0.9,1.0),'drop_size':(0.5,0.65),'drop_size_uniformity':(0.1,0.5),'angle':(-20,20),'speed':(0.1,0.2),'blur':(0.001,0.001)}
             result = Filter({'wh_set':config})
         if not re.search("mod_snow\d+\.\d+", str) == None:
