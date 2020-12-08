@@ -267,17 +267,21 @@ def premade_single_filter(str:str)->Filter:
     if "mod" in str:
         if not re.search("mod_fog\d+\.\d+",str) == None:
             modifier = re.search("\d+\.\d+",str)
-            config = {'octaves':4, 'persistence':0.2, 'lacunarity': 3, 'alpha': 1-float(modifier.group(0)), 'darkness':0.5}
+            config = {'octaves':4, 'persistence':0.2, 'lacunarity': 3, 'alpha': 1-0.6*(float(modifier.group(0))), 'darkness':0.5}
             result = Filter({'fog_set':config})
+
         if not re.search("mod_night\d+\.\d+", str) == None:
             modifier = re.search("\d+\.\d+",str)
-            config = {'factor': 1-(float(modifier.group(0))-0.001)}
+            config = {'factor': 1-0.8*(float(modifier.group(0))-0.001)}
             homo = {'a':1,'b':0.5,'cutoff':800}
             result = Filter({'day_set':config,'homo_set':homo})
-        if not re.search("mod_rain\d+\.\d+,str") == None:
-            modifier = re.search("\d+\.\d+,str")
+            # result = Filter({'day_set':config})
+
+        if not re.search("mod_rain\d+\.\d+",str) == None:
+            modifier = re.search("\d+\.\d+",str)
             config ={'density':(0.1*float(modifier.group(0)), 0.15*float(modifier.group(0))),'density_uniformity':(0.9,1.0),'drop_size':(0.5,0.65),'drop_size_uniformity':(0.1,0.5),'angle':(-20,20),'speed':(0.1,0.2),'blur':(0.001,0.001)}
             result = Filter({'wh_set':config})
+
         if not re.search("mod_snow\d+\.\d+", str) == None:
             modifier = re.search("\d+\.\d+", str)
             config = {'density':(0.11*float(modifier.group(0)),0.16*float(modifier.group(0))),'density_uniformity':(0.95,1.0),'drop_size':(0.7,0.8),'drop_size_uniformity':(0.2,0.3),'angle':(-30,30),'speed':(0.04,0.1),'blur':(0.004,0.01),'mode':'snow'}
@@ -423,29 +427,29 @@ def premade_single_filter(str:str)->Filter:
 if __name__ == '__main__':
     pass
     # import time
-    path1 = 'C:/Users/jeppe/Downloads/Combnoise_for_coronoi-20201207T131136Z-001/Combnoise_for_coronoi/fog_night.png'
+    # path1 = 'C:/Users/jeppe/Downloads/Combnoise_for_coronoi-20201207T131136Z-001/Combnoise_for_coronoi/fog_night.png'
     # path2 = 'C:/Users/jeppe/Downloads/Combnoise_for_coronoi-20201207T131136Z-001/Combnoise_for_coronoi/rain_night1.png'
     # path3 = 'C:/Users/jeppe/Downloads/Combnoise_for_coronoi-20201207T131136Z-001/Combnoise_for_coronoi/snow_night.png'
     # path4 = 'C:/Users/jeppe/Downloads/Combnoise_for_coronoi-20201207T131136Z-001/Combnoise_for_coronoi/fog_rain10.png'
     # path5 = 'C:/Users/jeppe/Downloads/Combnoise_for_coronoi-20201207T131136Z-001/Combnoise_for_coronoi/fog_snow.png'
-    save_path = 'C:/Users/jeppe/Desktop/Homomorphic'
+    # save_path = 'C:/Users/jeppe/Desktop/Homomorphic'
     # premade_single_filter
 
-    filt_homo = premade_single_filter("mod_night1.0")
+    # filt_homo = premade_single_filter("mod_night0.1")
     # filt_de_homo = premade_single_filter("dehaze_homo")
-    img1 = Image.open(path1)
+    # img1 = Image.open(path1)
     # img2 = Image.open(path2)
     # img3 = Image.open(path3)
     # img4 = Image.open(path4)
     # img5 = Image.open(path5)
 
-    img1 = filt_homo + img1
+    # img1 = filt_homo + img1
     # img2 = filt_homo + img2
     # img3 = filt_homo + img3
     # img4 = filt_de_homo + img4
     # img5 = filt_de_homo + img5
 
-    img1.open()
+    # img1.show()
     # img1.save(save_path+"/fog_night_homo_haze.png")
     # img2.save(save_path+"/rain_night_homo.png")
     # img3.save(save_path+"/snow_night_homo.png")
