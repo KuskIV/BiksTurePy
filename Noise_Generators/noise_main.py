@@ -267,7 +267,7 @@ def premade_single_filter(str:str)->Filter:
     if "mod" in str:
         if not re.search("mod_fog\d+\.\d+",str) == None:
             modifier = re.search("\d+\.\d+",str)
-            config = {'octaves':4, 'persistence':0.2, 'lacunarity': 3, 'alpha': float(modifier.group(0)), 'darkness':0.5}
+            config = {'octaves':4, 'persistence':0.2, 'lacunarity': 3, 'alpha': 1-float(modifier.group(0)), 'darkness':0.5}
             result = Filter({'fog_set':config})
         if not re.search("mod_night\d+\.\d+") == None:
             modifier = re.search("\d+\.\d+",str)
