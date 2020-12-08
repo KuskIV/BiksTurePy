@@ -271,7 +271,7 @@ def premade_single_filter(str:str)->Filter:
             result = Filter({'fog_set':config})
         if not re.search("mod_night\d+\.\d+") == None:
             modifier = re.search("\d+\.\d+",str)
-            config = {'factor': float(modifier.group(0))-0.001}
+            config = {'factor': 1-(float(modifier.group(0))-0.001)}
             homo = {'a':1,'b':0.5,'cutoff':800}
             result = Filter({'day_set':config,'homo_set':homo})
         if not re.search("mod_rain\d+\.\d+") == None:
