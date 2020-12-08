@@ -20,7 +20,7 @@ def ex_one(test_path:str, train_path:str, lazy_split:int=1, epoch_limit:int=100,
     """
     run_experiment_one(lazy_split, train_path, test_path, get_satina_gains_model_object_list, epochs_end=epoch_limit, folder_extension=folder_extension, model_paths=model_paths, data_to_test_on=data_to_test_on, noise_tuple=noise_tuple)
 
-def ex_two_eval_norm(test_path:str, train_path:str, lazy_split:int=1, epoch_limit:int=100, folder_extension:str="experiment_two_eval_norm", data_to_test_on=1, model_paths:list=None):
+def ex_two_eval_norm(test_path:str, train_path:str, lazy_split:int=1, epoch_limit:int=100, folder_extension:str="experiment_two_eval_norm", data_to_test_on=1, model_paths:list=None, run_on_one_model=False):
     """Trains at default three models with a normalization layer implemented, in a similar fashion as was done in experiment one
 
     Args:
@@ -30,4 +30,4 @@ def ex_two_eval_norm(test_path:str, train_path:str, lazy_split:int=1, epoch_limi
         epoch_limit (int, optional): the upper limit of how many epochs the models can be trained for. Defaults to 100.
         folder_extension (str, optional): the folder where the csv files will be saved from the experiment. Defaults to "experiment_two_eval_norm".
     """
-    run_experiment_one(lazy_split, train_path, test_path, get_satina_gains_model_norm_object_list, epochs_end=epoch_limit, folder_extension=folder_extension, data_to_test_on=data_to_test_on, model_paths=model_paths)
+    run_experiment_one(lazy_split, train_path, test_path, get_satina_gains_model_norm_object_list, epochs_end=epoch_limit, folder_extension=folder_extension, data_to_test_on=data_to_test_on, model_paths=model_paths, run_on_one_model=run_on_one_model)

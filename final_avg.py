@@ -28,18 +28,32 @@ def ensure_same_size(csv_one, csv_two):
             raise IndexError
 
 def is_numeric(numb):
-    return numb.isdigit()
+    if isinstance(numb, float):
+        return True
+    elif numb.isdigit():
+        return True
+    else:
+        return False
+    # return numb.isdigit()
 
-def avg_two_csv(csv_one, csv_two):
-    ensure_same_size(csv_one, csv_one)
-    
+def avg_longest(csv_one, csv_two):
     for i in range(len(csv_one)):
         for j in range(len(csv_one[i])):
-            if is_numeric(csv_one[i][j]) and is_numeric(csv_two[i][j]):
-                csv_one[i][j] = (float(csv_one[i][j]) + float(csv_two[i][j])) / 2
-            elif is_numeric(csv_two[i][j]):
-                csv_one[i][j] = csv_two[i][j]
+            if len(csv_two) > i:
+                if is_numeric(csv_one[i][j]) and is_numeric(csv_two[i][j]):
+                    csv_one[i][j] = (float(csv_one[i][j]) + float(csv_two[i][j])) / 2
+                elif is_numeric(csv_two[i][j]):
+                    csv_one[i][j] = csv_two[i][j]
+    return csv_one
+
+def avg_two_csv(csv_one, csv_two):
+    # ensure_same_size(csv_one, csv_one)
     
+    if len(csv_one) >= len(csv_two):
+        csv_one = avg_longest(csv_one, csv_two)
+    else:
+        csv_one = avg_longest(csv_two, csv_one)
+
     return csv_one
 
 def get_avg_csv(paths):
@@ -56,8 +70,12 @@ def get_avg_csv(paths):
 
 def calc_avg_from_base_and_csv(base, csv_list, output_folder):
     all_paths = walk_base(base, csv_list)
-    
+    i = 0
     for key, item in all_paths.items():
+        # print(i)
+        # i += 1
+        # if i == 7:
+        #     print('yeet')
         path_csv = f"{output_folder}/{key}"
         avg_csv = get_avg_csv(item)
         csv_obj = cvs_object(path_csv)

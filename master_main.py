@@ -12,7 +12,7 @@ def get_phase_two_csv():
 
 if __name__ == "__main__":
     index = 5
-    data_to_test_on = 1
+    data_to_test_on = 100
     
     phase_one_path = get_paths('phase_one_csv')
     phase_two_path = get_paths('phase_two_csv')
@@ -26,9 +26,9 @@ if __name__ == "__main__":
     
     for i in range(index):
         run_biksture(i, data_to_test_on, 
-                    run_base_experiments=True,
-                    run_ideal_experiments=True, 
-                    run_lobster_experiments=True, 
+                    run_base_experiments=False,
+                    run_ideal_experiments=False, 
+                    run_lobster_experiments=False, 
                     run_lobster_level_experiments=True
                     )
     

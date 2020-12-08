@@ -197,7 +197,7 @@ def initailize_initial_values(folder_extension:str, filter_method)->tuple:
 
     return filters, base_path
 
-def get_h5_with_models(h5_path:str, training_split:int=1, get_models:list=get_satina_gains_model_object_list, model_paths:str=None)->tuple:
+def get_h5_with_models(h5_path:str, run_on_one_model, training_split:int=1, get_models:list=get_satina_gains_model_object_list, model_paths:str=None)->tuple:
     """Gets the h5 object from a path, and the ml models
 
     Args:
@@ -210,7 +210,12 @@ def get_h5_with_models(h5_path:str, training_split:int=1, get_models:list=get_sa
         tuple: [A tuple of the loaded h5 object, and the models]
     """
     h5_obj = h5_object(civp(h5_path), training_split=training_split)
-    model_object_list = get_models(h5_obj.class_in_h5, load_trained_models=True, model_paths=model_paths)
+    
+    if run_on_one_model:
+        model_object_list = [get_models(h5_obj.class_in_h5, load_trained_models=True, model_paths=model_paths)[-1]]
+    else:
+        model_object_list = get_models(h5_obj.class_in_h5, load_trained_models=True, model_paths=model_paths)
+
     return h5_obj,model_object_list
 
 def evaluate_models_on_noise(filters:list, model_objs:list,h5_obj:object,base_path:str, data_to_test_on=1)->list:
@@ -261,7 +266,7 @@ def introduce_experiment_properties(filters, base_path, test_path, model_object_
     print(f"  - Running on 1 / {data_to_test_on} data")
     print("--------------------------")
 
-def ex_two_eval_noise(test_path:str, folder_extension:str, get_models:list=get_satina_gains_model_object_list, training_split:int=1, model_paths:str=None, data_to_test_on=1, filter_method=load_filters)->None:
+def ex_two_eval_noise(test_path:str, folder_extension:str, get_models:list=get_satina_gains_model_object_list, training_split:int=1, model_paths:str=None, data_to_test_on=1, filter_method=load_filters, run_on_one_model=False)->None:
     """This function enables the evalutation of a tensor flow models using some filters and images from teh models training set.
 
     Args:
@@ -273,7 +278,7 @@ def ex_two_eval_noise(test_path:str, folder_extension:str, get_models:list=get_s
         data_to_test_on (int, optional): [UNKNOWN USE]. Defaults to 1.
     """
     filters, base_path = initailize_initial_values(folder_extension, filter_method) #TODO seems folder_exstension is never used for anything, remove or identify use
-    h5_obj, model_object_list = get_h5_with_models(civp(test_path),training_split=training_split,get_models=get_models, model_paths=model_paths)
+    h5_obj, model_object_list = get_h5_with_models(civp(test_path), run_on_one_model,training_split=training_split,get_models=get_models, model_paths=model_paths)
     introduce_experiment_properties(filters, base_path, test_path, model_object_list, folder_extension, data_to_test_on)
     filter_names = evaluate_models_on_noise(filters, model_object_list, h5_obj, base_path, data_to_test_on=data_to_test_on) #TODO seems data_to_test_on is never used remove or identify use
     generate_csv_files_for_phase2(filter_names,h5_obj,base_path, model_object_list) #TODO move all csv related function into this method, speceficly the one from 2_1    

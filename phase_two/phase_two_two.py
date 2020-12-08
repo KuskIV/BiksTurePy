@@ -83,6 +83,11 @@ def load_fog_filters():
     dict = {'fog':F}
     return dict
 
+def load_dehaze_filters():
+    D = premade_single_filter('de_fog15')
+    dict = {'dehaze':D}
+    return dict
+
 def load_filters():
     F = premade_single_filter('foghomo')
     R = premade_single_filter('rainhomo')
@@ -132,11 +137,18 @@ def generate_noise_homo_dataset(img_shape, keep_original, data_split=1):
     generate_train_set(data_split, filters,img_shape, keep_original, chungus=0, train_noise_key='train_set_ideal_noise', h5_noise_key='h5_train_ideal_noise')
     generate_test_set(data_split, filters, img_shape, keep_original, chungus=0, test_noise_key='test_set_ideal_noise', h5_noise_key='h5_test_ideal_noise')
 
+def generate_dehaze_dataset(img_shape, keep_original, data_split=1):
+    filters = load_dehaze_filters()
+    generate_train_set(data_split, filters,img_shape, keep_original, chungus=0, train_noise_key='train_set_dehaze', h5_noise_key='h5_train_dehaze')
+    generate_test_set(data_split, filters, img_shape, keep_original, chungus=0, test_noise_key='test_set_dehaze', h5_noise_key='h5_test_dehaze')
+
+
 def generate_datasets():
     img_shape = (200, 200)
     generate_homo_dataset(img_shape, False) 
     generate_noise_dataset(img_shape, True)
     generate_noise_homo_dataset(img_shape, False)
+    generate_dehaze_dataset(img_shape, False)
 
 if __name__ == "__main__":
     generate_datasets()
