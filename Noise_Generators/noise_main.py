@@ -269,7 +269,7 @@ def premade_single_filter(str:str)->Filter:
             modifier = re.search("\d+\.\d+",str)
             config = {'octaves':4, 'persistence':0.2, 'lacunarity': 3, 'alpha': 1-float(modifier.group(0)), 'darkness':0.5}
             result = Filter({'fog_set':config})
-        if not re.search("mod_night\d+\.\d+") == None:
+        if not re.search("mod_night\d+\.\d+", str) == None:
             modifier = re.search("\d+\.\d+",str)
             config = {'factor': 1-(float(modifier.group(0))-0.001)}
             homo = {'a':1,'b':0.5,'cutoff':800}
@@ -278,8 +278,8 @@ def premade_single_filter(str:str)->Filter:
             modifier = re.search("\d+\.\d+")
             config ={'density':(0.1*float(modifier.group(0)), 0.15*float(modifier.group(0))),'density_uniformity':(0.9,1.0),'drop_size':(0.5,0.65),'drop_size_uniformity':(0.1,0.5),'angle':(-20,20),'speed':(0.1,0.2),'blur':(0.001,0.001)}
             result = Filter({'wh_set':config})
-        if not re.search("mod_snow\d+\.\d+") == None:
-            modifier = re.search("\d+\.\d+")
+        if not re.search("mod_snow\d+\.\d+", str) == None:
+            modifier = re.search("\d+\.\d+", str)
             config = {'density':(0.11*float(modifier.group(0)),0.16*float(modifier.group(0))),'density_uniformity':(0.95,1.0),'drop_size':(0.7,0.8),'drop_size_uniformity':(0.2,0.3),'angle':(-30,30),'speed':(0.04,0.1),'blur':(0.004,0.01),'mode':'snow'}
             result = Filter({'wh_set':config})
 
@@ -414,6 +414,10 @@ def premade_single_filter(str:str)->Filter:
         config_d = {'kernel':15}
         config = {'a':1,'b':0.5,'cutoff':800}
         result = Filter({'homo_set':config,'defog_set':config_d})
+        
+    if result == None:
+        raise KeyError(f"(noise main) No such key exists: {str}")
+    
     return result
 
 if __name__ == '__main__':

@@ -246,7 +246,7 @@ def iterate_and_sum(model_object_list, extension, sum_path, image_dataset, lable
 def verify_class_amounts(class_in_test, class_int_train):
     return class_in_test == class_int_train
 
-def run_experiment_one(lazy_split:int, train_h5_path:str, test_h5_path:str, get_models, epochs_end:int=10, dataset_split:int=0.7, folder_extension = None, model_paths=None, data_to_test_on=1, noise_tuple=None)->None:
+def run_experiment_one(lazy_split:int, train_h5_path:str, test_h5_path:str, get_models, epochs_end:int=10, dataset_split:int=0.7, folder_extension = None, model_paths=None, data_to_test_on=1, noise_tuple=None, run_on_one_model=False)->None:
     """This method runs experiment one, and is done in several steps:
             1. For each epoch to train for, the models are trained. After each epoch, the accuracy is saved on the object.
             2. When the training is done, all the data is saved in csv files as (Epochs,Resolution,Class,Class_Acuracy,Total_in_Class)
@@ -280,7 +280,10 @@ def run_experiment_one(lazy_split:int, train_h5_path:str, test_h5_path:str, get_
 
     custom_error_check(verify_class_amounts(h5_test.class_in_h5, h5_train.class_in_h5), f"The input train and test set does not have matching classes {h5_train.class_in_h5} - {h5_test.class_in_h5}")
 
-    model_object_list = get_models(h5_train.class_in_h5, model_paths=model_paths)
+    if run_on_one_model:
+        model_object_list = [get_models(h5_train.class_in_h5, model_paths=model_paths)[-1]]
+    else:
+        model_object_list = get_models(h5_train.class_in_h5, model_paths=model_paths)
 
     find_ideal_model(h5_train, model_object_list, lazy_split=lazy_split, epochs=epochs_end, save_models=True, data_to_test_on=data_to_test_on, noise_tuple=noise_tuple)
 
@@ -293,7 +296,11 @@ def run_experiment_one(lazy_split:int, train_h5_path:str, test_h5_path:str, get_
     _, _, image_dataset, lable_dataset = h5_train.shuffle_and_lazyload(0, data_to_test_on)
     iterate_and_sum(model_object_list, 'val', sum_val_path, image_dataset, lable_dataset, epochs_end, h5_train.images_in_classes, base_path, folder_extension)
     
-    model_object_list_loaded = get_models(h5_train.class_in_h5, load_trained_models=True)
+    if run_on_one_model:
+        model_object_list_loaded = [get_models(h5_train.class_in_h5, load_trained_models=True)[-1]]
+    else:
+        model_object_list_loaded = get_models(h5_train.class_in_h5, load_trained_models=True)
+    
     image_dataset, lable_dataset, _, _ = h5_test.shuffle_and_lazyload(0, data_to_test_on)
     iterate_and_sum(model_object_list_loaded, 'test', sum_test_path, image_dataset, lable_dataset, -1, h5_test.images_in_classes, base_path, folder_extension, epochs=[x.fit_data[-1][0] for x in model_object_list])
     combine_two_summed_class_accracy(sum_test_path, sum_val_path, base_path)

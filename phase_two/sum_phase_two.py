@@ -1,5 +1,5 @@
 import os, sys
-
+import re
 import os,sys,inspect
 current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parent_dir = os.path.dirname(current_dir)
@@ -110,6 +110,17 @@ def dissasemble_cell(cell):
     custom_error_check(verify_cell(cell_data), f'The cell {cell} is not in the correct syntax. Should contain three underscores')
     return cell_data[0], f"{cell_data[3]}_{cell_data[2]}"
 
+def dissasemble_cell_alternative(cell):
+    cell_data = cell.split('_')
+    custom_error_check(verify_cell(cell_data), f'The cell {cell} is not in the correct syntax. Should contain three underscores')
+    noise = re.search('[\D]+', cell_data[0])
+    number = re.search('[\d]+', cell_data[0])
+    
+    if re.match('(o|O)riginal', noise.group(0)):
+        return None, None
+    else:
+        return number.group(0), noise.group(0)
+
 def data_index_exists(data_to_append):
     return len(data_to_append) == 2
 
@@ -153,7 +164,7 @@ def merge_combined_files(data_to_combine, base_path, output_csv_name):
     csv_to_write = cvs_object(save_path)
     csv_to_write.write(data_to_save)
 
-def merge_final_files(base_path, output_csv_name):
+def merge_final_files(base_path, output_csv_name, dissasemble_cell_method):
     """iterates through all folders in the base path, and combines 
 
     Args:
@@ -170,7 +181,10 @@ def merge_final_files(base_path, output_csv_name):
             data_to_append = read_csv_file(csv_path)
             custom_error_check(data_index_exists(data_to_append), f"The list data_to_append should have length 2, but is {len(data_to_append)}.")
             for i in range(1, len(data_to_append[0])): #loops trough the headers one by one
-                noise, experiment = dissasemble_cell(data_to_append[0][i])
+                noise, experiment = dissasemble_cell_method(data_to_append[0][i])
+                if noise == None and experiment == None:
+                    continue
+                
                 if noise not in data_to_combine['filter']:
                     data_to_combine['filter'].append(noise)
                 
@@ -185,7 +199,7 @@ def merge_final_files(base_path, output_csv_name):
     
     merge_combined_files(data_to_combine, base_path, output_csv_name)
 
-def sum_merged_files(base_path):
+def sum_merged_files(base_path, exclude_folders):
     if not os.path.exists(base_path):
         print(f"The input path does not exists: \"{base_path}\"")
     csv_file_name = "sum_cat.csv"
@@ -194,8 +208,12 @@ def sum_merged_files(base_path):
         csv_path = f"{base_path}/{d}"
         output_csv_name = sum_merged_files_to_one_line(csv_path, csv_file_name)
         # sum_merged_files_to_one_file(base_path, output_csv_name)
-        if output_csv_name != "":
-            merge_final_files(csv_path, output_csv_name)
+        temp_exclude = f"{base_path.split('/')[-1]}/{d}"
+        if temp_exclude not in exclude_folders:
+            if output_csv_name != "":
+                merge_final_files(csv_path, output_csv_name, dissasemble_cell)
+        elif output_csv_name != "":
+            merge_final_files(csv_path, output_csv_name, dissasemble_cell_alternative)
 
 if __name__ == '__main__':
-    sum_merged_files('phase_two/csv_output')
+    sum_merged_files('phase_two/csv_output', [])
