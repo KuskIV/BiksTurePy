@@ -218,47 +218,44 @@ def introduce_experiment(folder_name):
 def get_ex_folder(baseline_folder, base):
     return f"{base}/{baseline_folder}"
 
-def lobster_noise_level(noise_name, data_to_test_on, base_path, test_path, ideal_path, ideal_noise_path, filter_method, ideal_and_lobster_on_one_model):
-    errors = []
-    folder_names = []
+def create_paths_for_lobster_noise_level(base_path, folder_name):
+    path_to_create1 = f"{get_paths('phase_two_csv')}/{base_path}"
+    path_to_create2 = f"{get_paths('phase_two_csv')}/{folder_name}"
+    create_dir(path_to_create1)
+    create_dir(path_to_create2)
+
+def one_lobster_noise_level(noise_name, base_path, test_path, data_to_test_on, ideal_path, filter_method, ideal_and_lobster_on_one_model, folder_extension):
+    errors = ''
+    folder_name = ''
     
     try:
-        ideal_lobster_level_folder = f"experiment_two_big_lobster_ideallevel{noise_name}"
-        ideal_base_path = f"{base_path}ideal"
-        ex_folder = get_ex_folder(ideal_lobster_level_folder, ideal_base_path)
-        # create_dir(ex_folder)
-        path_to_create1 = f"{get_paths('phase_two_csv')}/{ideal_base_path}"
-        path_to_create2 = f"{get_paths('phase_two_csv')}/{ex_folder}"
-        create_dir(path_to_create1)
-        create_dir(path_to_create2)
-        
-        folder_names.append(ideal_base_path)
-        introduce_experiment(ideal_lobster_level_folder)
-        ex_two_eval_noise(test_path, ex_folder, get_models=get_satina_gains_model_norm_object_list, data_to_test_on=data_to_test_on, model_paths=ideal_path, filter_method=filter_method, run_on_one_model=ideal_and_lobster_on_one_model)
+        modified_lobster_level_folder = f"experiment_two_big_lobster_{folder_extension}level{noise_name}"
+        modified_base_path = f"{base_path}{folder_extension}"
+        ex_folder = get_ex_folder(modified_lobster_level_folder, modified_base_path)
+        create_paths_for_lobster_noise_level(modified_base_path, ex_folder)
+        folder_name = modified_base_path
+        introduce_experiment(modified_lobster_level_folder)
+        ex_two_eval_noise(test_path, ex_folder, get_models=get_satina_gains_model_norm_object_list, 
+                        data_to_test_on=data_to_test_on, model_paths=ideal_path, filter_method=filter_method, 
+                        run_on_one_model=ideal_and_lobster_on_one_model)
     except Exception as e:
         print(f"ERROR IN EXPERIMENT 'TRAIN ON IDEAL LOBSTER {noise_name}'")
         e = sys.exc_info()
         print(e)
-        errors.append(e)
+        errors = e
+    return errors, folder_name
+
+def get_errors_and_folders(errors, folders):
+    error_list = [e for e in errors if e != '']
+    folder_list = [f for f in folders if f != '']
     
-    try:
-        noise_lobster_level_folder = f"experiment_two_big_lobster_noiselevel{noise_name}"
-        noise_base_path = f"{base_path}noise"
-        ex_folder = get_ex_folder(noise_lobster_level_folder, noise_base_path)
-        path_to_create1 = f"{get_paths('phase_two_csv')}/{noise_base_path}"
-        path_to_create2 = f"{get_paths('phase_two_csv')}/{ex_folder}"
-        create_dir(path_to_create1)
-        create_dir(path_to_create2)
-        folder_names.append(noise_base_path)
-        introduce_experiment(noise_lobster_level_folder)
-        ex_two_eval_noise(test_path, ex_folder, get_models=get_satina_gains_model_norm_object_list, data_to_test_on=data_to_test_on, model_paths=ideal_noise_path, filter_method=filter_method, run_on_one_model=ideal_and_lobster_on_one_model)
-    except Exception as e:
-        print(f"ERROR IN EXPERIMENT 'TRAIN ON NOISE LOBSTER {noise_name}'")
-        e = sys.exc_info()
-        print(e)
-        errors.append(e)
+    return error_list, folder_list
+
+def lobster_noise_level(noise_name, data_to_test_on, base_path, test_path, ideal_path, ideal_noise_path, filter_method, ideal_and_lobster_on_one_model):
+    e1, f1 = one_lobster_noise_level(noise_name, base_path, test_path, data_to_test_on, ideal_path, filter_method, ideal_and_lobster_on_one_model, 'ideal')
+    e2, f2 = one_lobster_noise_level(noise_name, base_path, test_path, data_to_test_on, ideal_noise_path, filter_method, ideal_and_lobster_on_one_model, 'noise')
     
-    return errors, folder_names
+    return get_errors_and_folders([e1, e2], [f1, f2])
 
 def extend_errors(errors, errors_to_append):
     for e in errors_to_append:
@@ -333,8 +330,7 @@ def run_biksture(index, data_to_test_on, run_base_experiments=True, run_ideal_ex
             homo_folder = "experiment_two_eval_homo"
             ex_folder = get_ex_folder(homo_folder, base_ex)
             introduce_experiment(homo_folder)
-            # ex_one(test_path, train_path, folder_extension=homo_folder, data_to_test_on=data_to_test_on, model_paths=homo_path, noise_tuple=get_fog_twenty_tuple())
-            ex_one(homo_test_path, homo_train_path, folder_extension=ex_folder, data_to_test_on=data_to_test_on, model_paths=homo_path, noise_tuple=get_fog_twenty_tuple())
+            ex_one(homo_test_path, homo_train_path, folder_extension=ex_folder, data_to_test_on=data_to_test_on, model_paths=homo_path)
             ex_two_eval_noise(homo_test_path, ex_folder, data_to_test_on=data_to_test_on, model_paths=homo_path, filter_method=load_homo_filters)
         except:
             print("ERROR IN EXPERIMENT 'TRAIN ON HOMO'")
@@ -428,34 +424,6 @@ def run_biksture(index, data_to_test_on, run_base_experiments=True, run_ideal_ex
         e3, _ = lobster_noise_level('rain', data_to_test_on, base_big_lobster_level, homo_test_path, ideal_path, ideal_noise_path, load_lobster_level_filters_rain, ideal_and_lobster_on_one_model)
         e4, exclude_folders = lobster_noise_level('snow', data_to_test_on, base_big_lobster_level, homo_test_path, ideal_path, ideal_noise_path, load_lobster_level_filters_snow, ideal_and_lobster_on_one_model)
         extend_errors(errors, [e1, e2, e3, e4])
-        
-        # try:
-        #     if ideal_worked or not run_ideal_experiments:
-        #         ideal_lobster_level_folder = "experiment_two_big_lobster_ideallevel"
-        #         ex_folder = get_ex_folder(ideal_lobster_level_folder, base_big_lobster_level)
-        #         introduce_experiment(ideal_lobster_level_folder)
-        #         ex_two_eval_noise(homo_test_path, ex_folder, get_models=get_satina_gains_model_norm_object_list, data_to_test_on=data_to_test_on, model_paths=ideal_path, filter_method=load_lobster_level_filters, run_on_one_model=ideal_and_lobster_on_one_model)
-        #     else:
-        #         print("---\nWARNING: experiment lobster_ideal will not run since an error occured when training the model\n---")
-        # except Exception as e:
-        #     print("ERROR IN EXPERIMENT 'TRAIN ON IDEAL LOBSTER'")
-        #     e = sys.exc_info()
-        #     print(e)
-        #     errors.append(e)
-        
-        # try:
-        #     if ideal_worked or not run_ideal_experiments:
-        #         noise_lobster_level_folder = "experiment_two_big_lobster_noiselevel"
-        #         ex_folder = get_ex_folder(noise_lobster_level_folder, base_big_lobster_level)
-        #         introduce_experiment(noise_lobster_level_folder)
-        #         ex_two_eval_noise(homo_test_path, ex_folder, get_models=get_satina_gains_model_norm_object_list, data_to_test_on=data_to_test_on, model_paths=ideal_noise_path, filter_method=load_lobster_level_filters, run_on_one_model=ideal_and_lobster_on_one_model)
-        #     else:
-        #         print("---\nWARNING: experiment lobster_noise will not run since an error occured when training the model\n---")
-        # except Exception as e:
-        #     print("ERROR IN EXPERIMENT 'TRAIN ON NOISE LOBSTER'")
-        #     e = sys.exc_info()
-        #     print(e)
-        #     errors.append(e)
 
     try:
         sum_merged_files(f'phase_two/csv_output/{index}', exclude_folders)

@@ -5,14 +5,14 @@ from final_avg import calc_avg_from_experiments
 from global_paths import get_paths
 
 def get_phase_one_csv():
-    return ['fitdata_combined.csv', 'test_val_sum_class_accuracy.csv']
+    return [] #[('fitdata_combined.csv', 1), ('test_val_sum_class_accuracy.csv', 3)]
 
 def get_phase_two_csv():
-    return ['final_sum_sum_sum_summed.csv', 'sum_cat', 'sum_sub_cat.csv']
+    return [('final_sum_sum_sum_summed.csv', 0)] # , ('sum_cat', 3), ('sum_sub_cat.csv', 3)]
 
 if __name__ == "__main__":
     index = 5
-    data_to_test_on = 100
+    data_to_test_on = 1
     
     phase_one_path = get_paths('phase_one_csv')
     phase_two_path = get_paths('phase_two_csv')
