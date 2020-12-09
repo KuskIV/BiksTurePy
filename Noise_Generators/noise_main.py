@@ -75,15 +75,21 @@ class Filter: #TODO create homophobic filter
         return inner_func
 
     def get_order(self):
+        """Returns a dictionary with the filter order
+
+        Returns:
+            [dict]: dict used to access the __init__ functions for the diffrent filters
+        """
         return {self.Keys[2]:weather,
                 self.Keys[0]:perlin,
                 self.Keys[1]:brightness,
                 self.Keys[4]:fog_remove, 
                 self.Keys[3]:homomorphic}
+
     @check_adjust_img_type
     @decor_img_corretness
     def Filter_order(self,img:Image.Image)->Image.Image:
-        """Method dictating the order of the filter when applied to some image
+        """Method applying the filter in the correct order to the img
 
         Args:
             img (PIL.image): a Pil image that the diffrent filter should be applied to
@@ -122,6 +128,22 @@ class Filter: #TODO create homophobic filter
         """
         return self.Apply(img)
 
+    def loading_bar(self, max:int):
+        if max > 100:
+            done = max
+            show_progress = True
+            progress = trange(done, desc='mult stuff', leave=True)
+        else:
+            show_progress = False
+            progress = range(max)
+        
+        for i in progress:
+            if show_progress:
+                progress.set_description(f"{i}/{done} multi done")
+                progress.refresh()
+            yield i 
+
+
     def __mul__(self, imgs:list)->list:
         """Method for applying the same filter on multiple images
         Args:
@@ -131,26 +153,10 @@ class Filter: #TODO create homophobic filter
             list: List of Pil images with the filter
         """
         returnList = []
-
-        if len(imgs) > 100:
-            done = len(imgs)
-            show_progress = True
-            progress = trange(done, desc='mult stuff', leave=True)
-        else:
-            show_progress = False
-            progress = range(len(imgs))
-        
-        try:
-            for i in progress:
-                if show_progress:
-                    progress.set_description(f"{i}/{done} multi done")
-                    progress.refresh()
-                returnList.append(self + imgs[i])
-            return returnList
-        except Exception as e:
-            print(f"ERROR: {e}")
-            raise Exception
-        
+        for i in self.loading_bar(len(imgs)):
+            returnList.append(self + imgs[i])
+        return returnList
+    
     def get_config(self):
         return self.configuration
 
@@ -434,6 +440,7 @@ def premade_single_filter(str:str)->Filter:
     return result
 
 if __name__ == '__main__':
+    pass
     # import time
     # path1 = 'C:/Users/jeppe/Downloads/Combnoise_for_coronoi-20201207T131136Z-001/Combnoise_for_coronoi/fog_night.png'
     # path2 = 'C:/Users/jeppe/Downloads/Combnoise_for_coronoi-20201207T131136Z-001/Combnoise_for_coronoi/rain_night1.png'
@@ -454,6 +461,12 @@ if __name__ == '__main__':
     # img = Image.open(path1)
     # (filt + img).save(f'{save_path}/fog_night.png')
     # filt_de_homo = premade_single_filter("dehaze_homo")
+
+    # imgarr = []
+    # for i in range(101):
+    #     imgarr.append(Image.open(path1))
+    # filt * imgarr
+
     # img1 = Image.open(path1)
     # img2 = Image.open(path1)
     # img3 = Image.open(path1)
@@ -473,14 +486,13 @@ if __name__ == '__main__':
     # img4.save(save_path+"/fog_rain_homo_haze.png")
     # img5.save(save_path+"/fog_snow_homo_haze.png")
     #QuickDebug()
-#fog_set=(1)
-#day_set=(0.5)
-#wh_set = (70,7,2,(2,2),(130,130,130))
-#Noise(img,fog_set = fog_set,day_set = day_set,wh_set = wh_set).show()
-#Noise(img,fog_set = (1)).save("C:/Users/jeppe/Desktop/Example_images/pic1.png")
-#Noise(img,day_set = (0.5)).save("C:/Users/jeppe/Desktop/Example_images/pic2.png")
-#Noise(img,day_set = (2.0)).save("C:/Users/jeppe/Desktop/Example_images/pic3.png")
-#Noise(img, wh_set = (500,7,1,(2,2),(130,130,150))).save("C:/Users/jeppe/Desktop/Example_images/pic4.png")
-#Noise(img,wh_set = (200,2,2,(5,5),(200,200,200))).save("C:/Users/jeppe/Desktop/Example_images/pic5.png")
-#Noise(img,fog_set=(1), wh_set = (500,7,1,(2,2),(130,130,150))).save("C:/Users/jeppe/Desktop/Example_images/pic4.png")
-    
+    #fog_set=(1)
+    #day_set=(0.5)
+    #wh_set = (70,7,2,(2,2),(130,130,130))
+    #Noise(img,fog_set = fog_set,day_set = day_set,wh_set = wh_set).show()
+    #Noise(img,fog_set = (1)).save("C:/Users/jeppe/Desktop/Example_images/pic1.png")
+    #Noise(img,day_set = (0.5)).save("C:/Users/jeppe/Desktop/Example_images/pic2.png")
+    #Noise(img,day_set = (2.0)).save("C:/Users/jeppe/Desktop/Example_images/pic3.png")
+    #Noise(img, wh_set = (500,7,1,(2,2),(130,130,150))).save("C:/Users/jeppe/Desktop/Example_images/pic4.png")
+    #Noise(img,wh_set = (200,2,2,(5,5),(200,200,200))).save("C:/Users/jeppe/Desktop/Example_images/pic5.png")
+    #Noise(img,fog_set=(1), wh_set = (500,7,1,(2,2),(130,130,150))).save("C:/Users/jeppe/Desktop/Example_images/pic4.png")
