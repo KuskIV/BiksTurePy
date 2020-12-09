@@ -129,30 +129,6 @@ class Filter: #TODO create homophobic filter
         """
         return self.Apply(img)
 
-    def loading_bar(self, max:int):
-        """loading bar, that can be applied easily in any loop
-
-        Args:
-            max (int): The value the loading bar count towards
-
-        Yields:
-            i (int): The currently reached value of i
-        """
-        if max > 100:
-            done = max
-            show_progress = True
-            progress = trange(done, desc='mult stuff', leave=True)
-        else:
-            show_progress = False
-            progress = range(max)
-        
-        for i in progress:
-            if show_progress:
-                progress.set_description(f"{i}/{done} multi done")
-                progress.refresh()
-            yield i 
-
-
     def __mul__(self, imgs:list)->list:
         """Method for applying the same filter on multiple images
         Args:
@@ -162,12 +138,35 @@ class Filter: #TODO create homophobic filter
             list: List of Pil images with the filter
         """
         returnList = []
-        for i in self.loading_bar(len(imgs)):
+        for i in loading_bar(len(imgs)):
             returnList.append(self + imgs[i])
         return returnList
     
     def get_config(self):
         return self.configuration
+
+def loading_bar(max:int):
+    """loading bar, that can be applied easily in any loop
+
+    Args:
+        max (int): The value the loading bar count towards
+
+    Yields:
+        i (int): The currently reached value of i
+    """
+    if max > 100:
+        done = max
+        show_progress = True
+        progress = trange(done, desc='mult stuff', leave=True)
+    else:
+        show_progress = False
+        progress = range(max)
+    
+    for i in progress:
+        if show_progress:
+            progress.set_description(f"{i}/{done} multi done")
+            progress.refresh()
+        yield i 
 
 def chunk_it(seq, num):
     avg = len(seq) / float(num)
