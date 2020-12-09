@@ -154,13 +154,9 @@ def loading_bar(max:int):
     Yields:
         i (int): The currently reached value of i
     """
-    if max > 100:
-        done = max
-        show_progress = True
-        progress = trange(done, desc='mult stuff', leave=True)
-    else:
-        show_progress = False
-        progress = range(max)
+    done = max
+    show_progress = True if max > 100 else False
+    progress = trange(done, desc='mult stuff', leave=True) if show_progress else range(max)
     
     for i in progress:
         if show_progress:
@@ -169,14 +165,22 @@ def loading_bar(max:int):
         yield i 
 
 def chunk_it(seq, num):
-    avg = len(seq) / float(num)
-    out = []
-    last = 0.0
+    avg, out, last = len(seq) / float(num), [], 0.0
     while last < len(seq):
         out.append(seq[int(last):int(last + avg)])
         last += avg
-
     return out
+
+def linear_dist(images,lables,fil,chungus):
+    result = []
+    indexes=chunk_it(range(len(images)),len(fil) + chungus) 
+    for i in range(len(indexes) - (chungus)):
+        temp_list = fil[i][1]*images[indexes[i].start:indexes[i].stop]
+        temptemp_list = lables[indexes[i].start:indexes[i].stop]
+        for k in range(len(temp_list)):
+            temp_list[k] = (temp_list[k],fil[i][0],temptemp_list[k])
+        result.extend(temp_list)
+    return result
 
 def apply_multiple_filters(Imgs:list,mode = 'rand', KeepOriginal:bool=True, filters:dict=None, chungus=4)->list:
     """
@@ -191,18 +195,10 @@ def apply_multiple_filters(Imgs:list,mode = 'rand', KeepOriginal:bool=True, filt
     Returns:
         list: A list containing the image, tupled with the filter and its original class
     """
-    result = []    
-    images, lables = Imgs[0], Imgs[1]
+    result, fil, images, lables =[], list(filters.items()) ,Imgs[0], Imgs[1]
 
-    fil = list(filters.items())
     if mode == 'linear':
-        indexes=chunk_it(range(len(images)),len(fil) + chungus) 
-        for i in range(len(indexes) - (chungus)):
-            temp_list = fil[i][1]*images[indexes[i].start:indexes[i].stop]
-            temptemp_list = lables[indexes[i].start:indexes[i].stop]
-            for k in range(len(temp_list)):
-                temp_list[k] = (temp_list[k],fil[i][0],temptemp_list[k])
-            result.extend(temp_list)
+        result = linear_dist(images, lables, fil, chungus)
 
     for i in loading_bar(len(Imgs)):
         if KeepOriginal:
@@ -210,8 +206,7 @@ def apply_multiple_filters(Imgs:list,mode = 'rand', KeepOriginal:bool=True, filt
         if mode == 'rand':
             _tuple = random.choice(fil)
             result.append((_tuple[1]+images[i],_tuple[0],lables[i]))
-
-    return result #(image,class,filter)
+    return result 
 
 def premade_single_filter(str:str)->Filter:
     return Filter(get_premade_filter(str))
