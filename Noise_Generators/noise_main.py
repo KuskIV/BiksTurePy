@@ -224,34 +224,34 @@ if __name__ == '__main__':
     # path3 = 'C:/Users/jeppe/Downloads/Combnoise_for_coronoi-20201207T131136Z-001/Combnoise_for_coronoi/snow_night.png'
     # path4 = 'C:/Users/jeppe/Downloads/Combnoise_for_coronoi-20201207T131136Z-001/Combnoise_for_coronoi/fog_rain10.png'
     # path5 = 'C:/Users/jeppe/Downloads/Combnoise_for_coronoi-20201207T131136Z-001/Combnoise_for_coronoi/fog_snow.png'
-    path1 = 'C:/Users/jeppe/Desktop/GTSRB_Final_Training_Images/GTSRB/Final_Training/images/00014/00020_00029.ppm'
-    save_path = 'C:/Users/jeppe/Desktop/Noise_levels'
-    levels = ['mild','medium','heavy']
-    noises = ['rain','snow','night','fog']
+    # path1 = 'C:/Users/jeppe/Desktop/GTSRB_Final_Training_Images/GTSRB/Final_Training/images/00014/00020_00029.ppm'
+    # save_path = 'C:/Users/jeppe/Desktop/Noise_levels'
+    # levels = ['mild','medium','heavy']
+    # noises = ['rain','snow','night','fog']
 
-    # for level in levels:
-    #     for noise in noises:
-    #         filt = premade_single_filter(f"{noise}_{level}")
-    #         img = Image.open(path1)
-    #         (filt + img).save(f'{save_path}/{noise}_{level}.png')
-    filt = premade_single_filter("fog_night")
-    # img = Image.open(path1)
-    # (filt + img).save(f'{save_path}/fog_night.png')
-    # filt_de_homo = premade_single_filter("dehaze_homo")
+    # # for level in levels:
+    # #     for noise in noises:
+    # #         filt = premade_single_filter(f"{noise}_{level}")
+    # #         img = Image.open(path1)
+    # #         (filt + img).save(f'{save_path}/{noise}_{level}.png')
+    # filt = premade_single_filter("fog_night")
+    # # img = Image.open(path1)
+    # # (filt + img).save(f'{save_path}/fog_night.png')
+    # # filt_de_homo = premade_single_filter("dehaze_homo")
 
-    imgarr = []
-    for i in range(101):
-        imgarr.append(Image.open(path1))
-    filt * imgarr
-    filters = {"fog":premade_single_filter("fog"),"rain":premade_single_filter("rain")}
-    imgarr = []
-    lalbes = []
-    for i in range(1000):
-        imgarr.append(Image.open(path1))
-        lalbes.append("yeet")
-    imgs = apply_multiple_filters((imgarr,lalbes),mode="linear",KeepOriginal=False,filters=filters, chungus=3)
-    for i in range(len(imgs)):
-        imgs[i][0].save(f"{save_path}/{imgs[i][1]}_{i}.png")
+    # imgarr = []
+    # for i in range(101):
+    #     imgarr.append(Image.open(path1))
+    # filt * imgarr
+    # filters = {"fog":premade_single_filter("fog"),"rain":premade_single_filter("rain")}
+    # imgarr = []
+    # lalbes = []
+    # for i in range(1000):
+    #     imgarr.append(Image.open(path1))
+    #     lalbes.append("yeet")
+    # imgs = apply_multiple_filters((imgarr,lalbes),mode="linear",KeepOriginal=False,filters=filters, chungus=3)
+    # for i in range(len(imgs)):
+    #     imgs[i][0].save(f"{save_path}/{imgs[i][1]}_{i}.png")
     #filt * imgarr
 
     # img1 = Image.open(path1)
