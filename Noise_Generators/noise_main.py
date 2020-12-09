@@ -52,25 +52,35 @@ class Filter: #TODO create homophobic filter
             self.homo_set = config.get(Keys[3])
         if config.get(Keys[4]) != None:
             self.defog_set = config.get(Keys[4])
-        
-    def Apply(self,img:Image.Image)->Image.Image:
-        """The method that applies the filters onto the images
 
-        Args:
-            img (Image.Image): Normal open PIL image
+    def check_adjust_img_type(func):
+        def inner_func1(self,img):
+            np_array_given = False
+            if isinstance(img, np.ndarray):
+                img = img * 255.0
+                img = img.astype(np.uint8)
+                img = Image.fromarray(img)
+                np_array_given = True
+            img = func(self,img)
+            if np_array_given:
+                img=np.asarray(img.convert('RGB'))
+                img = img / 255.0
+                np_array_given = False
+            return img
+        return inner_func1
 
-        Returns:
-            Image.Image: Image with filters on it
-        """
-        # if(type(img).__name__ == 'numpy.ndarray'):
-        if isinstance(img, np.ndarray):
-            img = img * 255.0
-            img = img.astype(np.uint8)
-            img = Image.fromarray(img)
-            self.np_array_given = True
+    def decor_img_corretness(func):
+        def inner_func(self,img):
+            old_size = img.size
+            img = changeImageSize(200,200,img)
+            img = func(self,img)
+            img = changeImageSize(old_size[1],old_size[0],img)
+            return img
+        return inner_func
 
-        old_size = img.size
-        img = changeImageSize(200,200,img)
+    @check_adjust_img_type
+    @decor_img_corretness
+    def Filter_order(self,img):
         if(self.wh_set != None):
             wn =  weather(self.wh_set)
             img = wn.add_weather(img)
@@ -90,15 +100,18 @@ class Filter: #TODO create homophobic filter
         if(self.homo_set != None):
             hom = homomorphic(self.homo_set)
             img = hom.homofy(img)
+        return img
 
+    def Apply(self,img:Image.Image)->Image.Image:
+        """The method that applies the filters onto the images
 
-        img = changeImageSize(old_size[1],old_size[0],img)
+        Args:
+            img (Image.Image): Normal open PIL image
 
-        if self.np_array_given:
-            img=np.asarray(img.convert('RGB'))
-            img = img / 255.0
-            self.np_array_given = False
-            
+        Returns:
+            Image.Image: Image with filters on it
+        """
+        img = self.Filter_order(img) 
         return img
 
     def __add__(self,img:Image.Image)->Image.Image:
@@ -425,9 +438,8 @@ def premade_single_filter(str:str)->Filter:
     return result
 
 if __name__ == '__main__':
-    pass
     # import time
-    # path1 = 'C:/Users/jeppe/Downloads/Combnoise_for_coronoi-20201207T131136Z-001/Combnoise_for_coronoi/fog_night.png'
+    path1 = 'C:/Users/jeppe/Downloads/Combnoise_for_coronoi-20201207T131136Z-001/Combnoise_for_coronoi/fog_night.png'
     # path2 = 'C:/Users/jeppe/Downloads/Combnoise_for_coronoi-20201207T131136Z-001/Combnoise_for_coronoi/rain_night1.png'
     # path3 = 'C:/Users/jeppe/Downloads/Combnoise_for_coronoi-20201207T131136Z-001/Combnoise_for_coronoi/snow_night.png'
     # path4 = 'C:/Users/jeppe/Downloads/Combnoise_for_coronoi-20201207T131136Z-001/Combnoise_for_coronoi/fog_rain10.png'
@@ -435,21 +447,21 @@ if __name__ == '__main__':
     # save_path = 'C:/Users/jeppe/Desktop/Homomorphic'
     # premade_single_filter
 
-    # filt_homo = premade_single_filter("mod_night0.1")
+    filt_homo = premade_single_filter("mod_night0.1")
     # filt_de_homo = premade_single_filter("dehaze_homo")
-    # img1 = Image.open(path1)
+    img1 = Image.open(path1)
     # img2 = Image.open(path2)
     # img3 = Image.open(path3)
     # img4 = Image.open(path4)
     # img5 = Image.open(path5)
 
-    # img1 = filt_homo + img1
+    img1 = filt_homo + img1
     # img2 = filt_homo + img2
     # img3 = filt_homo + img3
     # img4 = filt_de_homo + img4
     # img5 = filt_de_homo + img5
 
-    # img1.show()
+    img1.show()
     # img1.save(save_path+"/fog_night_homo_haze.png")
     # img2.save(save_path+"/rain_night_homo.png")
     # img3.save(save_path+"/snow_night_homo.png")
