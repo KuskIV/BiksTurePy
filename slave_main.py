@@ -350,8 +350,8 @@ def run_biksture(index, data_to_test_on, run_base_experiments=True, run_ideal_ex
         #                 condition=True, model_paths=noise_paths, train_model=True, run_on_one_model=False, two_test_path=test_path)
         
 
-        run_default_experiment(folder_name, base_folder, test_path, train_path, get_models_method, data_to_test_on, 
-                        model_types, filter_method=None, condition=True, model_paths=None, train_model=True, run_on_one_model=False)
+        # run_default_experiment(folder_name, base_folder, test_path, train_path, get_models_method, data_to_test_on, 
+        #                 model_types, filter_method=None, condition=True, model_paths=None, train_model=True, run_on_one_model=False)
         try:
             baseline_folder = "experiment_baseline"
             ex_folder = get_ex_folder(baseline_folder, base_ex)
