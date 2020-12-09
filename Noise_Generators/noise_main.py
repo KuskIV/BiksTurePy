@@ -130,6 +130,14 @@ class Filter: #TODO create homophobic filter
         return self.Apply(img)
 
     def loading_bar(self, max:int):
+        """loading bar, that can be applied easily in any loop
+
+        Args:
+            max (int): The value the loading bar count towards
+
+        Yields:
+            i (int): The currently reached value of i
+        """
         if max > 100:
             done = max
             show_progress = True
@@ -250,30 +258,30 @@ def apply_multiple_filters(Imgs:list,mode = 'rand', KeepOriginal:bool=True, filt
     return result #(image,class,filter)
 
         
-def loadImags(folder):
-    loaded_img = []
-    imgName = []
-    with os.scandir(folder) as imgs:
-        for ppm_path in imgs:
-            if ppm_path.name.endswith(".ppm"):
-                loaded_img.append(Image.open(ppm_path.path))
-                imgName.append(ppm_path.name.split(".")[0])
-    return loaded_img, imgName
+# def loadImags(folder):
+#     loaded_img = []
+#     imgName = []
+#     with os.scandir(folder) as imgs:
+#         for ppm_path in imgs:
+#             if ppm_path.name.endswith(".ppm"):
+#                 loaded_img.append(Image.open(ppm_path.path))
+#                 imgName.append(ppm_path.name.split(".")[0])
+#     return loaded_img, imgName
 
-def load_X_images(path):
-    subfolders = [ f.path for f in os.scandir(path) if f.is_dir() ]
-    imgName = []
-    newImgs = []
-    newLables = []
-    for folder in subfolders:
-        imgs, nwimgName = loadImags(folder)
-        imgName.extend(nwimgName)
-        imgs = [img for img in imgs]
-        lables = [os.path.basename(os.path.normpath(folder)) for img in imgs]
-        newImgs.extend(imgs)
-        newLables.extend(lables)
+# def load_X_images(path):
+#     subfolders = [ f.path for f in os.scandir(path) if f.is_dir() ]
+#     imgName = []
+#     newImgs = []
+#     newLables = []
+#     for folder in subfolders:
+#         imgs, nwimgName = loadImags(folder)
+#         imgName.extend(nwimgName)
+#         imgs = [img for img in imgs]
+#         lables = [os.path.basename(os.path.normpath(folder)) for img in imgs]
+#         newImgs.extend(imgs)
+#         newLables.extend(lables)
 
-    return (newImgs,newLables,imgName)
+#     return (newImgs,newLables,imgName)
 
 
 def premade_single_filter(str:str)->Filter:
