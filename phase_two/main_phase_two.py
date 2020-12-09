@@ -266,7 +266,7 @@ def introduce_experiment_properties(filters, base_path, test_path, model_object_
     print(f"  - Running on 1 / {data_to_test_on} data")
     print("--------------------------")
 
-def ex_two_eval_noise(test_path:str, folder_extension:str, get_models:list=get_satina_gains_model_object_list, training_split:int=1, model_paths:str=None, data_to_test_on=1, filter_method=load_filters, run_on_one_model=False)->None:
+def ex_two_eval_noise(test_path:str, folder_extension:str, get_models:list=get_satina_gains_model_object_list, training_split:int=1, model_paths:str=None, data_to_test_on=1, filter_method=None, run_on_one_model=False)->None:
     """This function enables the evalutation of a tensor flow models using some filters and images from teh models training set.
 
     Args:
@@ -277,6 +277,9 @@ def ex_two_eval_noise(test_path:str, folder_extension:str, get_models:list=get_s
         model_paths (str, optional): [The path to retrieve the saved models]. Defaults to None.
         data_to_test_on (int, optional): [UNKNOWN USE]. Defaults to 1.
     """
+    if filter_method == None:
+        filter_method = load_filters
+    
     filters, base_path = initailize_initial_values(folder_extension, filter_method) #TODO seems folder_exstension is never used for anything, remove or identify use
     h5_obj, model_object_list = get_h5_with_models(civp(test_path), run_on_one_model,training_split=training_split,get_models=get_models, model_paths=model_paths)
     introduce_experiment_properties(filters, base_path, test_path, model_object_list, folder_extension, data_to_test_on)
