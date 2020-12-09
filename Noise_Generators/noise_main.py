@@ -35,10 +35,10 @@ class Filter: #TODO create homophobic filter
             Keys = ['fog_set','day_set','wh_set','homo_set','defog_set']
         """
         self.configuration = config
-        Keys = ['fog_set','day_set','wh_set','homo_set','defog_set']
-        for key in Keys:
+        self.Keys = ['fog_set','day_set','wh_set','homo_set','defog_set']
+        for key in self.Keys:
             if key in config:
-                setattr(self,key, config.get(key))
+                setattr(self, key, config.get(key))
 
     def check_adjust_img_type(func):
         """Checks what type of image is given, then converts that to a PIL image
@@ -84,7 +84,7 @@ class Filter: #TODO create homophobic filter
 
         Returns:
             img (Pil.image): The image with the noise added
-        """
+        """    
         if(self.wh_set != None):
             wn =  weather(self.wh_set)
             img = wn.add_weather(img)
@@ -448,16 +448,16 @@ if __name__ == '__main__':
     # path3 = 'C:/Users/jeppe/Downloads/Combnoise_for_coronoi-20201207T131136Z-001/Combnoise_for_coronoi/snow_night.png'
     # path4 = 'C:/Users/jeppe/Downloads/Combnoise_for_coronoi-20201207T131136Z-001/Combnoise_for_coronoi/fog_rain10.png'
     # path5 = 'C:/Users/jeppe/Downloads/Combnoise_for_coronoi-20201207T131136Z-001/Combnoise_for_coronoi/fog_snow.png'
-    # path1 = 'C:/Users/jeppe/Desktop/GTSRB_Final_Training_Images/GTSRB/Final_Training/images/00014/00020_00029.ppm'
-    # save_path = 'C:/Users/jeppe/Desktop/Noise_levels'
-    # levels = ['mild','medium','heavy']
-    # noises = ['rain','snow','night','fog']
+    path1 = 'C:/Users/jeppe/Desktop/GTSRB_Final_Training_Images/GTSRB/Final_Training/images/00014/00020_00029.ppm'
+    save_path = 'C:/Users/jeppe/Desktop/Noise_levels'
+    levels = ['mild','medium','heavy']
+    noises = ['rain','snow','night','fog']
 
-    # for level in levels:
-    #     for noise in noises:
-    #         filt = premade_single_filter(f"{noise}_{level}")
-    #         img = Image.open(path1)
-    #         (filt + img).save(f'{save_path}/{noise}_{level}.png')
+    for level in levels:
+        for noise in noises:
+            filt = premade_single_filter(f"{noise}_{level}")
+            img = Image.open(path1)
+            (filt + img).save(f'{save_path}/{noise}_{level}.png')
 
     # filt_de_homo = premade_single_filter("dehaze_homo")
     # img1 = Image.open(path1)

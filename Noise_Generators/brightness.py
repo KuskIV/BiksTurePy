@@ -34,10 +34,10 @@ class brightness:
             The value would then be the value refresen by the keyword.
             keys = ['factor']
         """
-        keys = ['factor']
-
-        if keys[0] in config:
-            self.factor = config.get(keys[0])
+        self.Keys = ['factor']
+        for key in self.Keys:
+            if key in config:
+                setattr(self, key, config.get(key))
 
     # Method to adjust the brightness, a lower factor value will result in a darker picture.
     def AdjustBrightness(self,img:Image.Image):

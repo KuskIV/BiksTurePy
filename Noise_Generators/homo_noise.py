@@ -10,17 +10,10 @@ class homo_noise():
     mode = 'butterworth'
 
     def __init__(self,config):
-        Keys=['a','b','cutoff','filorder','mode']
-        if Keys[0] in config:
-            self.a = config.get(Keys[0])
-        if config.get(Keys[1]) != None:
-            self.b = config.get(Keys[1])
-        if config.get(Keys[2]) != None:
-            self.cut_off = config.get(Keys[2])
-        if config.get(Keys[3]) != None:
-            self.fil_order = config.get(Keys[3])
-        if config.get(Keys[4]) != None:
-            self.mode = config.get(Keys[4])
+        self.Keys=['a','b','cutoff','filorder','mode']
+        for key in self.Keys:
+            if key in config:
+                setattr(self, key, config.get(key))
 
     def __apply_filter(self, I, H):
         H = np.fft.fftshift(H)
