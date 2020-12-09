@@ -24,13 +24,7 @@ class Filter: #TODO create homophobic filter
         Image.Image : The returned image will have the filter configured to be added onto it.
     """
     #default values
-    fog_set = None
-    day_set = None
-    wh_set = None
-    homo_set = None
-    defog_set = None
-    configuration = None
-    np_array_given = False
+    fog_set = day_set = wh_set = homo_set = defog_set = configuration = None
 
     def __init__(self,config:dict):
         """The to configure the default variables in perlin noise.
@@ -38,22 +32,20 @@ class Filter: #TODO create homophobic filter
         Args:
             config (dict): The input should be a dictionary where the key is the name of the variable to change,
             The value would then be the value refresen by the keyword.
-            Keys = ['fog_set','day_set','wh_set','homo_set']
+            Keys = ['fog_set','day_set','wh_set','homo_set','defog_set']
         """
         self.configuration = config
         Keys = ['fog_set','day_set','wh_set','homo_set','defog_set']
-        if Keys[0] in config:
-            self.fog_set = config.get(Keys[0])
-        if config.get(Keys[1]) != None:
-            self.day_set = config.get(Keys[1])
-        if config.get(Keys[2]) != None:
-            self.wh_set = config.get(Keys[2])
-        if config.get(Keys[3]) != None:
-            self.homo_set = config.get(Keys[3])
-        if config.get(Keys[4]) != None:
-            self.defog_set = config.get(Keys[4])
+        for key in Keys:
+            if key in config:
+                setattr(self,key, config.get(key))
 
     def check_adjust_img_type(func):
+        """Checks what type of image is given, then converts that to a PIL image
+
+        Args:
+            func (function): The function that is decorated
+        """
         def inner_func1(self,img):
             np_array_given = False
             if isinstance(img, np.ndarray):
@@ -70,6 +62,10 @@ class Filter: #TODO create homophobic filter
         return inner_func1
 
     def decor_img_corretness(func):
+        """Decorator method that ensures that the image is the corret size for the filters.
+        Args:
+            func (function): The function this is used on
+        """
         def inner_func(self,img):
             old_size = img.size
             img = changeImageSize(200,200,img)
@@ -80,7 +76,15 @@ class Filter: #TODO create homophobic filter
 
     @check_adjust_img_type
     @decor_img_corretness
-    def Filter_order(self,img):
+    def Filter_order(self,img:Image.Image)->Image.Image:
+        """Method dictating the order of the filter when applied to some image
+
+        Args:
+            img (PIL.image): a Pil image that the diffrent filter should be applied to
+
+        Returns:
+            img (Pil.image): The image with the noise added
+        """
         if(self.wh_set != None):
             wn =  weather(self.wh_set)
             img = wn.add_weather(img)
@@ -439,29 +443,36 @@ def premade_single_filter(str:str)->Filter:
 
 if __name__ == '__main__':
     # import time
-    path1 = 'C:/Users/jeppe/Downloads/Combnoise_for_coronoi-20201207T131136Z-001/Combnoise_for_coronoi/fog_night.png'
+    # path1 = 'C:/Users/jeppe/Downloads/Combnoise_for_coronoi-20201207T131136Z-001/Combnoise_for_coronoi/fog_night.png'
     # path2 = 'C:/Users/jeppe/Downloads/Combnoise_for_coronoi-20201207T131136Z-001/Combnoise_for_coronoi/rain_night1.png'
     # path3 = 'C:/Users/jeppe/Downloads/Combnoise_for_coronoi-20201207T131136Z-001/Combnoise_for_coronoi/snow_night.png'
     # path4 = 'C:/Users/jeppe/Downloads/Combnoise_for_coronoi-20201207T131136Z-001/Combnoise_for_coronoi/fog_rain10.png'
     # path5 = 'C:/Users/jeppe/Downloads/Combnoise_for_coronoi-20201207T131136Z-001/Combnoise_for_coronoi/fog_snow.png'
-    # save_path = 'C:/Users/jeppe/Desktop/Homomorphic'
-    # premade_single_filter
+    # path1 = 'C:/Users/jeppe/Desktop/GTSRB_Final_Training_Images/GTSRB/Final_Training/images/00014/00020_00029.ppm'
+    # save_path = 'C:/Users/jeppe/Desktop/Noise_levels'
+    # levels = ['mild','medium','heavy']
+    # noises = ['rain','snow','night','fog']
 
-    filt_homo = premade_single_filter("mod_night0.1")
+    # for level in levels:
+    #     for noise in noises:
+    #         filt = premade_single_filter(f"{noise}_{level}")
+    #         img = Image.open(path1)
+    #         (filt + img).save(f'{save_path}/{noise}_{level}.png')
+
     # filt_de_homo = premade_single_filter("dehaze_homo")
-    img1 = Image.open(path1)
-    # img2 = Image.open(path2)
-    # img3 = Image.open(path3)
+    # img1 = Image.open(path1)
+    # img2 = Image.open(path1)
+    # img3 = Image.open(path1)
     # img4 = Image.open(path4)
     # img5 = Image.open(path5)
 
-    img1 = filt_homo + img1
+    # img1 = filt_homo + img1
     # img2 = filt_homo + img2
     # img3 = filt_homo + img3
     # img4 = filt_de_homo + img4
     # img5 = filt_de_homo + img5
 
-    img1.show()
+    # img1.show()
     # img1.save(save_path+"/fog_night_homo_haze.png")
     # img2.save(save_path+"/rain_night_homo.png")
     # img3.save(save_path+"/snow_night_homo.png")
