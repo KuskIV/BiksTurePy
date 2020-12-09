@@ -169,14 +169,6 @@ class Filter: #TODO create homophobic filter
     def get_config(self):
         return self.configuration
 
-def normal_distribution(lst:list):
-    mean = (len(lst) - 1) / 2
-    stddev = len(lst) / 6
-    while True:
-        index = int(random.normalvariate(mean, stddev) + 0.5)
-        if 0 <= index < len(lst):
-            return lst[index]
-
 def chunk_it(seq, num):
     avg = len(seq) / float(num)
     out = []
@@ -250,10 +242,6 @@ def apply_multiple_filters(Imgs:list,mode = 'rand', KeepOriginal:bool=True, filt
         if mode == 'rand':
             _tuple = random.choice(fil)
             result.append((_tuple[1]+images[i],_tuple[0],lables[i]))
-        
-        if mode == 'normal':
-            filter_and_lable = normal_distribution(fil)
-            result.append((filter_and_lable[1]+images[i],lables[i],filter_and_lable[0]))
 
     return result #(image,class,filter)
 
