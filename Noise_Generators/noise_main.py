@@ -16,7 +16,7 @@ from Noise_Generators.homomorphic_filtering import homomorphic
 from Noise_Generators.fog_remove import fog_remove
 from Noise_Generators.Premade_filters import get_premade_filter
 
-class Filter: #TODO create homophobic filter
+class Filter:
     """The filter class is a combination the three noises fog, 
     brightness and weather, the purpose is to provide a easy way the reuse and repeat the settings for a filter.
     And bmake them easier to iterface with in general.
@@ -172,14 +172,13 @@ def chunk_it(seq, num):
     avg = len(seq) / float(num)
     out = []
     last = 0.0
-
     while last < len(seq):
         out.append(seq[int(last):int(last + avg)])
         last += avg
 
     return out
 
-def apply_multiple_filters(Imgs:list,mode = 'rand', KeepOriginal:bool=True, filters:dict=None, chungus=4, **kwargs)->list:
+def apply_multiple_filters(Imgs:list,mode = 'rand', KeepOriginal:bool=True, filters:dict=None, chungus=4)->list:
     """
     A function that takes a input of pictures and applys them to eahc picture based on the selected mode. 
     The result will contain the edited picture with the name of the filter useed and the class of the orignal picture. 
@@ -193,13 +192,7 @@ def apply_multiple_filters(Imgs:list,mode = 'rand', KeepOriginal:bool=True, filt
         list: A list containing the image, tupled with the filter and its original class
     """
     result = []    
-    if filters is None:
-        filters = {}
-        for key, value in kwargs.items():
-            filters[key] = value
-
-    lables = Imgs[1]
-    images = Imgs[0]
+    images, lables = Imgs[0], Imgs[1]
 
     fil = list(filters.items())
     if mode == 'linear':
