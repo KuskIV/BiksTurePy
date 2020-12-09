@@ -50,15 +50,11 @@ class Filter:
         def inner_func1(self,img):
             np_array_given = False
             if isinstance(img, np.ndarray):
-                img = img * 255.0
-                img = img.astype(np.uint8)
-                img = Image.fromarray(img)
+                img = Image.fromarray((img * 255.0).astype(np.uint8))
                 np_array_given = True
             img = func(self,img)
             if np_array_given:
-                img=np.asarray(img.convert('RGB'))
-                img = img / 255.0
-                np_array_given = False
+                img = (np.asarray(img.convert('RGB')))/255
             return img
         return inner_func1
 
