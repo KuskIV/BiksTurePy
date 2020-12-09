@@ -203,39 +203,15 @@ def apply_multiple_filters(Imgs:list,mode = 'rand', KeepOriginal:bool=True, filt
 
     fil = list(filters.items())
     if mode == 'linear':
-        indexes=chunk_it(range(len(images)),len(fil) + chungus) #TODO find ideal number to add here(didnt work)
+        indexes=chunk_it(range(len(images)),len(fil) + chungus) 
+        for i in range(len(indexes) - (chungus)):
+            temp_list = fil[i][1]*images[indexes[i].start:indexes[i].stop]
+            temptemp_list = lables[indexes[i].start:indexes[i].stop]
+            for k in range(len(temp_list)):
+                temp_list[k] = (temp_list[k],fil[i][0],temptemp_list[k])
+            result.extend(temp_list)
 
-        done = len(indexes) - chungus
-        progress = trange(done, desc='index stuff', leave=True)        
-        try:
-            for i in progress:
-                try:
-                    progress.set_description(f"{i+1} / {done} chunks has been processed")
-                    progress.refresh()
-                except Exception as e:
-                    print(f"ERROR: {e}, {done}")
-    
-                # for j in range(len(fil)):
-
-                temp_list = fil[i][1]*images[indexes[i].start:indexes[i].stop]
-                temptemp_list = lables[indexes[i].start:indexes[i].stop]
-                for k in range(len(temp_list)):
-                    temp_list[k] = (temp_list[k],fil[i][0],temptemp_list[k])
-                    
-                # lst = [(entry,fil[j][0],lables[0]) for entry in temp_list]
-                
-                result.extend(temp_list)
-        except Exception as e:
-            print(f"ERROR: {e}")
-            raise Exception
-
-    done = len(lables)
-    progress = trange(done, desc="Lable stuff", leave=True)
-    
-    for i in progress:
-        progress.set_description(f"Image {i+1} / {done} has been processed")
-        progress.refresh()
-
+    for i in loading_bar(len(Imgs)):
         if KeepOriginal:
             result.append((images[i],'Original',lables[i]))
         if mode == 'rand':
@@ -255,25 +231,35 @@ if __name__ == '__main__':
     # path3 = 'C:/Users/jeppe/Downloads/Combnoise_for_coronoi-20201207T131136Z-001/Combnoise_for_coronoi/snow_night.png'
     # path4 = 'C:/Users/jeppe/Downloads/Combnoise_for_coronoi-20201207T131136Z-001/Combnoise_for_coronoi/fog_rain10.png'
     # path5 = 'C:/Users/jeppe/Downloads/Combnoise_for_coronoi-20201207T131136Z-001/Combnoise_for_coronoi/fog_snow.png'
-    # path1 = 'C:/Users/jeppe/Desktop/GTSRB_Final_Training_Images/GTSRB/Final_Training/images/00014/00020_00029.ppm'
-    # save_path = 'C:/Users/jeppe/Desktop/Noise_levels'
-    # levels = ['mild','medium','heavy']
-    # noises = ['rain','snow','night','fog']
+    path1 = 'C:/Users/jeppe/Desktop/GTSRB_Final_Training_Images/GTSRB/Final_Training/images/00014/00020_00029.ppm'
+    save_path = 'C:/Users/jeppe/Desktop/Noise_levels'
+    levels = ['mild','medium','heavy']
+    noises = ['rain','snow','night','fog']
 
     # for level in levels:
     #     for noise in noises:
     #         filt = premade_single_filter(f"{noise}_{level}")
     #         img = Image.open(path1)
     #         (filt + img).save(f'{save_path}/{noise}_{level}.png')
-    # filt = premade_single_filter("fog_night")
+    filt = premade_single_filter("fog_night")
     # img = Image.open(path1)
     # (filt + img).save(f'{save_path}/fog_night.png')
     # filt_de_homo = premade_single_filter("dehaze_homo")
 
-    # imgarr = []
-    # for i in range(101):
-    #     imgarr.append(Image.open(path1))
-    # filt * imgarr
+    imgarr = []
+    for i in range(101):
+        imgarr.append(Image.open(path1))
+    filt * imgarr
+    filters = {"fog":premade_single_filter("fog"),"rain":premade_single_filter("rain")}
+    imgarr = []
+    lalbes = []
+    for i in range(1000):
+        imgarr.append(Image.open(path1))
+        lalbes.append("yeet")
+    imgs = apply_multiple_filters((imgarr,lalbes),mode="linear",KeepOriginal=False,filters=filters, chungus=3)
+    for i in range(len(imgs)):
+        imgs[i][0].save(f"{save_path}/{imgs[i][1]}_{i}.png")
+    #filt * imgarr
 
     # img1 = Image.open(path1)
     # img2 = Image.open(path1)
