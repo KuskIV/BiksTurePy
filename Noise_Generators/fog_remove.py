@@ -99,5 +99,6 @@ class fog_remove():
         J = cv2.cvtColor(J.astype(np.uint8), cv2.COLOR_BGR2RGB)
         im_pil = Image.fromarray(J)
         return im_pil
-        # cv2.imshow('J',J);
-        # cv2.waitKey();
+
+    def __add__(self, img):
+        return self.de_fog(img)

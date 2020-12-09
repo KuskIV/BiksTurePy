@@ -79,7 +79,8 @@ class brightness:
             return merge_two_images(img, blue,alpha=0.2)
         else:
             return img
-
+    def __add__(self, img):
+        return self.DayAdjustment(img)
 
 def QuickDebug()->None:
     img = Image.open(get_paths("dataset"))

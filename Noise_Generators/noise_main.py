@@ -84,26 +84,17 @@ class Filter: #TODO create homophobic filter
 
         Returns:
             img (Pil.image): The image with the noise added
-        """    
-        if(self.wh_set != None):
-            wn =  weather(self.wh_set)
-            img = wn.add_weather(img)
-        
-        if(self.fog_set != None):
-            pn = perlin(self.fog_set)
-            img = pn.Foggyfy(img)
-        
-        if(self.day_set != None):
-            bn = brightness(self.day_set)
-            img = bn.DayAdjustment(img)
+        """
+        order = {self.Keys[2]:weather,
+                self.Keys[0]:perlin,
+                self.Keys[1]:brightness,
+                self.Keys[4]:fog_remove, 
+                self.Keys[3]:homomorphic}
 
-        if(self.defog_set != None):
-            fr = fog_remove(self.defog_set)
-            img = fr.de_fog(img)
-
-        if(self.homo_set != None):
-            hom = homomorphic(self.homo_set)
-            img = hom.homofy(img)
+        for key in self.Keys:
+            if getattr(self, key) != None:
+                obj = order[key](getattr(self, key))
+                img = obj + img
         return img
 
     def Apply(self,img:Image.Image)->Image.Image:

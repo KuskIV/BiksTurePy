@@ -73,6 +73,9 @@ class homo_noise():
 
         return Image.merge("RGB", (temp[0], temp[1], temp[2]))
 
+    def __add__(self, img):
+        return self.homofy(img)
+
 if __name__ == "__main__":
 
     filtred_bands = []

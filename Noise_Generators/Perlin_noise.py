@@ -112,6 +112,9 @@ class perlin:
         perlin = merge_two_images(convertToPILImg(perlin), self.get_white(),alpha = self.darkness)
         return merge_two_images(perlin,img, alpha=self.alpha)
 
+    def __add__(self, img):
+        return self.Foggyfy(img)
+
 def QuickDebug()->None:
     """Small function that shows how to call the perlin class with some config dict. And shows the resulting image
     """

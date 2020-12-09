@@ -93,6 +93,9 @@ class homomorphic():
         invers = self.inverse_fourier_transfor()
         exp = self.exponential_func()
         return self.merge_image()
+    
+    def __add__(self, img):
+        return self.homofy(img)
 
     def find_intensity(self,image): 
         # image.thumbnail((1,1))
