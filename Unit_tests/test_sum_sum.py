@@ -5,7 +5,7 @@ current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentfra
 parent_dir = os.path.dirname(current_dir)
 sys.path.insert(0, parent_dir) 
 
-from phase_two.sum_phase_two import merge_final_files
+from phase_two.sum_phase_two import merge_final_files, dissasemble_cell
 from plot.write_csv_file import cvs_object
 import plot.sum_for_model as sum_method
 from phase_one.experiment_one import sum_plot, sum_summed_plots, combine_fitdata
@@ -17,7 +17,7 @@ class Test_sum_sum(unittest.TestCase):
         output_csv_name = "final_sum_sum_sum_summed.csv"
         base_path = "Unit_tests/csv_test_data/merge_final_files_csv"
         
-        merge_final_files(base_path, output_csv_name)
+        merge_final_files(base_path, output_csv_name, dissasemble_cell)
         
         expected_csv = cvs_object(f"{base_path}/result_{output_csv_name}")
         output_csv = cvs_object(f"{base_path}/{output_csv_name}")
