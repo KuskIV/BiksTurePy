@@ -5,10 +5,10 @@ from final_avg import calc_avg_from_experiments
 from global_paths import get_paths
 
 def get_phase_one_csv():
-    return [('fitdata_combined.csv', 0), ('test_val_sum_class_accuracy.csv', 2)]
+    return ['fitdata_combined.csv', 'test_val_sum_class_accuracy.csv']
 
 def get_phase_two_csv():
-    return [('final_sum_sum_sum_summed.csv', 0) , ('sum_cat', 2), ('sum_sub_cat.csv', 2)]
+    return ['final_sum_sum_sum_summed.csv' , 'sum_cat', 'sum_sub_cat.csv']
 
 if __name__ == "__main__":
     index = 0
@@ -26,9 +26,9 @@ if __name__ == "__main__":
     
     for i in range(index):
         run_biksture(i, data_to_test_on, 
-                    run_base_experiments=False,
-                    run_ideal_experiments=False, 
-                    run_lobster_experiments=False, 
+                    run_base_experiments=True,
+                    run_ideal_experiments=True, 
+                    run_lobster_experiments=True, 
                     run_lobster_level_experiments=True
                     )
     
