@@ -24,7 +24,6 @@ def load_homo_filters()->dict:
     D = premade_single_filter('dayhomo')
     N = premade_single_filter('nighthomo')
     
-    #dict = {'fog':F,'rain':R,'snow':S,'day':D,'night':N}
     dict = [{'fog':F}, {'night':N},{'rain':R},{'snow':S},{'day':D},{'night':N}]
     return dict
 
@@ -48,81 +47,25 @@ def load_lobster_filters()->dict:
     dict = [{'fognight':FN}, {'fogsnow':FS},{'fograin':FR},{'rainnight':RN},{'snownight':SN}]
     return dict
 
-def load_lobster_level_filters_fog()->dict:
-    F1 = premade_single_filter('mod_fog0.1')
-    F2 = premade_single_filter('mod_fog0.2')
-    F3 = premade_single_filter('mod_fog0.3')
-    F4 = premade_single_filter('mod_fog0.4')
-    F5 = premade_single_filter('mod_fog0.5')
-    F6 = premade_single_filter('mod_fog0.6')
-    F7 = premade_single_filter('mod_fog0.7')
-    F8 = premade_single_filter('mod_fog0.8')
-    F9 = premade_single_filter('mod_fog0.9')
-    F10 = premade_single_filter('mod_fog1.0')
-    
-    dict = [{'fog1':F1},{'fog2':F2},{'fog3':F3},
-            {'fog4':F4},{'fog5':F5},{'fog6':F6},
-            {'fog7':F7},{'fog8':F8},{'fog9':F9},
-            {'fog10':F10}
-        ]
-    return dict
+def load_level_of_filters(filter_name:str):
+    filter_list = []
+    for i in range(1, 11):
+        filter_key = f'{filter_name}{i}'
+        filter_input = f'mod_{filter_name}{i/10}'
+        filter_list.append({filter_key : premade_single_filter(filter_input)})
+    return filter_list
 
-def load_lobster_level_filters_night()->dict:
-    F1 = premade_single_filter('mod_night0.1')
-    F2 = premade_single_filter('mod_night0.2')
-    F3 = premade_single_filter('mod_night0.3')
-    F4 = premade_single_filter('mod_night0.4')
-    F5 = premade_single_filter('mod_night0.5')
-    F6 = premade_single_filter('mod_night0.6')
-    F7 = premade_single_filter('mod_night0.7')
-    F8 = premade_single_filter('mod_night0.8')
-    F9 = premade_single_filter('mod_night0.9')
-    F10 = premade_single_filter('mod_night1.0')
-    
-    dict = [{'night1':F1},{'night2':F2},{'night3':F3},
-            {'night4':F4},{'night5':F5},{'night6':F6},
-            {'night7':F7},{'night8':F8},{'night9':F9},
-            {'night10':F10}
-        ]
-    return dict
+def load_lobster_level_filters_fog():
+    return load_level_of_filters('fog')
 
-def load_lobster_level_filters_rain()->dict:
-    F1 = premade_single_filter('mod_rain0.1')
-    F2 = premade_single_filter('mod_rain0.2')
-    F3 = premade_single_filter('mod_rain0.3')
-    F4 = premade_single_filter('mod_rain0.4')
-    F5 = premade_single_filter('mod_rain0.5')
-    F6 = premade_single_filter('mod_rain0.6')
-    F7 = premade_single_filter('mod_rain0.7')
-    F8 = premade_single_filter('mod_rain0.8')
-    F9 = premade_single_filter('mod_rain0.9')
-    F10 = premade_single_filter('mod_rain1.0')
-    
-    dict = [{'rain1':F1},{'rain2':F2},{'rain3':F3},
-            {'rain4':F4},{'rain5':F5},{'rain6':F6},
-            {'rain7':F7},{'rain8':F8},{'rain9':F9},
-            {'rain10':F10}
-        ]
-    return dict
+def load_lobster_level_filters_rain():
+    return load_level_of_filters('rain')
 
-def load_lobster_level_filters_snow()->dict:
-    F1 = premade_single_filter('mod_snow0.1')
-    F2 = premade_single_filter('mod_snow0.2')
-    F3 = premade_single_filter('mod_snow0.3')
-    F4 = premade_single_filter('mod_snow0.4')
-    F5 = premade_single_filter('mod_snow0.5')
-    F6 = premade_single_filter('mod_snow0.6')
-    F7 = premade_single_filter('mod_snow0.7')
-    F8 = premade_single_filter('mod_snow0.8')
-    F9 = premade_single_filter('mod_snow0.9')
-    F10 = premade_single_filter('mod_snow1.0')
-    
-    dict = [{'snow1':F1},{'snow2':F2},{'snow3':F3},
-            {'snow4':F4},{'snow5':F5},{'snow6':F6},
-            {'snow7':F7},{'snow8':F8},{'snow9':F9},
-            {'snow10':F10}
-        ]
-    return dict
+def load_lobster_level_filters_night():
+    return load_level_of_filters('night')
+
+def load_lobster_level_filters_snow():
+    return load_level_of_filters('snow')
 
 def create_lobster_dir(base_ex, lobster1, lobster2, index):
     create_dir(f"{get_paths('phase_two_csv')}/{lobster1}")
@@ -139,48 +82,21 @@ def create_dirs(base_ex, base_result, base_big_lobster, index):
     create_dir(f"{get_paths('phase_two_csv')}/{base_result}")
 
     create_dir(f"{get_paths('phase_two_csv')}/{base_big_lobster}")
-    
-    # create_dir(f"{get_paths('phase_two_csv')}/{base_big_lobster_level}")
-
-def apply_noise_evenly(img_batch, noises, batch_size):
-    global_idx = 0
-    aug_bs = batch_size // len(noises)
-    
-    for i, noise in enumerate(noises):
-        for img in img_batch[i*aug_bs:i+1*aug_bs]:
-            img_batch[global_idx] = noise + img
-            global_idx += 1
-
-def get_noise_evenly_tuple():
-    return apply_noise_evenly, premade_single_filter('NOT IMPLEMETED')
-
-def apply_got_twenty(img_batch, noise, batch_size):
-    # global_idx = 0
-    aug_bs = math.ceil((batch_size / 100) * 20)
-    img_batch[:aug_bs] = noise * img_batch[:aug_bs]
-    return img_batch
-    # for img in img_batch[:aug_bs]:
-    #     img_batch[global_idx] = noise + img
-    #     global_idx += 1
 
 def get_fog_twenty_tuple():
     return apply_got_twenty, premade_single_filter('night'), True
 
 def get_noise_paths():
     return [get_paths('satina_median_noise'), get_paths('satina_avg_noise'), get_paths('satina_mode_noise')]
-    # return [get_satina_model_median_path_noise(), get_satina_model_avg_path_noise(), get_satina_model_mode_path_noise()]
 
 def get_homo_paths():
     return [get_paths('satina_median_homo'), get_paths('satina_avg_homo'), get_paths('satina_mode_homo')]
-    # return [get_satina_model_median_path_homo(), get_satina_model_avg_path_homo(), get_satina_model_mode_path_homo()]
 
 def get_ideal_paths():
     return [get_paths('satina_median_ideal'), get_paths('satina_avg_ideal'), get_paths('satina_mode_ideal')]
-    # return [get_satina_model_median_path_ideal(), get_satina_model_avg_path_ideal(), get_satina_model_mode_path_ideal()]
 
 def get_ideal_noise_paths():
     return [get_paths('satina_median_idealnoise'), get_paths('satina_avg_idealnoise'), get_paths('satina_mode_idealnoise')]
-    # return [get_satina_model_median_path_ideal_noise(), get_satina_model_avg_path_ideal_noise(), get_satina_model_mode_path_ideal_noise()]
 
 def get_dehaze_path():
     return [get_paths('satina_median_dehaze'), get_paths('satina_avg_dehaze'), get_paths('satina_mode_dehaze')]
@@ -267,11 +183,6 @@ def run_default_experiment(folder_name:str, base_folder:str, test_path:str, trai
                 run_experiment_one(1, train_path, test_path, get_models_method, 
                     epochs_end=100, folder_extension=ex_folder, data_to_test_on=data_to_test_on, 
                     model_paths=model_paths, run_on_one_model=run_on_one_model)
-                
-                
-                # run_experiment_one(test_path, train_path, get_models_method, folder_extension=ex_folder, 
-                #                 data_to_test_on=data_to_test_on, model_paths=None, run_on_one_model=run_on_one_model)
-            
             ex_two_eval_noise(two_test_path, ex_folder, get_models=get_models_method, data_to_test_on=data_to_test_on, 
                             model_paths=model_paths, filter_method=filter_method, run_on_one_model=run_on_one_model)
         else:
@@ -388,21 +299,17 @@ def run_biksture(index, data_to_test_on, run_base_experiments=True, run_ideal_ex
             print(e)
             errors.append(e)
         
-
-        
-        try:
-            dehaze_folder = "experiment_two_eval_dehaze"
-            ex_folder = get_ex_folder(dehaze_folder, base_ex)
-            introduce_experiment(dehaze_folder)
-            ex_one(dehaze_test_path, dehaze_train_path, folder_extension=ex_folder, data_to_test_on=data_to_test_on, model_paths=dehaze_path)
-            ex_two_eval_noise(dehaze_test_path, ex_folder, data_to_test_on=data_to_test_on, filter_method=load_dehaze_filters, model_paths=dehaze_path)
-        except:
-            print("ERROR IN EXPERIMENT 'TRAIN ON DEHAZE'")
-            e = sys.exc_info()
-            print(e)
-            errors.append(e)
-        
-
+        # try:
+        #     dehaze_folder = "experiment_two_eval_dehaze"
+        #     ex_folder = get_ex_folder(dehaze_folder, base_ex)
+        #     introduce_experiment(dehaze_folder)
+        #     ex_one(dehaze_test_path, dehaze_train_path, folder_extension=ex_folder, data_to_test_on=data_to_test_on, model_paths=dehaze_path)
+        #     ex_two_eval_noise(dehaze_test_path, ex_folder, data_to_test_on=data_to_test_on, filter_method=load_dehaze_filters, model_paths=dehaze_path)
+        # except:
+        #     print("ERROR IN EXPERIMENT 'TRAIN ON DEHAZE'")
+        #     e = sys.exc_info()
+        #     print(e)
+        #     errors.append(e)
         
         try:
             noise_folder = "experiment_two_eval_noise"
@@ -429,7 +336,7 @@ def run_biksture(index, data_to_test_on, run_base_experiments=True, run_ideal_ex
             e = sys.exc_info()
             print(e)
             errors.append(e)
-            
+
         try:
             ideal_noise_folder = "experiment_two_eval_idealnoise"
             ex_folder = get_ex_folder(ideal_noise_folder, base_result)
