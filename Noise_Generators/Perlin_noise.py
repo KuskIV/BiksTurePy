@@ -39,24 +39,10 @@ class perlin:
             The value would then be the value refresen by the keyword.
             keys = ["shape","scale","octaves","persistence","lacunarity","seed","alpha"]
         """
-        Keys = ["shape","scale","octaves","persistence","lacunarity","seed","alpha","darkness"]
-        Test = config.keys()
-        if Keys[0] in config:
-            self.shape = config.get(Keys[0])
-        if config.get(Keys[1]) != None:
-            self.scale = config.get(Keys[1])
-        if config.get(Keys[2]) != None:
-            self.octaves = config.get(Keys[2])
-        if config.get(Keys[3]) != None:
-            self.persistence = config.get(Keys[3])
-        if config.get(Keys[4]) != None:
-            self.lacunarity = config.get(Keys[4])
-        if config.get(Keys[5]) != None:
-            self.seed = config.get(Keys[5])
-        if config.get(Keys[6]) != None:
-            self.alpha = config.get(Keys[6])
-        if config.get(Keys[7]) != None:
-            self.darkness = config.get(Keys[7])
+        self.Keys = ["shape","scale","octaves","persistence","lacunarity","seed","alpha","darkness"]
+        for key in self.Keys:
+            if key in config:
+                setattr(self, key, config.get(key))
 
     def perlin_array(self)->list:
         """
@@ -125,6 +111,9 @@ class perlin:
         #perlin = self.Transparentfy(convertToPILImg(perlin))
         perlin = merge_two_images(convertToPILImg(perlin), self.get_white(),alpha = self.darkness)
         return merge_two_images(perlin,img, alpha=self.alpha)
+
+    def __add__(self, img):
+        return self.Foggyfy(img)
 
 def QuickDebug()->None:
     """Small function that shows how to call the perlin class with some config dict. And shows the resulting image

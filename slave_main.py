@@ -1,8 +1,8 @@
 
 from global_paths import get_paths, get_h5_test, get_h5_train, get_h5_test_noise, get_h5_train_noise, get_h5_train_homo, get_h5_test_homo
-from phase_one.main_phase_one import ex_two_eval_norm, ex_one
+from phase_one.main_phase_one import ex_two_eval_norm, ex_one, run_experiment_one
 from phase_two.main_phase_two import ex_two_eval_noise
-from phase_one.find_ideal_model import get_satina_gains_model_norm_object_list
+from phase_one.find_ideal_model import get_satina_gains_model_norm_object_list, get_satina_gains_model_object_list
 from phase_two.sum_phase_two import sum_merged_files
 from Noise_Generators.noise_main import premade_single_filter
 import sys
@@ -124,27 +124,6 @@ def load_lobster_level_filters_snow()->dict:
         ]
     return dict
 
-# def load_lobster_level_filters()->dict:
-#     FL = premade_single_filter('fog_mild')
-#     FM = premade_single_filter('fog_medium')
-#     FH = premade_single_filter('fog_heavy')
-#     RL = premade_single_filter('rain_mild')
-#     RM = premade_single_filter('rain_medium')
-#     RH = premade_single_filter('rain_heavy')
-#     SL = premade_single_filter('snow_mild')
-#     SM = premade_single_filter('snow_medium')
-#     SH = premade_single_filter('snow_heavy')
-#     NL = premade_single_filter('night_mild')
-#     NM = premade_single_filter('night_medium')
-#     NH = premade_single_filter('night_heavy')
-    
-#     dict = [{'fogmild':FL},{'fogmedium':FM},{'fogheavy':FH},
-#             {'rainmild':RL},{'rainmedium':RM},{'rainheavy':RH},
-#             {'snowmild':SL},{'snowmedium':SM},{'snowheavy':SH},
-#             {'nightmild':NL},{'nightmedium':NM},{'nightheavy':NH}
-#         ]
-#     return dict
-
 def create_lobster_dir(base_ex, lobster1, lobster2, index):
     create_dir(f"{get_paths('phase_two_csv')}/{lobster1}")
     create_dir(f"{get_paths('phase_two_csv')}/{lobster2}")
@@ -262,6 +241,49 @@ def extend_errors(errors, errors_to_append):
         if len(e) != 0:
             errors.extend(e)
 
+def get_method_for_models(model_type):
+    if model_type == 'norm':
+        return get_satina_gains_model_norm_object_list
+    elif model_type == 'base':
+        return get_satina_gains_model_object_list
+    else:
+        raise TypeError(f"{model_type} is not a valid option. Should be either 'norm' or 'base'")
+
+def run_default_experiment(folder_name:str, base_folder:str, test_path:str, train_path:str, data_to_test_on:int, 
+                        model_types:str, filter_method:list=None, condition=True, model_paths=None, train_model=True, run_on_one_model=False, two_test_path=None) -> str:
+    
+    errors = ''
+    
+    get_models_method = get_method_for_models(model_types)
+    
+    if two_test_path == None:
+        two_test_path = test_path
+    
+    try:
+        if condition:
+            ex_folder = get_ex_folder(folder_name, base_folder)
+            introduce_experiment(folder_name)
+            if train_model:
+                run_experiment_one(1, train_path, test_path, get_models_method, 
+                    epochs_end=100, folder_extension=ex_folder, data_to_test_on=data_to_test_on, 
+                    model_paths=model_paths, run_on_one_model=run_on_one_model)
+                
+                
+                # run_experiment_one(test_path, train_path, get_models_method, folder_extension=ex_folder, 
+                #                 data_to_test_on=data_to_test_on, model_paths=None, run_on_one_model=run_on_one_model)
+            
+            ex_two_eval_noise(two_test_path, ex_folder, get_models=get_models_method, data_to_test_on=data_to_test_on, 
+                            model_paths=model_paths, filter_method=filter_method, run_on_one_model=run_on_one_model)
+        else:
+            print("---\nWARNING: experiment lobster_noise will not run since an error occured when training the model\n---")
+    except Exception as e:
+        print(f"ERROR IN EXPERIMENT '{folder_name}'")
+        e = sys.exc_info()
+        print(e)
+        errors = e
+    
+    return errors
+
 def run_biksture(index, data_to_test_on, run_base_experiments=True, run_ideal_experiments=True, 
                 run_lobster_experiments=True, run_lobster_level_experiments=True):
     test_path = get_h5_test()
@@ -302,6 +324,34 @@ def run_biksture(index, data_to_test_on, run_base_experiments=True, run_ideal_ex
     errors = []
 
     if run_base_experiments:
+        # # Baseline experiment
+        # baseline_folder = "experiment_baseline"
+        # run_default_experiment(baseline_folder, base_ex, test_path, train_path, data_to_test_on, 'base', 
+        #                 filter_method=None, condition=True, model_paths=None, train_model=True, run_on_one_model=False)
+        
+        # # Normalized experiment
+        # norm_folder = "experiment_two_eval_norm"
+        # run_default_experiment(norm_folder, base_ex, test_path, train_path, data_to_test_on, 'norm', 
+        #                 filter_method=None, condition=True, model_paths=None, train_model=True, run_on_one_model=False)
+        
+        # # Homomorpic experiment
+        # homo_folder = "experiment_two_eval_homo"
+        # run_default_experiment(homo_folder, base_ex, homo_test_path, homo_train_path, data_to_test_on, 'base', 
+        #                 filter_method=load_homo_filters, condition=True, model_paths=homo_path, train_model=True, run_on_one_model=False)
+        
+        # # Dehaze experiment
+        # dehaze_folder = "experiment_two_eval_dehaze"
+        # run_default_experiment(dehaze_folder, base_ex, dehaze_test_path, dehaze_train_path, data_to_test_on, 'base', 
+        #                 filter_method=load_dehaze_filters, condition=True, model_paths=dehaze_path, train_model=True, run_on_one_model=False)
+        
+        # # Noise experiment
+        # noise_folder = "experiment_two_eval_noise"
+        # run_default_experiment(noise_folder, base_ex, noise_test_path, noise_train_path, data_to_test_on, 'base', filter_method=None, 
+        #                 condition=True, model_paths=noise_paths, train_model=True, run_on_one_model=False, two_test_path=test_path)
+        
+
+        # run_default_experiment(folder_name, base_folder, test_path, train_path, get_models_method, data_to_test_on, 
+        #                 model_types, filter_method=None, condition=True, model_paths=None, train_model=True, run_on_one_model=False)
         try:
             baseline_folder = "experiment_baseline"
             ex_folder = get_ex_folder(baseline_folder, base_ex)
@@ -338,6 +388,8 @@ def run_biksture(index, data_to_test_on, run_base_experiments=True, run_ideal_ex
             print(e)
             errors.append(e)
         
+
+        
         try:
             dehaze_folder = "experiment_two_eval_dehaze"
             ex_folder = get_ex_folder(dehaze_folder, base_ex)
@@ -349,6 +401,8 @@ def run_biksture(index, data_to_test_on, run_base_experiments=True, run_ideal_ex
             e = sys.exc_info()
             print(e)
             errors.append(e)
+        
+
         
         try:
             noise_folder = "experiment_two_eval_noise"

@@ -24,25 +24,10 @@ class weather:
 
     def __init__(self, config:dict):
 
-        Keys = ['density','density_uniformity','drop_size','drop_size_uniformity','angle','speed','blur','mode']
-        if Keys[0] in config:
-            self.density = config.get(Keys[0])
-        if config.get(Keys[1]) != None:
-            self.density_uniformity = config.get(Keys[1])
-        if config.get(Keys[2]) != None:
-            self.drop_size = config.get(Keys[2])
-        if config.get(Keys[3]) != None:
-            self.drop_size_uniformity = config.get(Keys[3])
-        if config.get(Keys[4]) != None:
-            self.angle = config.get(Keys[4])
-        if config.get(Keys[5]) != None:
-            self.speed = config.get(Keys[5])
-        if config.get(Keys[6]) != None:
-            self.blur = config.get(Keys[6])
-        if config.get(Keys[7]) != None:
-            self.mode = config.get(Keys[7])
-
-
+        self.Keys = ['density','density_uniformity','drop_size','drop_size_uniformity','angle','speed','blur','mode']
+        for key in self.Keys:
+            if key in config:
+                setattr(self, key, config.get(key))
 
     def rain(self,image:Image.Image)->Image.Image: 
         """
@@ -144,6 +129,9 @@ class weather:
             return self.snow(img)
         else:
             print(f'{self.mode} is not a valid specefication')
+
+    def __add__(self, img):
+       return self.add_weather(img)
 
 def QuickDebug()-> None:
     img = Image.open('C:/Users/roni/Desktop/Project/BiksTurePy/Dataset/images/00000/00004_00010.ppm')

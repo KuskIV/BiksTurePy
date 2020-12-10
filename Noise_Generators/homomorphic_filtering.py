@@ -12,15 +12,10 @@ class homomorphic():
     # fil_order = 2
 
     def __init__(self,config):
-        Keys=['a','b','cutoff']
-        if Keys[0] in config:
-            self.a = config.get(Keys[0])
-        if config.get(Keys[1]) != None:
-            self.b = config.get(Keys[1])
-        if config.get(Keys[2]) != None:
-            self.cut_off = config.get(Keys[2])
-        # if config.get(Keys[3]) != None:
-        #     self.fil_order = config.get(Keys[3])
+        self.Keys=['a','b','cutoff']
+        for key in self.Keys:
+            if key in config:
+                setattr(self, key, config.get(key))
 
     # Convert image to a grayscaled image.
     def grayscale_image(self, img_path):
@@ -98,6 +93,9 @@ class homomorphic():
         invers = self.inverse_fourier_transfor()
         exp = self.exponential_func()
         return self.merge_image()
+    
+    def __add__(self, img):
+        return self.homofy(img)
 
     def find_intensity(self,image): 
         # image.thumbnail((1,1))

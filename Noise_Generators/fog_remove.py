@@ -8,9 +8,10 @@ class fog_remove():
     kernel_size = 15
 
     def __init__(self,config):
-        Keys=['kernel']
-        if Keys[0] in config:
-            self.kernel_size = config.get(Keys[0])
+        self.Keys=['kernel']
+        for key in self.Keys:
+            if key in config:
+                setattr(self, key, config.get(key))
 
     def DarkChannel(self,im,sz):
         b,g,r = cv2.split(im)
@@ -98,5 +99,6 @@ class fog_remove():
         J = cv2.cvtColor(J.astype(np.uint8), cv2.COLOR_BGR2RGB)
         im_pil = Image.fromarray(J)
         return im_pil
-        # cv2.imshow('J',J);
-        # cv2.waitKey();
+
+    def __add__(self, img):
+        return self.de_fog(img)
