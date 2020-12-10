@@ -163,8 +163,11 @@ def loading_bar(max:int):
 def chunk_it(seq, num):
     avg, out, last = len(seq) / float(num), [], 0.0
     while last < len(seq):
-        out.append(seq[int(last):int(last + avg)])
-        last += avg
+            out.append(seq[int(last):int(last + avg)])
+            last += avg
+    if(len(out) > num):
+        out[-2] = seq[out[-2].start:out[-1].stop]
+        del out[-1]
     return out
 
 def linear_dist(images,lables,fil,chungus):
