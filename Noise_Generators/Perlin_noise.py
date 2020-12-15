@@ -110,7 +110,7 @@ class perlin:
         
         #perlin = self.Transparentfy(convertToPILImg(perlin))
         perlin = merge_two_images(convertToPILImg(perlin), self.get_white(),alpha = self.darkness)
-        return merge_two_images(perlin,img, alpha=self.alpha)
+        return merge_two_images(perlin,img, alpha=self.alpha).convert('RGB')
 
     def __add__(self, img):
         return self.Foggyfy(img)

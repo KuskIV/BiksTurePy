@@ -11,7 +11,8 @@ def get_phase_two_csv():
     return ['final_sum_sum_sum_summed.csv' , 'sum_cat', 'sum_sub_cat.csv']
 
 if __name__ == "__main__":
-    index = 0
+    s_index = 1
+    e_index = 10
     data_to_test_on = 1
     
     phase_one_path = get_paths('phase_one_csv')
@@ -24,7 +25,7 @@ if __name__ == "__main__":
     
     tic = time.time()
     
-    for i in range(index):
+    for i in range(s_index, e_index):
         run_biksture(i, data_to_test_on, 
                     run_base_experiments=True,
                     run_ideal_experiments=True, 

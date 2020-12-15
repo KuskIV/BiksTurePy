@@ -80,7 +80,7 @@ class brightness:
         else:
             return img
     def __add__(self, img):
-        return self.DayAdjustment(img)
+        return self.DayAdjustment(img).convert('RGB')
 
 def QuickDebug()->None:
     img = Image.open(get_paths("dataset"))

@@ -145,10 +145,10 @@ def generate_dehaze_dataset(img_shape, keep_original, data_split=1):
 
 def generate_datasets():
     img_shape = (200, 200)
-    generate_homo_dataset(img_shape, False) 
+    # generate_homo_dataset(img_shape, False) 
     generate_noise_dataset(img_shape, True)
-    generate_noise_homo_dataset(img_shape, False)
-    generate_dehaze_dataset(img_shape, False)
+    # generate_noise_homo_dataset(img_shape, False)
+    # generate_dehaze_dataset(img_shape, False)
 
 if __name__ == "__main__":
     generate_datasets()
