@@ -1,6 +1,6 @@
-category,sub category,images,model_42_epoch_test,model_42_24_val
+category,sub category,images,model_42_epoch_test,model_42_25_val
 Dangerous warning,Dangerous warning,2228.0,77.3338330341113,84.85321743170414
 Regularoty,Priority ,1041.0,83.09312199807879,92.81371475816454
-Regularoty,Prohibitory,3957.0,71.16450341167551,84.28478560735672
-Regularoty,Mandatory,1203.0,72.90247714048212,88.60100311203321
-Regularoty,Special regulations,1344.0,77.60508928571427,89.0333796641791
+Regularoty,Prohibitory,3957.0,71.16450341167551,84.2847856073567
+Regularoty,Mandatory,1203.0,72.90247714048212,88.60100311203323
+Regularoty,Special regulations,1344.0,77.60508928571427,89.03337966417911
