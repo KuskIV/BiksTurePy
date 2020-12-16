@@ -72,8 +72,6 @@ def get_avg_csv(paths):
 def calc_avg_from_base_and_csv(base, csv_list, output_folder):
     all_paths = walk_base(base, csv_list)
     for key, item in all_paths.items():
-        if key == 'experiment_big_lobster_final_sum_sum_sum_summed.csv':
-            continue
         path_csv = f"{output_folder}/{key}"
         avg_csv = get_avg_csv(item)
         csv_obj = cvs_object(path_csv)
