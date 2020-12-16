@@ -64,7 +64,9 @@ def get_avg_csv(paths):
         if len(return_csv) == 0:
             return_csv = temp_lines
         else:
+            print(f"START: {paths[i]}")
             return_csv = avg_two_csv(return_csv, temp_lines, i)
+            print("END")
     return return_csv
 
 def calc_avg_from_base_and_csv(base, csv_list, output_folder):

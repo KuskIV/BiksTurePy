@@ -27,7 +27,7 @@ def load_expected_level_filters_fog()->dict:
         ]
     return dict
 
-class Test_load_level_of_noise(unittest.TestCase):
+class Test_level_of_filters(unittest.TestCase):
     
     def test_load_level_of_noise_length(self):
         expected_filters = load_expected_level_filters_fog()
