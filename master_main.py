@@ -30,7 +30,7 @@ if __name__ == "__main__":
                     run_base_experiments=False,
                     run_ideal_experiments=True, 
                     run_lobster_experiments=True, 
-                    run_lobster_level_experiments=True
+                    run_lobster_level_experiments=True,
         )
     
     toc = time.time()

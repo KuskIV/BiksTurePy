@@ -382,11 +382,11 @@ def run_biksture(index, data_to_test_on, run_base_experiments=True, run_ideal_ex
             errors.append(e)
 
     if run_lobster_level_experiments:
-        e1, _ = lobster_noise_level('fog', data_to_test_on, base_big_lobster_level, homo_test_path, ideal_path, ideal_noise_path, load_lobster_level_filters_fog, ideal_and_lobster_on_one_model)
-        e2, _ = lobster_noise_level('night', data_to_test_on, base_big_lobster_level, homo_test_path, ideal_path, ideal_noise_path, load_lobster_level_filters_night, ideal_and_lobster_on_one_model)
-        e3, _ = lobster_noise_level('rain', data_to_test_on, base_big_lobster_level, homo_test_path, ideal_path, ideal_noise_path, load_lobster_level_filters_rain, ideal_and_lobster_on_one_model)
+        # e1, _ = lobster_noise_level('fog', data_to_test_on, base_big_lobster_level, homo_test_path, ideal_path, ideal_noise_path, load_lobster_level_filters_fog, ideal_and_lobster_on_one_model)
+        # e2, _ = lobster_noise_level('night', data_to_test_on, base_big_lobster_level, homo_test_path, ideal_path, ideal_noise_path, load_lobster_level_filters_night, ideal_and_lobster_on_one_model)
+        # e3, _ = lobster_noise_level('rain', data_to_test_on, base_big_lobster_level, homo_test_path, ideal_path, ideal_noise_path, load_lobster_level_filters_rain, ideal_and_lobster_on_one_model)
         e4, exclude_folders = lobster_noise_level('snow', data_to_test_on, base_big_lobster_level, homo_test_path, ideal_path, ideal_noise_path, load_lobster_level_filters_snow, ideal_and_lobster_on_one_model)
-        extend_errors(errors, [e1, e2, e3, e4])
+        # extend_errors(errors, [e1, e2, e3, e4])
 
     try:
         sum_merged_files(f'phase_two/csv_output/{index}', exclude_folders)
