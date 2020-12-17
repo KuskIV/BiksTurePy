@@ -103,27 +103,33 @@ def get_premade_filter (str:str):
     if str == 'fog_night':
         config_f = {'octaves':8, 'persistence':0.3, 'lacunarity': 5, 'alpha': 0.4}
         config_n = {'factor':0.3}
-        result =  ({'day_set':config_n,'fog_set':config_f})
+        config_h = {'a':1,'b':0.5,'cutoff':800}
+        result =  ({'day_set':config_n,'fog_set':config_f,'homo_set':config_h})
     if str == 'fog_day':
         config_f = {'octaves':8, 'persistence':0.3, 'lacunarity': 5, 'alpha': 0.4}
         config_n = {'factor':1.0}
-        result =  ({'day_set':config_n,'fog_set':config_f})
+        config_h = {'a':1,'b':0.5,'cutoff':800}
+        result =  ({'day_set':config_n,'fog_set':config_f,'homo_set':config_h})
     if str == 'fog_rain':
         config_f = {'octaves':8, 'persistence':0.3, 'lacunarity': 5, 'alpha': 0.4}
         config_w = {'density':(0.03,0.14),'density_uniformity':(0.8,1.0),'drop_size':(0.3,0.4),'drop_size_uniformity':(0.1,0.5),'angle':(-15,15),'speed':(0.1,0.2),'blur':(0.001,0.001),'mode':'snow'}
-        result =  ({'wh_set':config_w,'fog_set':config_f})
+        config_h = {'a':1,'b':0.5,'cutoff':800}
+        result =  ({'wh_set':config_w,'fog_set':config_f,'homo_set':config_h})
     if str == 'fog_snow':
         config_f = {'octaves':8, 'persistence':0.3, 'lacunarity': 5, 'alpha': 0.4}
         config_w = {'density':(0.03,0.14),'density_uniformity':(0.8,1.0),'drop_size':(0.7,0.8),'drop_size_uniformity':(0.2,0.3),'angle':(-15,15),'speed':(0.1,0.2),'blur':(0.001,0.001),'mode':'snow'}
-        result =  ({'wh_set':config_w,'fog_set':config_f})
+        config_h = {'a':1,'b':0.5,'cutoff':800}
+        result =  ({'wh_set':config_w,'fog_set':config_f,'homo_set':config_h})
     if str == 'rain_night':
         config_w = {'density':(0.03,0.14),'density_uniformity':(0.8,1.0),'drop_size':(0.3,0.4),'drop_size_uniformity':(0.1,0.5),'angle':(-15,15),'speed':(0.1,0.2),'blur':(0.001,0.001),'mode':'snow'}
         config_n = {'factor':0.3}
-        result =  ({'wh_set':config_w,'day_set':config_n})
+        config_h = {'a':1,'b':0.5,'cutoff':800}
+        result =  ({'wh_set':config_w,'day_set':config_n,'homo_set':config_h})
     if str == 'snow_night':
         config_w = {'density':(0.03,0.14),'density_uniformity':(0.8,1.0),'drop_size':(0.7,0.8),'drop_size_uniformity':(0.2,0.3),'angle':(-15,15),'speed':(0.1,0.2),'blur':(0.001,0.001),'mode':'snow'}
         config_n = {'factor':0.3}
-        result =  ({'wh_set':config_w,'day_set':config_n})
+        config_h = {'a':1,'b':0.5,'cutoff':800}
+        result =  ({'wh_set':config_w,'day_set':config_n,'homo_set':config_h})
     if str == 'de_fog15':
         config = {'kernel':15}
         result =  ({'defog_set':config})

@@ -220,19 +220,28 @@ if __name__ == '__main__':
     # path5 = 'C:/Users/jeppe/Downloads/Combnoise_for_coronoi-20201207T131136Z-001/Combnoise_for_coronoi/fog_snow.png'
     path1 = 'C:/Users/jeppe/Desktop/GTSRB_Final_Training_Images/GTSRB/Final_Training/images/00014/00020_00029.ppm'
     save_path = 'C:/Users/jeppe/Desktop/Noise_levels'
-    name1 = "fog_night_homo_haze.png"
-    name2 = "fog_snow_homo_haze.png"
-    name3 = "fog_rain_homo_haze.png"
+    name1 = "fog_night_homo_haze"
+    name2 = "fog_rain_homo_haze"
+    name3 = "fog_snow_homo_haze"
     names = [name1,name2,name3]
+    alt1 = "fog_night"
+    alt2 = "fog_rain"
+    alt3 = "fog_snow"
+    alts = [alt1,alt2,alt3]
     homo = premade_single_filter("std_homo")
     filt1 = premade_single_filter("fog_night")
     filt2 = premade_single_filter("fog_rain")
     filt3 = premade_single_filter("fog_snow")
     filters = [filt1,filt2,filt3]
 
+
+
     for i in range(len(names)):
+
         img = Image.open(path1)
-        homo+(filters[i]+img).save(f"{save_path}/{names[i]}.png")
+        img =(filters[i]+img)
+        img.save(f"{save_path}/{alts[i]}.png")
+        (homo+img).save(f"{save_path}/{names[i]}.png")
     # levels = ['mild','medium','heavy']
     # noises = ['rain','snow','night','fog']
 
