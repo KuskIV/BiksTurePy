@@ -6,7 +6,7 @@ def get_premade_filter (str:str):
     if "mod" in str:
         if not re.search("mod_fog\d+\.\d+",str) == None:
             modifier = re.search("\d+\.\d+",str)
-            config = {'octaves':4, 'persistence':0.2, 'lacunarity': 3, 'alpha': 1-0.6*(float(modifier.group(0))), 'darkness':0.5}
+            config = {'octaves':4, 'persistence':0.2, 'lacunarity': 3, 'alpha': 0.6*(1-float(modifier.group(0))), 'darkness':0.5}
             result =  ({'fog_set':config})
 
         if not re.search("mod_night\d+\.\d+", str) == None:
