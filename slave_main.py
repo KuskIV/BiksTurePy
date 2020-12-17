@@ -353,19 +353,19 @@ def run_biksture(index, data_to_test_on, run_base_experiments=True, run_ideal_ex
             errors.append(e)
 
     if run_lobster_experiments:
-    #     try:
-    #         if ideal_worked or not run_ideal_experiments:
-    #             ideal_lobster_folder = "experiment_two_big_lobster_ideal"
-    #             ex_folder = get_ex_folder(ideal_lobster_folder, base_big_lobster)
-    #             introduce_experiment(ideal_lobster_folder)
-    #             ex_two_eval_noise(homo_test_path, ex_folder, get_models=get_satina_gains_model_norm_object_list, data_to_test_on=data_to_test_on, model_paths=ideal_path, filter_method=load_lobster_filters, run_on_one_model=ideal_and_lobster_on_one_model)
-    #         else:
-    #             print("---\nWARNING: experiment lobster_ideal will not run since an error occured when training the model\n---")
-    #     except Exception as e:
-    #         print("ERROR IN EXPERIMENT 'TRAIN ON IDEAL LOBSTER'")
-    #         e = sys.exc_info()
-    #         print(e)
-    #         errors.append(e)
+        # try:
+        #     if ideal_worked or not run_ideal_experiments:
+        #         ideal_lobster_folder = "experiment_two_big_lobster_ideal"
+        #         ex_folder = get_ex_folder(ideal_lobster_folder, base_big_lobster)
+        #         introduce_experiment(ideal_lobster_folder)
+        #         ex_two_eval_noise(homo_test_path, ex_folder, get_models=get_satina_gains_model_norm_object_list, data_to_test_on=data_to_test_on, model_paths=ideal_path, filter_method=load_lobster_filters, run_on_one_model=ideal_and_lobster_on_one_model)
+        #     else:
+        #         print("---\nWARNING: experiment lobster_ideal will not run since an error occured when training the model\n---")
+        # except Exception as e:
+        #     print("ERROR IN EXPERIMENT 'TRAIN ON IDEAL LOBSTER'")
+        #     e = sys.exc_info()
+        #     print(e)
+        #     errors.append(e)
 
         try:
             if ideal_noise_worked or not run_ideal_experiments:
@@ -382,14 +382,13 @@ def run_biksture(index, data_to_test_on, run_base_experiments=True, run_ideal_ex
             errors.append(e)
 
     if run_lobster_level_experiments:
-        # e1, _ = lobster_noise_level('fog', data_to_test_on, base_big_lobster_level, homo_test_path, ideal_path, ideal_noise_path, load_lobster_level_filters_fog, ideal_and_lobster_on_one_model)
-        # e2, _ = lobster_noise_level('night', data_to_test_on, base_big_lobster_level, homo_test_path, ideal_path, ideal_noise_path, load_lobster_level_filters_night, ideal_and_lobster_on_one_model)
-        # e3, _ = lobster_noise_level('rain', data_to_test_on, base_big_lobster_level, homo_test_path, ideal_path, ideal_noise_path, load_lobster_level_filters_rain, ideal_and_lobster_on_one_model)
+        e1, _ = lobster_noise_level('fog', data_to_test_on, base_big_lobster_level, homo_test_path, ideal_path, ideal_noise_path, load_lobster_level_filters_fog, ideal_and_lobster_on_one_model)
+        e2, _ = lobster_noise_level('night', data_to_test_on, base_big_lobster_level, homo_test_path, ideal_path, ideal_noise_path, load_lobster_level_filters_night, ideal_and_lobster_on_one_model)
+        e3, _ = lobster_noise_level('rain', data_to_test_on, base_big_lobster_level, homo_test_path, ideal_path, ideal_noise_path, load_lobster_level_filters_rain, ideal_and_lobster_on_one_model)
         e4, exclude_folders = lobster_noise_level('snow', data_to_test_on, base_big_lobster_level, homo_test_path, ideal_path, ideal_noise_path, load_lobster_level_filters_snow, ideal_and_lobster_on_one_model)
-        # extend_errors(errors, [e1, e2, e3, e4])
+        extend_errors(errors, [e1, e2, e3, e4])
 
     try:
-        
         sum_merged_files(f'phase_two/csv_output/{index}', exclude_folders)
     except Exception as e:
         print(f"ERROR: {e}")
