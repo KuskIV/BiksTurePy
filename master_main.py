@@ -12,7 +12,7 @@ def get_phase_two_csv():
 
 if __name__ == "__main__":
     s_index = 0
-    e_index = 10
+    e_index = 0
     data_to_test_on = 1
     
     phase_one_path = get_paths('phase_one_csv')
