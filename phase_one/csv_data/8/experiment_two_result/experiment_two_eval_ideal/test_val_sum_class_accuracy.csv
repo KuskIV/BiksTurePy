@@ -1,0 +1,6 @@
+category,sub category,images,model_42_epoch_test,model_42_33_val
+Dangerous warning,Dangerous warning,2228,93.58010323159782,95.51765285262964
+Regularoty,Priority ,1041,96.92591738712775,97.95955353451839
+Regularoty,Prohibitory,3957,94.54188526661613,95.8920263045338
+Regularoty,Mandatory,1203,95.34264339152118,96.27629322268328
+Regularoty,Special regulations,1344,94.79389880952385,97.08582089552237

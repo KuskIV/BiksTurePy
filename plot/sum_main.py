@@ -1,5 +1,5 @@
 
-from sum_constructors.sum_constructor_object import sum_constructor
+# from sum_constructors.sum_constructor_object import sum_constructor
 
 import os,sys,inspect
 current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
@@ -12,13 +12,13 @@ from plot.test_train_sizes import sum_train_test_file
 
 
 def get_sub_category(class_name):
-    class_text_labels, categories, subcategories = read_class_descrip(get_category_csv())
+    _ , categories, subcategories = read_class_descrip(get_category_csv())
     subcategories.append(categories[0])
     subcategories.append(categories[-1])
     return get_category_from_class(subcategories, int(class_name))
 
 def get_category(class_name):
-    class_text_labels, categories, subcategories = read_class_descrip(get_category_csv())
+    _ , categories, subcategories = read_class_descrip(get_category_csv())
     subcategories.append(categories[0])
     subcategories.append(categories[-1])
 

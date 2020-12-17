@@ -19,8 +19,8 @@ sys.path.insert(0, parent_dir)
 
 from phase_one.fit_model_on_batch import fit_model
 from error_handler import check_if_valid_path, custom_error_check
-from general_image_func import get_class_names, display_numpy_image                        # Not an error
-from Models.create_model import flatten_and_dense          # Not an error
+from general_image_func import get_class_names, display_numpy_image
+from Models.create_model import flatten_and_dense
 from global_paths import get_paths, get_satina_model_avg_path, get_satina_model_median_path, get_satina_model_mode_path, get_satina_model_avg_path_norm, get_satina_model_median_path_norm, get_satina_model_mode_path_norm
 
 class return_model(object):
@@ -58,7 +58,7 @@ class return_model(object):
         try:
             return_tuple = (self.img_shape[0], self.img_shape[1], last_size)
         except IndexError as e:
-            print(f"ERROR: as e")
+            print(f"ERROR: as {e}")
             raise ValueError
 
         return return_tuple
@@ -452,8 +452,10 @@ def get_satina_gains_model_object_list(shape:int, load_trained_models:bool=False
     except Exception as e:
         print(f"ERROR: {e}")
         raise Exception
-
-    return [satina_model_avg, satina_model_mode, satina_model_median]
+    
+    model_list = [satina_model_avg, satina_model_median, satina_model_mode]
+    
+    return sorted(model_list, key=lambda x: x.get_size(), reverse=True)
 
 def get_satina_gains_model_norm_object_list(shape:int, load_trained_models:bool=False, model_paths=None)->list:
     custom_error_check(verify_model_paths(model_paths), f'The model path length is not correct. It is {get_len_if_not_none(model_paths)}, but it should be 3')
@@ -473,4 +475,6 @@ def get_satina_gains_model_norm_object_list(shape:int, load_trained_models:bool=
         print(f"ERROR: {e}")
         raise Exception
 
-    return [satina_model_avg, satina_model_mode, satina_model_median]
+    model_list = [satina_model_avg, satina_model_median, satina_model_mode]
+    
+    return sorted(model_list, key=lambda x: x.get_size(), reverse=True)

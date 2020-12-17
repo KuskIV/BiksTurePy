@@ -23,8 +23,8 @@ Dataset/ETSD_GTSRB_N_GTSDB/
 Dataset/miladgainsimage/
 Dataset/roni_bot/
 error_messages/
-phase_two/csv_output/
-phase_one/csv_data/
+#phase_two/csv_output/
+#phase_one/csv_data/
 # Distribution / packaging
 .Python
 build/
