@@ -210,6 +210,14 @@ def apply_multiple_filters(Imgs:list,mode = 'rand', KeepOriginal:bool=True, filt
 def premade_single_filter(str:str)->Filter:
     return Filter(get_premade_filter(str))
 
+def load_level_of_filters(filter_name:str):
+    filter_list = []
+    for i in range(1, 11):
+        filter_key = f'{filter_name}{i}'
+        filter_input = f'mod_{filter_name}{i/10}'
+        filter_list.append(premade_single_filter(filter_input))
+    return filter_list
+    
 if __name__ == '__main__':
     pass
     # import time
@@ -220,28 +228,47 @@ if __name__ == '__main__':
     # path5 = 'C:/Users/jeppe/Downloads/Combnoise_for_coronoi-20201207T131136Z-001/Combnoise_for_coronoi/fog_snow.png'
     path1 = 'C:/Users/jeppe/Desktop/GTSRB_Final_Training_Images/GTSRB/Final_Training/images/00014/00020_00029.ppm'
     save_path = 'C:/Users/jeppe/Desktop/Noise_levels'
-    name1 = "fog_night_homo_haze"
-    name2 = "fog_rain_homo_haze"
-    name3 = "fog_snow_homo_haze"
-    names = [name1,name2,name3]
-    alt1 = "fog_night"
-    alt2 = "fog_rain"
-    alt3 = "fog_snow"
-    alts = [alt1,alt2,alt3]
-    homo = premade_single_filter("std_homo")
-    filt1 = premade_single_filter("fog_night")
-    filt2 = premade_single_filter("fog_rain")
-    filt3 = premade_single_filter("fog_snow")
-    filters = [filt1,filt2,filt3]
+
+    fog = load_level_of_filters("fog")
+    fogs = [x+Image.open(path1) for x in fog]
+    rain = load_level_of_filters("rain")
+    rains = [x+Image.open(path1) for x in rain]
+    snow = load_level_of_filters("snow")
+    snows = [x+Image.open(path1) for x in snow]
+    night = load_level_of_filters("night")
+    nights = [x+Image.open(path1) for x in night]
+
+    for i in range(len(fogs)):
+        fogs[i].save(f"{save_path}/fog{i}.png")
+        rains[i].save(f"{save_path}/rain{i}.png")
+        snows[i].save(f"{save_path}/snow{i}.png")
+        nights[i].save(f"{save_path}/night{i}.png")
 
 
 
-    for i in range(len(names)):
+    # name1 = "fog_night_homo_haze"
+    # name2 = "fog_rain_homo_haze"
+    # name3 = "fog_snow_homo_haze"
+    # names = [name1,name2,name3]
+    # alt1 = "fog_night"
+    # alt2 = "fog_rain"
+    # alt3 = "fog_snow"
+    # alts = [alt1,alt2,alt3]
+    # homo = premade_single_filter("std_homo")
+    # filt1 = premade_single_filter("fog_night")
+    # filt2 = premade_single_filter("fog_rain")
+    # filt3 = premade_single_filter("fog_snow")
+    # filters = [filt1,filt2,filt3]
 
-        img = Image.open(path1)
-        img =(filters[i]+img)
-        img.save(f"{save_path}/{alts[i]}.png")
-        (homo+img).save(f"{save_path}/{names[i]}.png")
+
+
+
+    # for i in range(len(names)):
+
+    #     img = Image.open(path1)
+    #     img =(filters[i]+img)
+    #     img.save(f"{save_path}/{alts[i]}.png")
+    #     (homo+img).save(f"{save_path}/{names[i]}.png")
     # levels = ['mild','medium','heavy']
     # noises = ['rain','snow','night','fog']
 
