@@ -1,0 +1,15 @@
+<<<<<<< HEAD:results/experiment_two_eval_idealnoise_test_val_sum_class_accuracy.csv
+category,sub category,images,model_42_epoch_test,model_42_24_val
+Dangerous warning,Dangerous warning,2228.0,77.3338330341113,84.17260713622004
+Regularoty,Priority ,1041.0,83.09312199807879,92.41179909053326
+Regularoty,Prohibitory,3957.0,71.16450341167551,84.55957014542344
+Regularoty,Mandatory,1203.0,72.90247714048212,88.72564834024897
+Regularoty,Special regulations,1344.0,77.60508928571427,89.26512095771145
+=======
+category,sub category,images,model_42_epoch_test,model_42_26_val
+Dangerous warning,Dangerous warning,2228.0,77.3338330341113,83.54763055194202
+Regularoty,Priority ,1041.0,83.09312199807879,93.02510417527904
+Regularoty,Prohibitory,3957.0,71.16450341167551,84.80697679640717
+Regularoty,Mandatory,1203.0,72.90247714048212,88.23989419087135
+Regularoty,Special regulations,1344.0,77.60508928571427,88.37050373134328
+>>>>>>> 4067e82c2898dfe750ab01e438ff433c51ea707d:results/experiment_two_eval_idealnoise_test_val_sum_class_accuracy_avg.csv
