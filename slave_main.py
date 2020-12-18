@@ -130,10 +130,10 @@ def one_lobster_noise_level(noise_name, base_path, test_path, data_to_test_on, i
         ex_folder = get_ex_folder(modified_lobster_level_folder, modified_base_path)
         create_paths_for_lobster_noise_level(modified_base_path, ex_folder)
         folder_name = modified_base_path
-        # introduce_experiment(modified_lobster_level_folder)
-        # ex_two_eval_noise(test_path, ex_folder, get_models=get_satina_gains_model_norm_object_list,
-        #                 data_to_test_on=data_to_test_on, model_paths=ideal_path, filter_method=filter_method,
-        #                 run_on_one_model=ideal_and_lobster_on_one_model)
+        introduce_experiment(modified_lobster_level_folder)
+        ex_two_eval_noise(test_path, ex_folder, get_models=get_satina_gains_model_norm_object_list,
+                        data_to_test_on=data_to_test_on, model_paths=ideal_path, filter_method=filter_method,
+                        run_on_one_model=ideal_and_lobster_on_one_model)
     except Exception as e:
         print(f"ERROR IN EXPERIMENT 'TRAIN ON IDEAL LOBSTER {noise_name}'")
         e = sys.exc_info()
