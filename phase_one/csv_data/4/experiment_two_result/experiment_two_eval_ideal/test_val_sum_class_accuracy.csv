@@ -1,6 +1,6 @@
-category,sub category,images,model_42_epoch_test,model_42_27_val
-Dangerous warning,Dangerous warning,2228,94.74797576301616,95.22906894629251
-Regularoty,Priority ,1041,96.0609414024976,97.26053327821413
-Regularoty,Prohibitory,3957,94.818840030326,95.7894129597947
-Regularoty,Mandatory,1203,95.09491271820451,97.84236168741354
-Regularoty,Special regulations,1344,95.0889806547619,95.6613961442786
+category,sub category,images,model_42_epoch_test,model_42_28_val
+Dangerous warning,Dangerous warning,2228,94.74797576301616,94.82911354766772
+Regularoty,Priority ,1041,96.0609414024976,98.35730880529144
+Regularoty,Prohibitory,3957,94.818840030326,94.97208404619333
+Regularoty,Mandatory,1203,95.09491271820451,96.57725449515905
+Regularoty,Special regulations,1344,95.0889806547619,96.63531094527363
